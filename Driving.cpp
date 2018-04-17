@@ -24,20 +24,20 @@ if (y >= 0) {
     if (x >= 0) {
         if (y >= x) {
             powerLeft = y;
-            } else {
+        } else {
             powerLeft = x;
         }
-        } else {
+    } else {
         powerLeft = y + x;
     }
 } else {
     if (x <= 0) {
         if (y <= x) {
             powerLeft = y;
-            } else {
+        } else {
             powerLeft = x;
         }
-        } else {
+    } else {
         powerLeft = y + x;
     }
 }
@@ -47,20 +47,20 @@ if (y >= 0) {
     if (x <= 0) {
         if (y >= -x) {
             powerRight = y;
-            } else {
+        } else {
             powerRight = -x;
         }
-        } else {
+    } else {
         powerRight = y - x;
     }
 } else {
     if (x >= 0) {
         if (y <= -x) {
             powerRight = y;
-            } else {
+        } else {
             powerRight = -x;
         }
-        } else {
+    } else {
         powerRight = y - x;
     }
 }
