@@ -2,6 +2,5 @@
 All notable changes will be documented in this file
 
 ## [Unreleased]
-- Waiting for the new VEX Robotics Competition to be announced
-- Basic remote control of chassis
-- No other plans
+- Create class called roboMethods
+- Implement driving algorithm as a function of roboMethods
