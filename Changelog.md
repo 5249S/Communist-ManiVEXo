@@ -2,5 +2,9 @@
 All notable changes will be documented in this file
 
 ## [Unreleased]
-- Create class called roboMethods, inheriting a class driveMethods
-- Implement driving algorithm as a function of driveMethods
+- Class of pid Methods for future auton control
+
+## [0.0.0]
+### Added
+- New class called roboMethods
+- New class called driveMethods
