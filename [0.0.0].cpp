@@ -1,6 +1,6 @@
 class driveMethods {
     public:
-        void drive(int x, int y){
+        void driveH(int x, int y){
             //Deadzone Filter to prevent motor whining or drifting
             if (y < 10 && y > -10) {
                 y = 0;
