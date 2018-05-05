@@ -1,15 +1,6 @@
 class driveMethods {
-    public:
-        void driveH(int x, int y){
-            //Deadzone Filter to prevent motor whining or drifting
-            if (y < 10 && y > -10) {
-                y = 0;
-            }
-            if (x < 10 && x > -10) {
-                x = 0;
-            }
-
-            //Left Motor Calculator
+    protected:
+        int leftMotor(int y, int x){
             if (y >= 0) {
                 if (x >= 0) {
                     if (y >= x) {
@@ -31,36 +22,50 @@ class driveMethods {
                     powerLeft = y + x;
                 }
             }
-
-            //Right Motor Calculator
-            if (y >= 0) {
-                if (x <= 0) {
-                    if (y >= -x) {
-                        powerRight = y;
-                    } else {
-                        powerRight = -x;
-                    }
-                } else {
-                    powerRight = y - x;
-                }
-            } else {
-                if (x >= 0) {
-                    if (y <= -x) {
-                        powerRight = y;
-                    } else {
-                        powerRight = -x;
-                    }
-                } else {
-                    powerRight = y - x;
-                }
+            return powerLeft;
+        }
+        int rightMotor(int y, int x){
+            x *= -1;
+            return leftMotor(y, x);
+        }
+    public:
+        void driveX(int y, int x, int t){
+            if (y < 10 && y > -10) {
+                y = 0;
+            }
+            if (x < 10 && x > -10) {
+                x = 0;
+            }
+            if(t < 10 && t > -10){
+                t = 0;
             }
 
-            //Use power variables to control the motors
-            motor[leftFront] = powerLeft;
-            motor[rightBack] = powerRight;
-            motor[leftBack] = powerLeft;
-            motor[rightFront] = powerRight;
+            int a = 0;
+            int b = 0;
+
+            a = (int) (-x+y)*(sqrt(2)/2);
+            b = (int) (x-y)*(sqrt(2)/2);
+
+            motor[frontLeft] = leftMotor(a, t);
+            motor[backLeft] = leftMotor(b, t);
+            motor[frontRight] = rightMotor(b, t);
+            motor[backRight] = rightMotor(a, t);
+
         }
+        void driveH(int y, int x){
+            if (y < 10 && y > -10) {
+                y = 0;
+            }
+            if (x < 10 && x > -10) {
+                x = 0;
+            }
+
+            motor[frontLeft] = leftMotor(y, x);
+            motor[backLeft] = leftMotor(y, x);
+            motor[frontRight] = rightMotor(y, x);
+            motor[backRight] = rightMotor(y, x);
+        }
+    
 }
 class pid: public driveMethods {
     public:
