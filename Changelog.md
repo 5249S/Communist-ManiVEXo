@@ -9,4 +9,6 @@ All notable changes will be documented in this file
 ### Added
 - New class called roboMethods
 - New class called driveMethods
+- Method for an x-drive chassis
+- Method for a h-drive chassis
 - General PID calculator under pid class
