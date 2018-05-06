@@ -2,8 +2,8 @@
 All notable changes will be documented in this file
 
 ## [Unreleased]
-- Class of pid Methods for future auton control
-- Driving algorithm specific to chassis design
+- Integrate VexOS commands for robot control
+- Methods for controlling other parts of the robot
 
 ## [0.0.0]
 ### Added
