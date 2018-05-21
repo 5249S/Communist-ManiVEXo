@@ -1,4 +1,4 @@
-class driveMethods {
+class DriveMethods {
     protected:
         int leftMotor(int y, int x){
             if (y >= 0) {
@@ -67,7 +67,7 @@ class driveMethods {
         }
     
 }
-class pid: public driveMethods {
+class Pid: public DriveMethods {
     public:
         struct pidCalcReturn {
             float adjust;
@@ -108,6 +108,6 @@ class pid: public driveMethods {
         }
 }
 }
-class roboMethods: public pid {
+class RoboMethods: public Pid {
 
 }
