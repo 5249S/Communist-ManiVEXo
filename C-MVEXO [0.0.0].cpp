@@ -1,3 +1,8 @@
+/*--------------------------------------------*/
+/*                    5249S                   */
+/*             Communist ManiVEXo             */
+/*--------------------------------------------*/
+
 class DriveMethods {
     protected:
         int leftMotor(int y, int x){
