@@ -1,3 +1,3 @@
 # Communist-ManiVEXo
-- The child of Bjorn
+- Sparta Robotics
 - Team 5249S
