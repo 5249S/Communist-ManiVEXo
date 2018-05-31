@@ -2,7 +2,9 @@
 /*                    5249S                   */
 /*             Communist ManiVEXo             */
 /*--------------------------------------------*/
-
+#include <iostream>
+#include <cmath>
+using namespace std;
 class DriveMethods {
     //Class for methods for driving the robot around the field
     protected:
@@ -74,6 +76,26 @@ class DriveMethods {
             motor[frontRight] = rightMotor(y, x);
             motor[backRight] = rightMotor(y, x);
         }
+    
+}
+class Launcher {
+    private: 
+        //All measurements use SI units
+        const float GRAVITY = 9.8;
+        const float INITIAL_VELOCITY = 0; //To be calculated
+        const float FLAG_HEIGHT = 0;
+        distance = 
+        senseVision(){
+            float distance;
+            float alpha;
+            float beta;
+            return height;
+        }
+        
+    public:
+        ballToFlagCheck(){}
+        ballToFlagCheckDrag(){}
+        updateRemoteControlInterface(){}
     
 }
 class Pid: public DriveMethods {
