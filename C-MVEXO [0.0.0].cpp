@@ -4,7 +4,9 @@
 /*--------------------------------------------*/
 
 class DriveMethods {
+    //Class for methods for driving the robot around the field
     protected:
+        //Calculators for motor power to translate remote joystick values into motor powers
         int leftMotor(int y, int x){
             if (y >= 0) {
                 if (x >= 0) {
@@ -34,7 +36,8 @@ class DriveMethods {
             return leftMotor(y, x);
         }
     public:
-        void driveX(int y, int x, int t){
+        void driveX(int y, int x, int t){ //Method for driving the chassis with an x-drive, incorporating strafe and turning
+            //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
             if (y < 10 && y > -10) {
                 y = 0;
             }
@@ -57,7 +60,8 @@ class DriveMethods {
             motor[backRight] = rightMotor(a, t);
 
         }
-        void driveH(int y, int x){
+        void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
+            //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
             if (y < 10 && y > -10) {
                 y = 0;
             }
@@ -80,7 +84,7 @@ class Pid: public DriveMethods {
             float integral;
         }
         pidCalcReturn pidCalc(float processVar, float setPoint = 0, float prevError = 0, float pidIntegral = 0, float kP = 0.0, float kI = 0.0, float kD = 0.0){
-            
+            //This is a single calculation for one cycle of a PID calculator, the integral and previous error variables need to be cycled back into the calculator
             //Define variables
             float pidProportional = 0.0;
             float pidDerivative = 0.0;
