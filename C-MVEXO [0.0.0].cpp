@@ -7,7 +7,7 @@
 #include <cmath>
 using namespace std;
 
-class DriveMethods {
+class DriveMethods: public Pid {
     //Class for methods for driving the robot around the field
     protected:
         //Calculators for motor power to translate remote joystick values into motor powers
@@ -81,14 +81,18 @@ class DriveMethods {
     
 }
 class Pid: public DriveMethods {
+    private:
+        //variables that affect pid that will remain hidden from user to increase stability/abstraction
+        float prevError = 0;
+        float pidIntegral = 0;
     public:
-        struct pidCalcReturn {
-            float adjust;
-            float lastError;
-            float integral;
-        }
-        pidCalcReturn pidCalc(float processVar, float setPoint = 0, float prevError = 0, float pidIntegral = 0, float kP = 0.0, float kI = 0.0, float kD = 0.0){
-            //This is a single calculation for one cycle of a PID calculator, the integral and previous error variables need to be cycled back into the calculator
+        float setPoint = 0;
+        float kP = 0.0;
+        float kI = 0.0;
+        float kD = 0.0;
+    
+        float pidCalc(float processVar){
+            //This is a single calculation for one cycle of a PID calculator, run in while loop, put output into control system
             //Define variables
             float pidProportional = 0.0;
             float pidDerivative = 0.0;
@@ -111,14 +115,16 @@ class Pid: public DriveMethods {
             }
 
             //use pid structure to return values
-            pidCalcReturn returnValues;
-            returnValues.adjust = pidDerivative + pidProportional + kI * pidIntegral;
-            returnValues.lastError = pidError;
-            returnValues.integral = pidIntegral;
+            
+            float adjust = pidDerivative + pidProportional + kI * pidIntegral;
+            //reset error for next loop
+            prevError = pidError;
+            
 
             //return adjustment, new error, and pidIntegral
-            return returnValues;
+            return adjust;
         }
+        
 }
 }
 class RoboMethods: public Pid {
