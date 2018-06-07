@@ -7,6 +7,7 @@
 #include <cmath>
 using namespace std;
 
+//The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
 class DriveMethods: public Pid {
     //Class for methods for driving the robot around the field
     protected:
