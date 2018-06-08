@@ -9,4 +9,5 @@ All significant changes made to the software for 5249S will be documented here
 - Made a c++ document with driving code from last year
 ## C-MVEXO [0.0.0]
 ### April 30, 2018
-- 
+- Created the main file for the robot
+- Put in a general PID calculator
