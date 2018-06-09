@@ -17,6 +17,13 @@ All significant changes made to the software for 5249S will be documented here
 ### May 5, 2018
 - Added driving for an X-drive chassis
 - X-Drive Probably will not be used as only 8 V5 motors are allowed
+### May 7, 2018
+- Researched the new V5 Vision Sensor and researched ways to locate target using sensor for ball launcher
+### May 9, 2018
+- Finished initial ball launcher calculations
+### May 20, 2018
+- Began research on drag and looking to calculate projectile path incorperating drag
+- Drag will probably not be used as it will most likely prove to be too precise
 ### May 30, 2018
 - Finalized calculations for ball launcher including vision sensor distance calculations and projectile path with and without drag
 ### May 31, 2018
