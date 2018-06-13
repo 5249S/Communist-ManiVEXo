@@ -110,7 +110,7 @@ class Pid: public DriveMethods {
 
             //Calculate Integral
             if (abs(pidIntegral) < 50) {
-                    pidIntegral = pidError - (pidError-prevError)/2 + pidIntegral;
+                    pidIntegral += (pidError + prevError)/2;
             } else {
                     pidIntegral = 0;
             }
