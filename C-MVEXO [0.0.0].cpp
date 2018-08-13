@@ -81,7 +81,7 @@ class DriveMethods: public Pid {
         }
     
 }
-class Pid: public DriveMethods {
+class Pid {
     private:
         //variables that affect pid that will remain hidden from user to increase stability/abstraction
         float prevError = 0;
