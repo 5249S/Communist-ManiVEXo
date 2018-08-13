@@ -8,7 +8,7 @@
 using namespace std;
 
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
-class DriveMethods: public Pid {
+class DriveMethods {
     //Class for methods for driving the robot around the field
     protected:
         //Calculators for motor power to translate remote joystick values into motor powers
@@ -41,6 +41,11 @@ class DriveMethods: public Pid {
             return leftMotor(y, x);
         }
     public:
+    
+        DriveMethods() { }
+    
+        Pid drive; //Creates a PID object for controlling driving
+        Pid turn;  //Creates a PID object for controlling turning
         void driveX(int y, int x, int t){ //Method for driving the chassis with an x-drive, incorporating strafe and turning
             //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
             if (y < 10 && y > -10) {
@@ -87,6 +92,9 @@ class Pid {
         float prevError = 0;
         float pidIntegral = 0;
     public:
+    
+        Pid() { }
+        
         float setPoint = 0;
         float kP = 0.0;
         float kI = 0.0;
