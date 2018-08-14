@@ -2,6 +2,7 @@
 All notable changes will be documented in this file
 
 ## [Unreleased]
+- Create a user interface to allow selection between multiple modes
 - Integrate VexOS commands for robot control
 - Implement ball projectile calculations and sensors
 - Control of robot subsystems and sensors
