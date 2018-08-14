@@ -34,3 +34,5 @@ All significant changes made to the software for 5249S will be documented here
 - Found calculations for auto angle adjustment
 ### June 6, 2018
 - Changed the PID calculator format so it can be easier used with the object oriented part of c++
+### August 14, 2018
+- Overlooked newly released API for Vex Coding Studio
