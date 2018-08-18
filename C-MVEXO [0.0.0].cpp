@@ -5,7 +5,9 @@
 
 #include <cmath>
 
-vex::motor mtrDriveLeft = vex::motor()
+vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
+vex::motor mtrDriveRight = vex::motor(vex::PORT10);
+
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
 class DriveMethods {
     //Class for methods for driving the robot around the field
@@ -78,10 +80,20 @@ class DriveMethods {
                 x = 0;
             }
 
-            motor[frontLeft] = leftMotor(y, x);
-            motor[backLeft] = leftMotor(y, x);
-            motor[frontRight] = rightMotor(y, x);
-            motor[backRight] = rightMotor(y, x);
+            int leftPower = leftMotor(y, x);
+            int rightPower = rightMotor(y, x);
+            if (leftPower < 0){
+                mtrDriveLeft.spin(rev, (double)(-leftPower), rpm);
+            } else {
+                mtrDriveLeft.spin(fwd, (double)leftPower, rpm);
+            }
+            
+            if (rightPower < 0){
+                mtrDriveRight.spin(rev, (double)(-rightPower), rpm);
+            } else {
+                mtrDriveRight.spin(fwd, (double)rightPower, rpm);
+            }
+            
         }
     
 };
@@ -135,3 +147,30 @@ class Pid {
         
 };
 
+void wait(int time){
+    vex::timer timer;
+    timer.clear();
+    while (timer.time < time){}
+}
+
+int main() {
+    vex::brain robotMain = vex::brain();
+    vex::controller ctrPrimary = vex::controller();
+    DriveMethods robot;
+    controller.Screen.clearScreen();
+    controller.Screen.setCursor(0, 0);
+    controller.Screen.print("C-MVEXO 5249S");
+    controller.Screen.newLine();
+    controller.Screen.print("Ver: 0.0.0");
+    controller.Screen.newLine();
+    controller.Screen.print("Driver Control");
+
+    while (true){
+        int y = controller.Axis3.value();
+        int x = controller.Axis1.value();
+
+        robot.driveH(y, x);
+        wait(20);
+    }
+    return 0;
+}
