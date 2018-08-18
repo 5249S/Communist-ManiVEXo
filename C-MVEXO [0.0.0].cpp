@@ -3,10 +3,9 @@
 /*             Communist ManiVEXo             */
 /*--------------------------------------------*/
 
-#include <iostream>
 #include <cmath>
-using namespace std;
 
+vex::motor mtrDriveLeft = vex::motor()
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
 class DriveMethods {
     //Class for methods for driving the robot around the field
@@ -64,10 +63,10 @@ class DriveMethods {
             a = (int) (-x+y)*(sqrt(2)/2);
             b = (int) (x-y)*(sqrt(2)/2);
 
-            motor[frontLeft] = leftMotor(a, t);
-            motor[backLeft] = leftMotor(b, t);
-            motor[frontRight] = rightMotor(b, t);
-            motor[backRight] = rightMotor(a, t);
+            //motor[frontLeft] = leftMotor(a, t);
+            //motor[backLeft] = leftMotor(b, t);
+            //motor[frontRight] = rightMotor(b, t);
+            //motor[backRight] = rightMotor(a, t);
 
         }
         void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
@@ -85,7 +84,7 @@ class DriveMethods {
             motor[backRight] = rightMotor(y, x);
         }
     
-}
+};
 class Pid {
     private:
         //variables that affect pid that will remain hidden from user to increase stability/abstraction
@@ -134,8 +133,5 @@ class Pid {
             return adjust;
         }
         
-}
-}
-class RoboMethods: public Pid {
+};
 
-}
