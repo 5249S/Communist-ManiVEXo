@@ -39,3 +39,5 @@ All significant changes made to the software for 5249S will be documented here
 ### August 18, 2018
 - Integrated VEX OS into the main program
 - Version 0.0.0 is ready to be tested
+### August 19, 2018
+- Began working on versions 0.1.0 and 0.2.0
