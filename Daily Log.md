@@ -41,3 +41,5 @@ All significant changes made to the software for 5249S will be documented here
 - Version 0.0.0 is ready to be tested
 ### August 19, 2018
 - Began working on versions 0.1.0 and 0.2.0
+### August 21, 2018
+- Successfully compiled version 0.0.0, ready for testing
