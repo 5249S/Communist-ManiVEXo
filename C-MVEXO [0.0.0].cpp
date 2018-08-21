@@ -6,9 +6,6 @@
 
 #include <cmath>
 
-vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
-vex::motor mtrDriveRight = vex::motor(vex::PORT10);
-
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
 class DriveMethods {
     //Class for methods for driving the robot around the field
@@ -155,8 +152,6 @@ void wait(int time){
 }
 
 int main() {
-    vex::brain robotMain = vex::brain();
-    vex::controller ctrPrimary = vex::controller();
     DriveMethods robot;
     controller.Screen.clearScreen();
     controller.Screen.setCursor(0, 0);
