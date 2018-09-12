@@ -132,15 +132,15 @@ class DriveMethods {
             int leftPower = leftMotor(y, x);
             int rightPower = rightMotor(y, x);
             if (leftPower < 0){
-                mtrDriveLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::rpm);
+                mtrDriveLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
             } else {
-                mtrDriveLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::rpm);
+                mtrDriveLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
             }
             
             if (rightPower < 0){
-                mtrDriveRight.spin(vex::directionType::rev, (double)(-rightPower), vex::velocityUnits::rpm);
+                mtrDriveRight.spin(vex::directionType::rev, (double)(-rightPower), vex::velocityUnits::pct);
             } else {
-                mtrDriveRight.spin(vex::directionType::fwd, (double)rightPower, vex::velocityUnits::rpm);
+                mtrDriveRight.spin(vex::directionType::fwd, (double)rightPower, vex::velocityUnits::pct);
             }
             
         }
@@ -165,8 +165,8 @@ int main() {
     ctrPrimary.Screen.print("Driver Control");
 
     while (true){
-        int y = ctrPrimary.Axis3.value();
-        int x = ctrPrimary.Axis1.value();
+        int y = ctrPrimary.Axis3.position(vex::percentUnits.pct);
+        int x = ctrPrimary.Axis1.position(vex::percentUnits.pct);
 
         robot.driveH(y, x);
         wait(20);
