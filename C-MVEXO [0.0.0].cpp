@@ -141,8 +141,8 @@ int main() {
     ctrPrimary.Screen.print("Driver Control");
 
     while (true){
-        int y = ctrPrimary.Axis3.position(vex::percentUnits.pct);
-        int x = ctrPrimary.Axis1.position(vex::percentUnits.pct);
+        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
+        int x = ctrPrimary.Axis1.position(vex::percentUnits::pct);
 
         robot.driveH(y, x);
         wait(20);
