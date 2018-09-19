@@ -43,3 +43,9 @@ All significant changes made to the software for 5249S will be documented here
 - Began working on versions 0.1.0 and 0.2.0
 ### August 21, 2018
 - Successfully compiled version 0.0.0, ready for testing
+### September 14, 2018
+- Researched V5 Vision Sensor and determined method for locating flags
+### September 16, 2018
+- Finished first draft of 0.1.0
+### September 18, 2018
+- Revised 0.1.0 to reduce lines of code
