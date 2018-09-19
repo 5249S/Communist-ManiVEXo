@@ -96,30 +96,6 @@ class DriveMethods {
     
         Pid drive; //Creates a PID object for controlling driving
         Pid turn;  //Creates a PID object for controlling turning
-        void driveX(int y, int x, int t){ //Method for driving the chassis with an x-drive, incorporating strafe and turning
-            //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
-            if (y < 10 && y > -10) {
-                y = 0;
-            }
-            if (x < 10 && x > -10) {
-                x = 0;
-            }
-            if(t < 10 && t > -10){
-                t = 0;
-            }
-
-            int a = 0;
-            int b = 0;
-
-            a = (int) (-x+y)*(sqrt(2)/2);
-            b = (int) (x-y)*(sqrt(2)/2);
-
-            //motor[frontLeft] = leftMotor(a, t);
-            //motor[backLeft] = leftMotor(b, t);
-            //motor[frontRight] = rightMotor(b, t);
-            //motor[backRight] = rightMotor(a, t);
-
-        }
         void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
             //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
             if (y < 10 && y > -10) {
