@@ -39,10 +39,11 @@ All significant changes made to the software for 5249S will be documented here
 ### August 18, 2018
 - Integrated VEX OS into the main program
 - Version 0.0.0 is ready to be tested
-### August 19, 2018
-- Began working on versions 0.1.0 and 0.2.0
 ### August 21, 2018
 - Successfully compiled version 0.0.0, ready for testing
+## C-MVEXO [0.1.0]
+### August 19, 2018
+- Began working on versions 0.1.0
 ### September 14, 2018
 - Researched V5 Vision Sensor and determined method for locating flags
 ### September 16, 2018
