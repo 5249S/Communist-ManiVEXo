@@ -49,3 +49,6 @@ All significant changes made to the software for 5249S will be documented here
 - Finished first draft of 0.1.0
 ### September 18, 2018
 - Revised 0.1.0 to reduce lines of code
+### September 24, 2018
+- Uploaded first draft of 0.1.0
+- Updated changelog for 0.1.0
