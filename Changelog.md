@@ -2,9 +2,17 @@
 All notable changes will be documented in this file
 
 ## [Unreleased]
-- Create a user interface to allow selection between multiple modes
-- A competition control system for driver control and autonomous
+- Full driver control
+- New methods for controlling the robot in auton
 - Ball launcher targeting system
+
+## C-MVEXO [0.1.0] 
+### Added
+- User interface to select between modes
+- A Competition Control system
+- Simplified method of creating driver and autonomous programs
+### Changed
+- Driver Control is now in a new format for competitions
 
 ## C-MVEXO [0.0.0] - 2018-9-18
 ### Added
