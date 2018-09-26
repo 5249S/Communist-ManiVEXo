@@ -53,3 +53,5 @@ All significant changes made to the software for 5249S will be documented here
 ### September 24, 2018
 - Uploaded first draft of 0.1.0
 - Updated changelog for 0.1.0
+### September 25, 2018
+- Started new version of ball launcher code
