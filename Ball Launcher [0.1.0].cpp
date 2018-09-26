@@ -39,10 +39,10 @@ class Launcher {
             return (float)(atan((double)(yP/FOCAL_LENGTH)) + offset;
         }
     public:
-      void scanForFlags(){
-          
-      }
-      void targetSpecificFlag(){
+        void scanForFlags(){
+            
+        }
+        void targetSpecificFlag(){
 
-      }
+        }
 };
