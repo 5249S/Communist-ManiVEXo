@@ -33,6 +33,15 @@ class Launcher {
         double toDeg(double radians){
             return radians * (180.0/pi);
         }
+        int accelToGyro(){
+            int Z = accelLauncherZ.value(vex::analogUnits::range12bit);
+            int Y = accelLauncherY.value(vex::analogUnits::range12bit);
+            int offset = 0;
+            if (Y == 0){
+                return (int)(toDeg(-asin((double)Z))) + offset);
+            }
+            return (int)(toDeg(-atan((double)(Z/Y))) + offset);
+        }
         Flag htzFlags[9];
         const float FOV = 47.0;//field of view
         const float FOCAL_LENGTH = 200/tan(toRad(23.5));
@@ -48,6 +57,9 @@ class Launcher {
             
         }
     public:
+        Launcher(){
+            gyroLauncherSet.setValues(accelToGyro(), gyroLauncher.value(vex::rotationUnits::deg), false);
+        }
         int flagX[9];
         void scanForFlags(){
             if (colorRed){
