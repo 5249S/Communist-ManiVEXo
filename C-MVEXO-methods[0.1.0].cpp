@@ -5,7 +5,7 @@
 /*                Version 0.1.0               */
 /*--------------------------------------------*/
 
-class GyroSettings {
+class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
     private:
         gryoBias = 0;
         reverse = 1;
@@ -40,7 +40,8 @@ void calibrateGyros(){
         wait(20);
     }
     while(ctrPrimary.ButtonB.pressing()){wait(20);}
-    gyroLauncherSet.setValues(gyroLauncher.value(vex::rotationUnits::deg, false);
+    gyroNavSet.setValue(0, gyroNav.value(vex::rotationUnits::deg), false);
+    gyroLauncherSet.setValues(0, gyroLauncher.value(vex::rotationUnits::deg), false);
     
     
 }
