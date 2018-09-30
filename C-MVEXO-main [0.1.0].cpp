@@ -46,7 +46,7 @@ void calibrateGyros(){
         wait(20);
     }
     while(ctrPrimary.ButtonB.pressing()){wait(20);}
-    gyroNavSet.setValue(0, gyroNav.value(vex::rotationUnits::deg), false);
+    gyroNavSet.setValues(0, gyroNav.value(vex::rotationUnits::deg), false);
     gyroLauncherSet.setValues(0, gyroLauncher.value(vex::rotationUnits::deg), false);
     
     
