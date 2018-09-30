@@ -5,15 +5,6 @@
 /*                Version 0.1.0               */
 /*--------------------------------------------*/
 
-#include "robot-config.h"
-#include <cmath>
-    
-static int mode = -1;
-static bool colorRed = true;
-bool confirmAuton();
-bool confirmDriver();
-void wait(int);
-
 void auton(int autonMode){
     if (autonMode == 0){
         //Declare variable here
