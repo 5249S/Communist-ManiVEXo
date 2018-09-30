@@ -1,8 +1,8 @@
 class Flag {
     private:
-        const float GRAVITY = -9.8 //m/s^2 Acceleration of gravity
-        const float INITIAL_VELOCITY = 0 //m/s Initial velocity of ball
-        const float FLAG_HEIGHT = 0 //meters known height of flag object
+        const float GRAVITY = -9.8; //m/s^2 Acceleration of gravity
+        const float INITIAL_VELOCITY = 0; //m/s Initial velocity of ball
+        const float FLAG_HEIGHT = 0; //meters known height of flag object
         float distance = 0; //Variable for holding distance
         float height = 0; //Variable holding height to bottom of flag
         
@@ -14,18 +14,20 @@ class Flag {
             height = distance * (float)(tan(alpha));
         }
         float calculateRequiredAngle(){//Returns angle required to hit flag
-            float v = INITIAL_VELOCITY;//variables to hold values, for simplicity
-            float g = GRAVITY;
-            float h = height + FLAG_HEIGHT/2;//height of middle of flag
-            int offset = 0;//Offset varible to adjust for systematic error
-            return (float)(atan((v^2 - sqrt(v^4-g(g*distance^2-2*h*v^2)))/g*distance) + offset);//calculates angle required, casting between numbers where needed
+            double v = (double)INITIAL_VELOCITY;//variables to hold values, for simplicity
+            double g = (double)GRAVITY;
+            double h = (double)(height + FLAG_HEIGHT/2);//height of middle of flag
+            double d = (double)distance;
+            int offset = 0.0;//Offset varible to adjust for systematic error
+            return (float)(atan((pow(v,2.0) - sqrt(pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0))))/(g*d) + offset));//calculates angle required, casting between numbers where needed
         }
         bool checkForHit(){
-            
+            return false;
         }
 };
-class Launcher {
-    private:        
+class Launcher : private Pid {
+    private:
+        
         int htzIndex = 0;//Number of flags in horizontal target zone
         const double pi = 3.141592;//Pi
         double toRad(double degrees){//Converts degrees to radians
@@ -42,29 +44,26 @@ class Launcher {
                 if (Z == 0){
                     return 0;//Something is wrong if this happens, only here to prevent error
                 }
-                return (int)(toDeg(-asin((double)Z/abs(Z)))) + offset);//gives back either 0 or 90 degrees
+                return (int)((toDeg(-asin((double)Z/abs(Z)))) + offset);//gives back either 0 or 90 degrees
             }
             return (int)(toDeg(-atan((double)(Z/Y))) + offset);//Calculates angle
         }
         Flag htzFlags[9];
         //The following values are for the vision sensor camera
         const float FOV = 47.0;//field of view
-        const float FOCAL_LENGTH = 200/tan(toRad(23.5));//Focal length of the camera based on field of view 
+        const float FOCAL_LENGTH = 200/tan(toRad(FOV/2));//Focal length of the camera based on field of view 
         const int htzMax = 340;//Upper limit of horizontal target zone
         const int htzMin = 300;//Lower limit of horizontal target zone
         float angleAtPoint(int y){//calculates the verticle angle to a specific point on the camera using the field of view and focal length
             float offset = 0;//Offset for systematic error
             int yP = y - 200;//Makes center the origin
-            return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH))) + offset;//Returns angle at point
+            return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH)))) + offset;//Returns angle at point
         }
-        Pid pidLauncher;
-        pidLauncher.kP = 0;
-        pidLauncher.kI = 0;
-        pidLauncher.kD = 0;
+        
         void runAngleMotor(int angle){//Runs motor to set launcher to an angle
             
-            pidLauncher.setPoint = angle;
-            float fix = pidLauncher.update(gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
+            setPoint = angle;
+            float fix = pidCalc(gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
             if (fix > 100){
                 return;
             }
@@ -75,6 +74,9 @@ class Launcher {
     public:
         Launcher(){//Constructor, just sets gyro to 
             gyroLauncherSet.setValues(accelToGyro(), gyroLauncher.value(vex::rotationUnits::deg), false);
+            kP = 0.0;
+            kI = 0.0;
+            kD = 0.0;
         }
         int flagX[9];
         void scanForFlags(){//
