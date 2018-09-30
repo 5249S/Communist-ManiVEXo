@@ -58,8 +58,19 @@ class Launcher {
             return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH))) + offset;//Returns angle at point
         }
         Pid pidLauncher;
-        void runPid(float angle){//Runs motor to set launcher to an angle
+        pidLauncher.kP = 0;
+        pidLauncher.kI = 0;
+        pidLauncher.kD = 0;
+        void runAngleMotor(int angle){//Runs motor to set launcher to an angle
             
+            pidLauncher.setPoint = angle;
+            float fix = pidLauncher.update(gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
+            if (fix > 100){
+                return;
+            }
+            if (fix < -100){
+                return;
+            }
         }
     public:
         Launcher(){//Constructor, just sets gyro to 
@@ -84,10 +95,16 @@ class Launcher {
             }
         }
         void targetSpecificFlag(){
-            smallestAngleDifference = 100;
-            current 
-            for (int i = 0; i < htzIndex; i++){
-                
+            float angles[htzIndex];
+            for (int i = 0; i < htzIndex; i++){//Calculate the difference between the needed angle and gyro angle for all flags in the htz
+                angles[i] = fabs(htzFlags[i].calculateRequiredAngle() - (float)gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
             }
+            int shortestAngle = 0;//set the first angle to the shortest angle
+            for (int i = 1; i < htzIndex; i++){
+                if (angles[i] < angles[shortestAngle]){//If any other angle is closer to the gyro angle, set that to the closest angle
+                    shortestAngle = i;
+                }
+            }
+            runAngleMotor((int)htzFlags[shortestAngle].calculateRequiredAngle());//Run the motor to reach selected angle.
         }
 };
