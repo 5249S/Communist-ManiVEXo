@@ -5,50 +5,6 @@
 /*                Version 0.1.0               */
 /*--------------------------------------------*/
 
-class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
-    private:
-        gryoBias = 0;
-        reverse = 1;
-    public:
-        void setValues(int trueValue, int currentValue, bool rev){
-            reverse = rev?-1:1;
-            gyroBias = currentValue - reverse * trueValue;
-        }
-        int value(int currentValue){
-            return reverse * (currentValue - gyroBias);
-        }
-};
-void wait(int time){
-    vex::task::sleep(time);
-}
-GyroSettings gyroLauncherSet;
-GyroSettings gyroNavSet;
-void calibrateGyros(){
-    ctrPrimary.Screen.clearScreen();
-    ctrPrimary.Screen.setCursor(0,0);
-    ctrPrimary.Screen.print("Gyros Calibrating")
-    ctrPrimary.Screen.newLine();
-    ctrPrimary.Screen.print("Do Not Touch Robot");
-    ctrPrimary.Screen.newLine();
-    ctrPrimary.Screen.print("(B) Bypass");
-    gyroNav.startCallibration();
-    gyroLauncher.startCallibration();
-    while(gryoNav.isCalibrating() || gryoLauncher.isCalibrating()){
-        if (ctrPrimary.ButtonB.pressing()){
-            break;
-        }
-        wait(20);
-    }
-    while(ctrPrimary.ButtonB.pressing()){wait(20);}
-    gyroNavSet.setValue(0, gyroNav.value(vex::rotationUnits::deg), false);
-    gyroLauncherSet.setValues(0, gyroLauncher.value(vex::rotationUnits::deg), false);
-    
-    
-}
-void stopAllMotors(){
-
-}
-
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
 class Pid {
     private:
