@@ -4,7 +4,8 @@
 /*                    Main                    */
 /*                Version 0.1.0               */
 /*--------------------------------------------*/
-
+void autonomous(int);
+void driverControl();
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
     private:
         int maxLines = 3;
@@ -137,7 +138,7 @@ void colorSelect(){//method for selecting field color
         int status = selectColor.update(select, up, down);//call update method
         while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
         if (status != -1){//repeat loop until selection is made (update return something other than -1)
-            colorRed = (status == 0)//set colorRed to true if the status is zero, otherwise blue
+            colorRed = (status == 0);//set colorRed to true if the status is zero, otherwise blue
             break;
         }
         wait(20);//update at 50 hertz
