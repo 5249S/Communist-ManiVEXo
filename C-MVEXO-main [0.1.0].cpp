@@ -11,6 +11,49 @@ static int mode = -1;
 static bool colorRed = true;
 void autonomous(int);
 void driverControl();
+class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
+    private:
+        int gyroBias = 0;
+        int reverse = 1;
+    public:
+        void setValues(int trueValue, int currentValue, bool rev){
+            reverse = rev?-1:1;
+            gyroBias = currentValue - reverse * trueValue;
+        }
+        int value(int currentValue){
+            return reverse * (currentValue - gyroBias);
+        }
+};
+void wait(int time){
+    vex::task::sleep(time);
+}
+GyroSettings gyroLauncherSet;
+GyroSettings gyroNavSet;
+void calibrateGyros(){
+    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.setCursor(0,0);
+    ctrPrimary.Screen.print("Gyros Calibrating");
+    ctrPrimary.Screen.newLine();
+    ctrPrimary.Screen.print("Do Not Touch Robot");
+    ctrPrimary.Screen.newLine();
+    ctrPrimary.Screen.print("(B) Bypass");
+    gyroNav.startCalibration();
+    gyroLauncher.startCalibration();
+    while(gyroNav.isCalibrating() || gyroLauncher.isCalibrating()){
+        if (ctrPrimary.ButtonB.pressing()){
+            break;
+        }
+        wait(20);
+    }
+    while(ctrPrimary.ButtonB.pressing()){wait(20);}
+    gyroNavSet.setValue(0, gyroNav.value(vex::rotationUnits::deg), false);
+    gyroLauncherSet.setValues(0, gyroLauncher.value(vex::rotationUnits::deg), false);
+    
+    
+}
+void stopAllMotors(){
+
+}
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
     private:
         int maxLines = 3;
