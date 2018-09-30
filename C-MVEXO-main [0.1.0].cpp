@@ -4,6 +4,11 @@
 /*                    Main                    */
 /*                Version 0.1.0               */
 /*--------------------------------------------*/
+#include "robot-config.h"
+#include <cmath>
+    
+static int mode = -1;
+static bool colorRed = true;
 void autonomous(int);
 void driverControl();
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
