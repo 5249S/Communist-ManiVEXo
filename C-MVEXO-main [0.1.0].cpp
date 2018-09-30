@@ -9,8 +9,8 @@
     
 static int mode = -1;
 static bool colorRed = true;
-void autonomous(int);
-void driverControl();
+void auton(int);
+void driver();
 class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
     private:
         int gyroBias = 0;
