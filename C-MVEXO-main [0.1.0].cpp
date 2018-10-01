@@ -99,7 +99,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 moveDown();
             }
             ctrPrimary.Screen.clearScreen();
-            for (int i=0; i == maxLines; i++){
+            for (int i=0; i < maxLines; i++){
                 ctrPrimary.Screen.setCursor(i,2);
                 ctrPrimary.Screen.print("%s", text[i + topLine]);
             }
