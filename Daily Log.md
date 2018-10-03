@@ -57,3 +57,6 @@ All significant changes made to the software for 5249S will be documented here
 - Started new version of ball launcher code
 ### September 28, 2018
 - Configured gyro and accelerometer configurations
+### September 30, 2018
+- Finished and fixed error for ball launcher code
+- Reorganized code
