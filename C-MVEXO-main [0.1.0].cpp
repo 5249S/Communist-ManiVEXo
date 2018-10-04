@@ -111,7 +111,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 bool selectBtn = ctrPrimary.ButtonA.pressing();
                 bool up = ctrPrimary.ButtonUp.pressing();
                 bool down = ctrPrimary.ButtonDown.pressing();
-                int status = selectAuton.update(selectBtn, up, down);//call update function
+                int status = update(selectBtn, up, down);//call update function
                 while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
                 if (status != -1){//repeat loop until selection is made (update return something other than -1)
                     return status;//return number selected
