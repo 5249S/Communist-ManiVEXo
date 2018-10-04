@@ -82,12 +82,6 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 current --;
             }
         }
-    public:
-        char text[8][32];
-        DisplaySelection(unsigned int maxOptions){
-            max = maxOptions;
-        }
-        
         int update(bool select, bool up, bool down){
             if(select){
                 return current;
@@ -107,6 +101,26 @@ class DisplaySelection {//Class created to hold and change the values needed to 
             ctrPrimary.Screen.print("->");
             return -1;
         }
+    public:
+        char text[8][32];
+        DisplaySelection(unsigned int maxOptions){
+            max = maxOptions;
+        }
+        int select(){
+            while(true){//repeat update until a selection is chosen
+                bool selectBtn = ctrPrimary.ButtonA.pressing();
+                bool up = ctrPrimary.ButtonUp.pressing();
+                bool down = ctrPrimary.ButtonDown.pressing();
+                int status = selectAuton.update(selectBtn, up, down);//call update function
+                while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
+                if (status != -1){//repeat loop until selection is made (update return something other than -1)
+                    return status;//return number selected
+                    break;
+                }
+                wait(20); //Update at 50 hertz
+            }
+        }
+        
 };
 class PromptClose {//Handles whether the user wants to exit at a particular screen
     private:
@@ -162,35 +176,13 @@ int selectAutonomous(){//method for selecting autons
     strcpy(selectAuton.text[1], "Auton1");
     strcpy(selectAuton.text[2], "Auton2");
     strcpy(selectAuton.text[3], "Auton3");
-    while(true){//repeat update until a selection is chosen
-        bool select = ctrPrimary.ButtonA.pressing();
-        bool up = ctrPrimary.ButtonUp.pressing();
-        bool down = ctrPrimary.ButtonDown.pressing();
-        int status = selectAuton.update(select, up, down);//call update function
-        while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
-        if (status != -1){//repeat loop until selection is made (update return something other than -1)
-            return status;//return auton number
-            break;
-        }
-        wait(20); //Update at 50 hertz
-    }
+    return selectAuton.select();
 }
 void colorSelect(){//method for selecting field color
     DisplaySelection selectColor = DisplaySelection(2);//create display object
     strcpy(selectColor.text[0], "Red");//set array values to colors
     strcpy(selectColor.text[1], "Blue");
-    while(true){//update until a selection is chosen
-        bool select = ctrPrimary.ButtonA.pressing();
-        bool up = ctrPrimary.ButtonUp.pressing();
-        bool down = ctrPrimary.ButtonDown.pressing();
-        int status = selectColor.update(select, up, down);//call update method
-        while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
-        if (status != -1){//repeat loop until selection is made (update return something other than -1)
-            colorRed = (status == 0);//set colorRed to true if the status is zero, otherwise blue
-            break;
-        }
-        wait(20);//update at 50 hertz
-    }
+    colorRed = (selectColor.select() == 0);
 }
 int main(){//main control function
     while(true){//repeat until close is selected
@@ -201,18 +193,7 @@ int main(){//main control function
         strcpy(selectMode.text[2], "Auton Testing");
         strcpy(selectMode.text[3], "Driver Control");
         strcpy(selectMode.text[4], "Exit");//for closing the program
-        while(true){//update screen until selection is chosen
-            bool select = ctrPrimary.ButtonA.pressing();
-            bool up = ctrPrimary.ButtonUp.pressing();
-            bool down = ctrPrimary.ButtonDown.pressing();
-            int status = selectMode.update(select, up, down);//call update method
-            while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
-            if (status != -1){//repeat loop until selection is made (update return something other than -1)
-                mode = status;
-                break;
-            }
-            wait(20); //Update at 50 hertz
-        }
+        mode = selectMode.select();
         if(mode == 0){//Field control was selected
             calibrateGyros();//Calibrate gyro sensors
             colorSelect();//select team color
