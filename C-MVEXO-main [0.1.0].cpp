@@ -52,7 +52,9 @@ void calibrateGyros(){
     
 }
 void stopAllMotors(){
-
+    mtrDriveLeft.stop(vex::brakeType::coast);
+    mtrDriveRight.stop(vex::brakeType::coast);
+    
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
     private:
@@ -200,12 +202,12 @@ int main(){//main control function
             int autonMode = selectAutonomous();//select auton to run
 
             while(true){//loop for competition
-                bool statusClose = false;
                 PromptClose promptExit = PromptClose();
+                ctrPrimary.Screen.setCursor(0,0);
+                ctrPrimary.Screen.clearScreen();
+                ctrPrimary.Screen.print("FC-Disabled");
+                bool statusClose = false;
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
-                    ctrPrimary.Screen.setCursor(0,0);
-                    ctrPrimary.Screen.clearLine();
-                    ctrPrimary.Screen.print("FC-Disabled");
                     bool a = ctrPrimary.ButtonA.pressing();
                     bool b = ctrPrimary.ButtonB.pressing();
                     statusClose = (promptExit.update(a, b) == 1);
