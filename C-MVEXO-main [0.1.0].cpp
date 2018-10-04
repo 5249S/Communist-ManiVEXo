@@ -204,7 +204,7 @@ int main(){//main control function
             while(true){//loop for competition
                 PromptClose promptExit = PromptClose();
                 ctrPrimary.Screen.setCursor(0,0);
-                ctrPrimary.Screen.clearScreen();
+                ctrPrimary.Screen.clearLine();
                 ctrPrimary.Screen.print("FC-Disabled");
                 bool statusClose = false;
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
@@ -239,6 +239,9 @@ int main(){//main control function
             while(true){
                 bool statusClose = false;
                 PromptClose promptExit = PromptClose();
+                ctrPrimary.Screen.setCursor(0,0);
+                ctrPrimary.Screen.clearLine();
+                ctrPrimary.Screen.print("SK-Disabled");
                 while(!compControl.isEnabled()){
                     ctrPrimary.Screen.setCursor(0,0);
                     ctrPrimary.Screen.clearLine();
