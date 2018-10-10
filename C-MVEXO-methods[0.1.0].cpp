@@ -55,6 +55,18 @@ class Pid {
         }
         
 };
+class Lift {
+    public:
+        void drive(int power){
+            if (leftPower < 0){
+                mtrLiftLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
+                mtrLiftRight.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
+            } else {
+                mtrLiftLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
+                mtrLiftRight.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
+            }
+        }
+}
 class DriveMethods {
     //Class for methods for driving the robot around the field
     protected:
