@@ -16,11 +16,11 @@ class GyroSettings {//Class used to set gyros to specific values, as they can't 
         int gyroBias = 0;
         int reverse = 1;
     public:
-        void setValues(int trueValue, int currentValue, bool rev){
+        void setValues(int trueValue, int currentValue, bool rev){//Sets proper values
             reverse = rev?-1:1;
             gyroBias = currentValue - reverse * trueValue;
         }
-        int value(int currentValue){
+        int value(int currentValue){//returns true value with wanted shift
             return reverse * (currentValue - gyroBias);
         }
 };
@@ -29,7 +29,7 @@ void wait(int time){
 }
 GyroSettings gyroLauncherSet;
 GyroSettings gyroNavSet;
-void calibrateGyros(){
+void calibrateGyros(){//Calibrates gyros
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
     ctrPrimary.Screen.print("Gyros Calibrating");
@@ -39,9 +39,9 @@ void calibrateGyros(){
     ctrPrimary.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
     gyroLauncher.startCalibration();
-    while(gyroNav.isCalibrating() || gyroLauncher.isCalibrating()){
+    while(gyroNav.isCalibrating() || gyroLauncher.isCalibrating()){//waits for both gyros to finish 
         if (ctrPrimary.ButtonB.pressing()){
-            break;
+            break;//allows bypass
         }
         wait(20);
     }
@@ -212,7 +212,7 @@ int main(){//main control function
                     bool b = ctrPrimary.ButtonB.pressing();
                     statusClose = (promptExit.update(a, b) == 1);
                     while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isEnabled()){wait(20);}
-                    if (statusClose){
+                    if (statusClose){//allow robot to exit competition when disabled
                         break;
                     }
                     wait(20);
@@ -220,11 +220,11 @@ int main(){//main control function
                 if (statusClose){
                     break;
                 }
-                if(compControl.isEnabled() && compControl.isAutonomous()){
+                if(compControl.isEnabled() && compControl.isAutonomous()){//runs auton when enabled and autonomous
                         auton(autonMode);
                         while(compControl.isEnabled() && compControl.isAutonomous()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
-                if(compControl.isEnabled() && compControl.isDriverControl()){
+                if(compControl.isEnabled() && compControl.isDriverControl()){//runs driver control when enabled and autonomous
                     driver();
                     while(compControl.isEnabled() && compControl.isDriverControl()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
@@ -232,7 +232,7 @@ int main(){//main control function
             }
             stopAllMotors();
         }
-        if(mode == 1){
+        if(mode == 1){//Skills mode- same as field control, except no color selection
             colorRed = true;
             int autonMode = selectAutonomous();
 
@@ -270,18 +270,18 @@ int main(){//main control function
             }
             stopAllMotors();
         }
-        if(mode == 2){
+        if(mode == 2){//Auton testing mode
             while (true){
                 while(true){
                     ctrPrimary.Screen.clearScreen();
                     ctrPrimary.Screen.setCursor(0,0);
                     ctrPrimary.Screen.print("Setup Robot");
                     ctrPrimary.Screen.newLine();
-                    ctrPrimary.Screen.print("(A) Done");
+                    ctrPrimary.Screen.print("(A) Done");//Waits until robot is placed properly for auton
                     if (ctrPrimary.ButtonA.pressing()){
                         break;
                     }
-                    wait(20);
+                    wait(20);//50 hertz
                 }
                 while(ctrPrimary.ButtonA.pressing()){wait(20);}
                 calibrateGyros();
@@ -289,14 +289,16 @@ int main(){//main control function
                 if(selection == 0){
                     break;
                 }
-                colorSelect();
-                auton(selection);
+                colorSelect();//select color
+                auton(selection);//run selected auton
+                while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
             }
         }
         if(mode == 3){
             calibrateGyros();
             colorSelect();
             driver();
+            while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
         }
         if(mode == 4){
             return 0;
