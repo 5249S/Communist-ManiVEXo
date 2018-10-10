@@ -58,12 +58,12 @@ class Pid {
 class Lift {
     public:
         void drive(int power){
-            if (leftPower < 0){
-                mtrLiftLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
-                mtrLiftRight.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
+            if (power < 0){
+                mtrLiftLeft.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+                mtrLiftRight.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
             } else {
-                mtrLiftLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
-                mtrLiftRight.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
+                mtrLiftLeft.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+                mtrLiftRight.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
             }
         }
 }
@@ -97,8 +97,7 @@ class DriveMethods {
             return powerLeft;
         }
         int rightMotor(int y, int x){
-            x *= -1;
-            return leftMotor(y, x);
+            return leftMotor(y, -x);
         }
     public:
     
