@@ -21,12 +21,14 @@ void auton(int autonMode){
 
 void driver(){
     //Declare variables here
+    DriveMethods robot;
+    Lift lift;
     while (confirmDriver()){
         //Run driver implementation here
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
+        lift.drive(ctrctrPrimary.Axis2.position(vex::percentUnits::pct));
         robot.driveH(y, x);
-        wait(20);
         if (mode == 3){
             //Run something for running in test mode
         }
