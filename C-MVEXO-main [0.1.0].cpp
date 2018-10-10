@@ -54,6 +54,8 @@ void calibrateGyros(){//Calibrates gyros
 void stopAllMotors(){
     mtrDriveLeft.stop(vex::brakeType::coast);
     mtrDriveRight.stop(vex::brakeType::coast);
+    mtrLiftLeft.stop(vex::brakeType::coast);
+    mtrLiftRight.stop(vex::brakeType::coast);
     
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
