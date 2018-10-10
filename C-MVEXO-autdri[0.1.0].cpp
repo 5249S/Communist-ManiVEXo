@@ -11,8 +11,8 @@ void auton(int autonMode){
         int process = 0; //variable to control where in the auton you are
         while (confirmAuton() && process < 0){//Set process number to last process
             //Run auton implementation here
-            if (mode == 2){
-                //Run something for running in test mode
+            if (mode == 2 && ctrPrimary.ButtonB.pressing()){
+                break;//Option for quitting in test mode
             }
             wait(20);//run at 50 Hz
         }
@@ -29,8 +29,8 @@ void driver(){
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
         lift.drive(ctrctrPrimary.Axis2.position(vex::percentUnits::pct));
         robot.driveH(y, x);
-        if (mode == 3){
-            //Run something for running in test mode
+        if (mode == 3 && ctrPrimary.ButtonB.pressing()){
+            break;//Option for quitting in test mode
         }
         wait(20);//run at 50 Hz
     }
