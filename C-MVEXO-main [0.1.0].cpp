@@ -291,6 +291,7 @@ int main(){//main control function
                 }
                 colorSelect();//select color
                 auton(selection);//run selected auton
+                stopAllMotors();
                 while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
             }
         }
@@ -298,6 +299,7 @@ int main(){//main control function
             calibrateGyros();
             colorSelect();
             driver();
+            stopAllMotors();
             while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
         }
         if(mode == 4){
