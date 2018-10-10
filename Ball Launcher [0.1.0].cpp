@@ -1,10 +1,10 @@
 class Flag {
     private:
-        const float GRAVITY = -9.8; //m/s^2 Acceleration of gravity
-        const float INITIAL_VELOCITY = 0; //m/s Initial velocity of ball
-        const float FLAG_HEIGHT = 0; //meters known height of flag object
-        float distance = 0; //Variable for holding distance
-        float height = 0; //Variable holding height to bottom of flag
+        const double GRAVITY = -9.8; //m/s^2 Acceleration of gravity
+        const double INITIAL_VELOCITY = 0; //m/s Initial velocity of ball
+        const double FLAG_HEIGHT = 0; //meters known height of flag object
+        float double = 0; //Variable for holding distance
+        float double = 0; //Variable holding height to bottom of flag
         
     public:
         //Equations are based on inmatic formulas
@@ -13,11 +13,11 @@ class Flag {
             distance = (float)(FLAG_HEIGHT/(tan(beta)-tan(alpha)) + offset);
             height = distance * (float)(tan(alpha));
         }
-        float calculateRequiredAngle(){//Returns angle required to hit flag
-            double v = (double)INITIAL_VELOCITY;//variables to hold values, for simplicity
-            double g = (double)GRAVITY;
-            double h = (double)(height + FLAG_HEIGHT/2);//height of middle of flag
-            double d = (double)distance;
+        float calculateRequiredAngle(){//Returns angle required to hit flag in radians
+            double v = INITIAL_VELOCITY;//variables to hold values, for simplicity
+            double g = GRAVITY;
+            double h = height + FLAG_HEIGHT/2;//height of middle of flag
+            double d = distance;
             int offset = 0.0;//Offset varible to adjust for systematic error
             return (float)(atan((pow(v,2.0) - sqrt(pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0))))/(g*d) + offset));//calculates angle required, casting between numbers where needed
         }
