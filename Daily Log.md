@@ -39,13 +39,27 @@ All significant changes made to the software for 5249S will be documented here
 ### August 18, 2018
 - Integrated VEX OS into the main program
 - Version 0.0.0 is ready to be tested
-### August 19, 2018
-- Began working on versions 0.1.0 and 0.2.0
 ### August 21, 2018
 - Successfully compiled version 0.0.0, ready for testing
+## C-MVEXO [0.1.0]
+### August 19, 2018
+- Began working on versions 0.1.0
 ### September 14, 2018
 - Researched V5 Vision Sensor and determined method for locating flags
 ### September 16, 2018
 - Finished first draft of 0.1.0
 ### September 18, 2018
 - Revised 0.1.0 to reduce lines of code
+### September 24, 2018
+- Uploaded first draft of 0.1.0
+- Updated changelog for 0.1.0
+### September 25, 2018
+- Started new version of ball launcher code
+### September 28, 2018
+- Configured gyro and accelerometer configurations
+### September 30, 2018
+- Finished and fixed error for ball launcher code
+- Reorganized code
+### October 10, 2018
+- Added lift control
+- Fixed syntax mistakes
