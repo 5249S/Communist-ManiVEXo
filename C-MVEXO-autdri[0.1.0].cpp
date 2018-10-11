@@ -6,8 +6,11 @@
 /*--------------------------------------------*/
 
 void auton(int autonMode){
-    if (autonMode == 0){
+    if (autonMode == 1){
         //Declare variable here
+        ctrPrimary.Screen.clearScreen();
+        ctrPrimary.Screen.setCursor(0,0);
+        ctrPrimary.Screen.print("Autonomous");
         int process = 0; //variable to control where in the auton you are
         while (confirmAuton() && process < 0){//Set process number to last process
             //Run auton implementation here
@@ -21,6 +24,9 @@ void auton(int autonMode){
 
 void driver(){
     //Declare variables here
+    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.setCursor(0,0);
+    ctrPrimary.Screen.print("Driver Control");
     DriveMethods robot;
     Lift lift;
     while (confirmDriver()){
