@@ -11,6 +11,7 @@ All notable changes will be documented in this file
 - User interface to select between modes
 - A Competition Control system
 - Simplified method of creating driver and autonomous programs
+- Lift control in driver control
 ### Changed
 - Driver Control is now in a new format for competitions
 
