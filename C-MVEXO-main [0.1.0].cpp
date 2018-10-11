@@ -300,7 +300,6 @@ int main() {
         }
         if(mode == 3){
             calibrateGyros();
-            colorSelect();
             driver();
             stopAllMotors();
             while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
