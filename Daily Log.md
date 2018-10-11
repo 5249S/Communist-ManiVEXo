@@ -63,3 +63,5 @@ All significant changes made to the software for 5249S will be documented here
 ### October 10, 2018
 - Added lift control
 - Fixed syntax mistakes
+### October 11, 2018
+- Began 0.1.1, fixing update problems
