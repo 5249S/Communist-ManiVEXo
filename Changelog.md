@@ -6,7 +6,7 @@ All notable changes will be documented in this file
 - New methods for controlling the robot in auton
 - Ball launcher targeting system
 
-## C-MVEXO [0.1.0] 
+## C-MVEXO [0.1.0] - 2018-10-10
 ### Added
 - User interface to select between modes
 - A Competition Control system
