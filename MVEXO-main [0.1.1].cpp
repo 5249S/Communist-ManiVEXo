@@ -227,7 +227,7 @@ int main() {
                     if (statusClose){//allow robot to exit competition when disabled
                         break;
                     }
-                    wait(20);
+                    wait(50); //Update at 20 hertz
                 }
                 if (statusClose){
                     break;
@@ -264,7 +264,7 @@ int main() {
                     if (statusClose){
                         break;
                     }
-                    wait(20);
+                    wait(50); //Update at 20 hertz
                 }
                 if (statusClose){
                     break;
@@ -292,7 +292,7 @@ int main() {
                     if (ctrPrimary.ButtonA.pressing()){
                         break;
                     }
-                    wait(20);//50 hertz
+                    wait(50); //Update at 20 hertz
                 }
                 while(ctrPrimary.ButtonA.pressing()){wait(20);}
                 calibrateGyros();
