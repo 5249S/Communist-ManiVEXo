@@ -66,7 +66,7 @@ class Lift {
                 mtrLiftRight.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
             }
         }
-}
+};
 class DriveMethods {
     //Class for methods for driving the robot around the field
     protected:
