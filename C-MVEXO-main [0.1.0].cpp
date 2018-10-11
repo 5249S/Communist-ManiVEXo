@@ -60,7 +60,7 @@ void stopAllMotors(){
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
     private:
-        int maxLines = 4;
+        int maxLines = 3;
         int current = 0;
         int topLine = 0;
         bool selectionMade = false;
