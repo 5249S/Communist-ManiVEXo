@@ -182,16 +182,21 @@ int selectAutonomous(){//method for selecting autons
     strcpy(selectAuton.text[1], "Auton1");
     strcpy(selectAuton.text[2], "Auton2");
     strcpy(selectAuton.text[3], "Auton3");
+    strcpy(selectAuton.text[4], "");
     return selectAuton.select();
 }
 void colorSelect(){//method for selecting field color
     DisplaySelection selectColor = DisplaySelection(2);//create display object
     strcpy(selectColor.text[0], "Red");//set array values to colors
     strcpy(selectColor.text[1], "Blue");
+    strcpy(selectColor.text[2], "");
+    strcpy(selectColor.text[3], "");
+    strcpy(selectColor.text[4], "");
     colorRed = (selectColor.select() == 0);
 }
 int main() {
     robotMain.Screen.setFont(vex::fontType::mono40);
+    robotMain.Screen.setPenColor("00FF00");
     robotMain.Screen.clearScreen();
     robotMain.Screen.setCursor(1,0);
     while(true){
@@ -206,9 +211,10 @@ int main() {
             calibrateGyros();//Calibrate gyro sensors
             colorSelect();//select team color
             int autonMode = selectAutonomous();//select auton to run
-            robotMain.Screen.clearScreen();
             while(true){//loop for competition
                 PromptClose promptExit = PromptClose();
+                ctrPrimary.Screen.clearLine(1);
+                ctrPrimary.Screen.print("FC-Disabled");
                 bool statusClose = false;
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     robotMain.Screen.setCursor(1,0);
@@ -245,6 +251,8 @@ int main() {
             while(true){
                 bool statusClose = false;
                 PromptClose promptExit = PromptClose();
+                ctrPrimary.Screen.clearLine(1);
+                ctrPrimary.Screen.print("SK-Disabled");
                 while(!compControl.isEnabled()){
                     robotMain.Screen.setCursor(1,0);
                     robotMain.Screen.clearLine();
