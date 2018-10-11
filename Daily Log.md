@@ -60,3 +60,6 @@ All significant changes made to the software for 5249S will be documented here
 ### September 30, 2018
 - Finished and fixed error for ball launcher code
 - Reorganized code
+### October 10, 2018
+- Added lift control
+- Fixed syntax mistakes
