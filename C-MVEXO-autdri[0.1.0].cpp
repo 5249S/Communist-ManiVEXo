@@ -27,7 +27,7 @@ void driver(){
         //Run driver implementation here
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
-        lift.drive(ctrctrPrimary.Axis2.position(vex::percentUnits::pct));
+        lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));
         robot.driveH(y, x);
         if (mode == 3 && ctrPrimary.ButtonB.pressing()){
             break;//Option for quitting in test mode
