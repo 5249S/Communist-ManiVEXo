@@ -61,9 +61,12 @@ class Lift {
             if (power < 0){
                 mtrLiftLeft.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
                 mtrLiftRight.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
-            } else {
+            } else if (power > 0){
                 mtrLiftLeft.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
                 mtrLiftRight.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+            } else {
+                mtrLiftLeft.stop(vex::brakeType::hold);
+                mtrLiftRight.stop(vex::brakeType::hold);
             }
         }
 };
