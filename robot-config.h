@@ -6,8 +6,8 @@ vex::competition compControl;
 
 vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
 vex::motor mtrDriveRight = vex::motor(vex::PORT10, true);
-vex::motor mtrLiftLeft = vex::motor(vex::PORT2);
-vex::motor mtrLiftRight = vex::motor(vex::PORT9, true);
+vex::motor mtrLiftLeft = vex::motor(vex::PORT2, true);
+vex::motor mtrLiftRight = vex::motor(vex::PORT9);
 vex::gyro gyroNav = vex::gyro(robotMain.ThreeWirePort.A);
 
 vex::vision visLauncher = vex::vision(vex::PORT2);
