@@ -9,6 +9,7 @@ All notable changes will be documented in this file
 ## MVEXO [0.1.1] - 2018-10-17
 ### Changed
 - Selections are displayed on brain screen for better update rates
+- Changed name
 ### Fixed
 - Removed color prompt in driver control mode
 - Fixed update rate for smoother display
