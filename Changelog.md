@@ -6,13 +6,14 @@ All notable changes will be documented in this file
 - New methods for controlling the robot in auton
 - Ball launcher targeting system
 
-## MVEXO [0.1.1]
+## MVEXO [0.1.1] - 2018-10-17
 ### Changed
 - Selections are displayed on brain screen for better update rates
 ### Fixed
 - Removed color prompt in driver control mode
 - Fixed update rate for smoother display
 - Fixed display problem where unoccupied lines weren't blank
+- Switched lift motors to fix direction
 ## C-MVEXO [0.1.0] - 2018-10-10
 ### Added
 - User interface to select between modes
