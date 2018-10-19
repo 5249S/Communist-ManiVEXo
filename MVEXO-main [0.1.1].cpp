@@ -11,6 +11,16 @@ static int mode = -1;
 static bool colorRed = true;
 void auton(int);
 void driver();
+static bool warning[10][2];
+void runDiagnostics(){
+    for (int i = 0; i < 10; i++){
+        warning[i][1] = warning[i][0];
+    }
+    warning[0][0] = robotmain.Battery.capacity() < 25;
+    
+
+}
+
 class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
     private:
         int gyroBias = 0;
