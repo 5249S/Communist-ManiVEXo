@@ -6,6 +6,9 @@ All notable changes will be documented in this file
 - New methods for controlling the robot in auton
 - Ball launcher targeting system
 
+## MVEXO [0.2.0]
+### Added
+- Live diagnotics system
 ## MVEXO [0.1.1] - 2018-10-17
 ### Changed
 - Selections are displayed on brain screen for better update rates
