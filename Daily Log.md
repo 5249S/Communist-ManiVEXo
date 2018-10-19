@@ -65,3 +65,7 @@ All significant changes made to the software for 5249S will be documented here
 - Fixed syntax mistakes
 ### October 11, 2018
 - Began 0.1.1, fixing update problems
+### October 16, 2018
+- Finished 0.1.1, fixed problems
+### October 18, 2018
+- Began work on live diagnostics system
