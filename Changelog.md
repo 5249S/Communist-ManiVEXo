@@ -9,6 +9,8 @@ All notable changes will be documented in this file
 ## MVEXO [0.2.0]
 ### Added
 - Live diagnotics system
+### Changed
+- Changed display to controller
 ## MVEXO [0.1.1] - 2018-10-17
 ### Changed
 - Selections are displayed on brain screen for better update rates
