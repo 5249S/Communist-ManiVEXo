@@ -17,8 +17,15 @@ void runDiagnostics(){
         warning[i][1] = warning[i][0];
     }
     warning[0][0] = robotmain.Battery.capacity() < 25;
-    
-
+    warning[1][0] = robotmain.Battery.temperature() > 80;
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 80;
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 80;
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 80;
+    warning[5][0] = mtrRightLeft.temperature(vex::percentUnits::pct) > 80;
+    warning[6][0] = false;
+    warning[7][0] = false;
+    warning[8][0] = false;
+    warning[9][0] = false;
 }
 
 class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
@@ -132,6 +139,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         break;
                     }
                     wait(50); //Update at 20 hertz
+                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){wait(20);}
                 }
             }
 
@@ -238,6 +246,7 @@ int main() {
                         break;
                     }
                     wait(50); //Update at 20 hertz
+                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isEnabled()){wait(20);}
                 }
                 if (statusClose){
                     break;
@@ -275,6 +284,7 @@ int main() {
                         break;
                     }
                     wait(50); //Update at 20 hertz
+                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isEnabled()){wait(20);}
                 }
                 if (statusClose){
                     break;
