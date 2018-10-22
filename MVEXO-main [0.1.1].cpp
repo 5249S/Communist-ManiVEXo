@@ -51,7 +51,7 @@ void calibrateGyros(){//Calibrates gyros
     robotMain.Screen.setCursor(0,0);
     robotMain.Screen.print("Gyros Calibrating");
     robotMain.Screen.newLine();
-    robotMain.Screen.print("Do Not Touch Robot");
+    robotMain.Screen.print("Do Not Touch Robot!");
     robotMain.Screen.newLine();
     robotMain.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
@@ -65,6 +65,7 @@ void calibrateGyros(){//Calibrates gyros
     while(ctrPrimary.ButtonB.pressing()){wait(20);}
     gyroNavSet.setValues(0, gyroNav.value(vex::rotationUnits::deg), false);
     gyroLauncherSet.setValues(0, gyroLauncher.value(vex::rotationUnits::deg), false);
+    robotMain.Screen.clearScreen();
     
     
 }
@@ -115,11 +116,11 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 }
                 robotMain.Screen.clearScreen();
                 for (int i=0; i < maxLines; i++){
-                    robotMain.Screen.setCursor(i+1,3);
-                    robotMain.Screen.print("%s", text[i + topLine]);
+                    ctrPrimary.Screen.setCursor(i+1,3);
+                    ctrPrimary.Screen.print("%s", text[i + topLine]);
                 }
-                robotMain.Screen.setCursor(getPosition()+1,0);
-                robotMain.Screen.print("->");
+                ctrPrimary.Screen.setCursor(getPosition()+1,0);
+                ctrPrimary.Screen.print("->");
                 return -1;
             }
         public:
@@ -149,22 +150,22 @@ class PromptClose {//Handles whether the user wants to exit at a particular scre
         bool prompt = false;//bool for whether the second confirm close screen should be shown
     public:
         int update(bool A, bool B){//A and B are the values for selecting the different options
-            robotMain.Screen.setCursor(1,0);
-            robotMain.Screen.clearLine();
-            robotMain.Screen.setCursor(2,0);
-            robotMain.Screen.clearLine();
+            ctrPrimary.Screen.setCursor(1,0);
+            ctrPrimary.Screen.clearLine();
+            ctrPrimary.Screen.setCursor(2,0);
+            ctrPrimary.Screen.clearLine();
             if((!prompt && B) || (prompt && !A && !B)){//Shows second screen if prompt is true or b is chosen on first screen
                 prompt = true;
-                robotMain.Screen.setCursor(1,0);
-                robotMain.Screen.print("(A) Close?");
-                robotMain.Screen.newLine();
-                robotMain.Screen.print("(B) Back");
+                ctrPrimary.Screen.setCursor(1,0);
+                ctrPrimary.Screen.print("(A) Close?");
+                ctrPrimary.Screen.newLine();
+                ctrPrimary.Screen.print("(B) Back");
                 return 0;
             }
             if((prompt && B) || (!prompt && !B)){//Shows first screen if prompt is false or if b is chosen on the second screen
                 prompt = false;
-                robotMain.Screen.setCursor(1,0);
-                robotMain.Screen.print("(B) Close");
+                ctrPrimary.Screen.setCursor(1,0);
+                ctrPrimary.Screen.print("(B) Close");
                 return 0;
             }
             return 1;//returns 0 if there is no close chosen, returns 1 if close is chosen
@@ -215,8 +216,8 @@ void colorSelect(){//method for selecting field color
 int main() {
     robotMain.Screen.setFont(vex::fontType::mono40);
     robotMain.Screen.setPenColor("00FF00");
-    robotMain.Screen.clearScreen();
-    robotMain.Screen.setCursor(1,0);
+    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.setCursor(1,0);
     while(true){
         DisplaySelection selectMode = DisplaySelection(5); //Create Display object
         strcpy(selectMode.text[0], "Field Control");//set values in array to options
@@ -235,9 +236,9 @@ int main() {
                 ctrPrimary.Screen.print("FC-Disabled");
                 bool statusClose = false;
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
-                    robotMain.Screen.setCursor(1,0);
-                    robotMain.Screen.clearLine();
-                    robotMain.Screen.print("FC-Disabled");
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.clearLine();
+                    ctrPrimary.Screen.print("FC-Disabled");
                     bool a = ctrPrimary.ButtonA.pressing();
                     bool b = ctrPrimary.ButtonB.pressing();
                     statusClose = (promptExit.update(a, b) == 1);
@@ -266,16 +267,16 @@ int main() {
         if(mode == 1){//Skills mode- same as field control, except no color selection
             colorRed = true;
             int autonMode = selectAutonomous();
-            robotMain.Screen.clearScreen();
+            ctrPrimary.Screen.clearScreen();
             while(true){
                 bool statusClose = false;
                 PromptClose promptExit = PromptClose();
                 ctrPrimary.Screen.clearLine(1);
                 ctrPrimary.Screen.print("SK-Disabled");
                 while(!compControl.isEnabled()){
-                    robotMain.Screen.setCursor(1,0);
-                    robotMain.Screen.clearLine();
-                    robotMain.Screen.print("SK-Disabled");
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.clearLine();
+                    ctrPrimary.Screen.print("SK-Disabled");
                     bool a = ctrPrimary.ButtonA.pressing();
                     bool b = ctrPrimary.ButtonB.pressing();
                     statusClose = (promptExit.update(a, b) == 1);
@@ -304,11 +305,11 @@ int main() {
         if(mode == 2){//Auton testing mode
             while (true){
                 while(true){
-                    robotMain.Screen.clearScreen();
-                    robotMain.Screen.setCursor(1,0);
-                    robotMain.Screen.print("Setup Robot");
-                    robotMain.Screen.newLine();
-                    robotMain.Screen.print("(A) Done");//Waits until robot is placed properly for auton
+                    ctrPrimary.Screen.clearScreen();
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.print("Setup Robot");
+                    ctrPrimary.Screen.newLine();
+                    ctrPrimary.Screen.print("(A) Done");//Waits until robot is placed properly for auton
                     if (ctrPrimary.ButtonA.pressing()){
                         break;
                     }
