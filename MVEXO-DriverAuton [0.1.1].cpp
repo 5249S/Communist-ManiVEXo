@@ -6,11 +6,11 @@
 /*--------------------------------------------*/
 
 void auton(int autonMode){
+    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.setCursor(1,0);
+    ctrPrimary.Screen.print("Autonomous");
     if (autonMode == 1){
         //Declare variable here
-        ctrPrimary.Screen.clearScreen();
-        ctrPrimary.Screen.setCursor(0,0);
-        ctrPrimary.Screen.print("Autonomous");
         int process = 0; //variable to control where in the auton you are
         while (confirmAuton() && process < 0){//Set process number to last process
             //Run auton implementation here
