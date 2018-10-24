@@ -13,6 +13,7 @@ void auton(int);
 void driver();
 static bool warning[10][2];
 void runDiagnostics(){
+    char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""}
     for (int i = 0; i < 10; i++){
         warning[i][1] = warning[i][0];
     }
@@ -26,6 +27,25 @@ void runDiagnostics(){
     warning[7][0] = false;
     warning[8][0] = false;
     warning[9][0] = false;
+    
+    
+    bool update = false;
+    for (int i = 0; i < 10; i++){
+        if (warning[i][0] && !warning[i][1] || warning[i][1] && !warning[i][0]){
+            update = true;
+            break;
+        }
+    }
+    if (update) {
+        ctrPrimary.Screen.clearLine(2);
+        ctrPrimary.Screen.clearLine(3);
+        ctrPrimary.Screen.setCursor(2,0);
+        for (int i = 0; i < 10; i++){
+            if (warning[i][0]){
+                ctrPrimary.Screen.print("%s", warningText[i]);
+            }
+        }
+    }
 }
 
 class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
