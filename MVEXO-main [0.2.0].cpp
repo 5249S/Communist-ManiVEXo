@@ -176,32 +176,6 @@ class DisplaySelection {//Class created to hold and change the values needed to 
             }
 
 };
-class PromptClose {//Handles whether the user wants to exit at a particular screen
-    private:
-        bool prompt = false;//bool for whether the second confirm close screen should be shown
-    public:
-        int update(bool A, bool B){//A and B are the values for selecting the different options
-            ctrPrimary.Screen.setCursor(2,0);
-            ctrPrimary.Screen.clearLine();
-            ctrPrimary.Screen.setCursor(3,0);
-            ctrPrimary.Screen.clearLine();
-            if((!prompt && B) || (prompt && !A && !B)){//Shows second screen if prompt is true or b is chosen on first screen
-                prompt = true;
-                ctrPrimary.Screen.setCursor(2,0);
-                ctrPrimary.Screen.print("(A) Close?");
-                ctrPrimary.Screen.newLine();
-                ctrPrimary.Screen.print("(B) Back");
-                return 0;
-            }
-            if((prompt && B) || (!prompt && !B)){//Shows first screen if prompt is false or if b is chosen on the second screen
-                prompt = false;
-                ctrPrimary.Screen.setCursor(2,0);
-                ctrPrimary.Screen.print("(B) Close");
-                return 0;
-            }
-            return 1;//returns 0 if there is no close chosen, returns 1 if close is chosen
-        }
-};
 bool confirmAuton(){//Confirms it is allowed to run auton
     if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
         if (compControl.isAutonomous() && compControl.isEnabled() && compControl.isFieldControl()){//return true if auton is on and the robot is enabled
@@ -262,19 +236,19 @@ int main() {
             colorSelect();//select team color
             int autonMode = selectAutonomous();//select auton to run
             while(true){//loop for competition
-                PromptClose promptExit = PromptClose();
                 if (!compControl.isFieldControl()){
                     ctrPrimary.Screen.clearScreen();
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.print("Connect to Field");
-                    bool a = ctrPrimary.ButtonA.pressing();
-                    bool b = ctrPrimary.ButtonB.pressing();
-                    bool statusClose = (promptExit.update(a, b) == 1);
-                    while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isFieldControl()){wait(20);}
-                    if (statusClose){//allow robot to exit competition when not connected
-                        break;
+                    ctrPrimary.Screen.newLine();
+                    ctrPrimary.Screen.print("(B) Close");
+                    while(!ctrPrimary.ButtonB.pressing()){
+                        if(compControl.isFieldControl()){
+                            break;
+                        }
+                        wait(20);
                     }
-                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
+                    while(ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
                 }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
@@ -300,19 +274,19 @@ int main() {
             int autonMode = selectAutonomous();
             ctrPrimary.Screen.clearScreen();
             while(true){
-                PromptClose promptExit = PromptClose();
                 if (!compControl.isFieldControl()){
                     ctrPrimary.Screen.clearScreen();
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.print("Connect to Field");
-                    bool a = ctrPrimary.ButtonA.pressing();
-                    bool b = ctrPrimary.ButtonB.pressing();
-                    bool statusClose = (promptExit.update(a, b) == 1);
-                    while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isFieldControl()){wait(20);}
-                    if (statusClose){//allow robot to exit competition when not connected
-                        break;
+                    ctrPrimary.Screen.newLine();
+                    ctrPrimary.Screen.print("(B) Close");
+                    while(!ctrPrimary.ButtonB.pressing()){
+                        if(compControl.isFieldControl()){
+                            break;
+                        }
+                        wait(20);
                     }
-                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
+                    while(ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
                 }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
