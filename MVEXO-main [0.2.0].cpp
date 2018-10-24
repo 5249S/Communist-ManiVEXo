@@ -159,7 +159,6 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         return status;//return number selected
                         break;
                     }
-                    wait(50); //Update at 20 hertz
                     while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
                         if (compControl.isFieldControl()){
                             ctrPrimary.Screen.clearScreen();
@@ -242,13 +241,10 @@ int main() {
                     ctrPrimary.Screen.print("Connect to Field");
                     ctrPrimary.Screen.newLine();
                     ctrPrimary.Screen.print("(B) Close");
-                    while(!ctrPrimary.ButtonB.pressing()){
-                        if(compControl.isFieldControl()){
-                            break;
-                        }
-                        wait(20);
+                    while(!ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
+                    if(ctrPrimary.ButtonB.pressing()){
+                        break;
                     }
-                    while(ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
                 }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
@@ -280,13 +276,10 @@ int main() {
                     ctrPrimary.Screen.print("Connect to Field");
                     ctrPrimary.Screen.newLine();
                     ctrPrimary.Screen.print("(B) Close");
-                    while(!ctrPrimary.ButtonB.pressing()){
-                        if(compControl.isFieldControl()){
-                            break;
-                        }
-                        wait(20);
+                    while(!ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
+                    if(ctrPrimary.ButtonB.pressing()){
+                        break;
                     }
-                    while(ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
                 }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
