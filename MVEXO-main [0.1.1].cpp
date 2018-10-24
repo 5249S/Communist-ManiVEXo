@@ -189,7 +189,7 @@ bool confirmAuton(){//Confirms it is allowed to run auton
         }
         return false;//otherwise return false
     }
-    if (mode == 2){//if in auton testing mode, always allow
+    if (mode == 2 && !compControl.isFieldControl()){//if in auton testing mode, always allow
         return true;
     }
     return false;//return false otherwise
@@ -201,7 +201,7 @@ bool confirmDriver(){//Confirms it is allowed to run driver control
         }
         return false;//otherwise return false
     }
-    if (mode == 2){//if in driver mode, always allow
+    if (mode == 2 && !compControl.isFieldControl()){//if in driver mode, always allow
         return true;
     }
     return false;//return false otherwise
