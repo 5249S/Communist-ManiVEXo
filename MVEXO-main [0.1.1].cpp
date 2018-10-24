@@ -140,7 +140,18 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         break;
                     }
                     wait(50); //Update at 20 hertz
-                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){wait(20);}
+                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
+                        if (compControl.isFieldControl()){
+                            ctrPrimary.Screen.clearScreen();
+                            ctrPrimary.Screen.setCursor(1,0);
+                            ctrPrimary.Screen.print("Remove Field Cable");
+                            while (compControl.isFieldControl()){
+                                wait(20);
+                            }
+                            break;
+                        }
+                        wait(20);
+                    }
                 }
             }
 
@@ -173,7 +184,7 @@ class PromptClose {//Handles whether the user wants to exit at a particular scre
 };
 bool confirmAuton(){//Confirms it is allowed to run auton
     if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
-        if (compControl.isAutonomous() && compControl.isEnabled()){//return true if auton is on and the robot is enabled
+        if (compControl.isAutonomous() && compControl.isEnabled() && compControl.isFieldControl()){//return true if auton is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
@@ -185,7 +196,7 @@ bool confirmAuton(){//Confirms it is allowed to run auton
 }
 bool confirmDriver(){//Confirms it is allowed to run driver control
     if (mode == 0 || mode == 3){//If in field control or skills mode, the competition control will be checked
-        if (compControl.isDriverControl() && compControl.isEnabled()){//return true if driver is on and the robot is enabled
+        if (compControl.isDriverControl() && compControl.isEnabled() && compControl.isFieldControl()){//return true if driver is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
@@ -232,27 +243,26 @@ int main() {
             int autonMode = selectAutonomous();//select auton to run
             while(true){//loop for competition
                 PromptClose promptExit = PromptClose();
-                ctrPrimary.Screen.clearLine(1);
-                ctrPrimary.Screen.print("FC-Disabled");
-                bool statusClose = false;
+                if (!compControl.isFieldControl()){
+                    ctrPrimary.Screen.clearScreen();
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.print("Connect to Field");
+                    bool a = ctrPrimary.ButtonA.pressing();
+                    bool b = ctrPrimary.ButtonB.pressing();
+                    bool statusClose = (promptExit.update(a, b) == 1);
+                    while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isFieldControl()){wait(20);}
+                    if (statusClose){//allow robot to exit competition when not connected
+                        break;
+                    }
+                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
+                }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.clearLine();
                     ctrPrimary.Screen.print("FC-Disabled");
-                    //bool a = ctrPrimary.ButtonA.pressing();
-                    //bool b = ctrPrimary.ButtonB.pressing();
-                    //statusClose = (promptExit.update(a, b) == 1);
-                    //while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isEnabled()){wait(20);}
-                    //if (statusClose){//allow robot to exit competition when disabled
-                    //    break;
-                    //}
-                    //wait(50); //Update at 20 hertz
-                    //while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isEnabled()){wait(20);}
                     while(!compControl.isEnabled()){wait(20);}
                 }
-                if (statusClose){
-                    break;
-                }
+                
                 if(compControl.isEnabled() && compControl.isAutonomous()){//runs auton when enabled and autonomous
                         auton(autonMode);
                         while(compControl.isEnabled() && compControl.isAutonomous()){wait(20);}//Waits for auton to end (50 Hertz)
@@ -270,27 +280,25 @@ int main() {
             int autonMode = selectAutonomous();
             ctrPrimary.Screen.clearScreen();
             while(true){
-                bool statusClose = false;
                 PromptClose promptExit = PromptClose();
-                ctrPrimary.Screen.clearLine(1);
-                ctrPrimary.Screen.print("SK-Disabled");
+                if (!compControl.isFieldControl()){
+                    ctrPrimary.Screen.clearScreen();
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.print("Connect to Field");
+                    bool a = ctrPrimary.ButtonA.pressing();
+                    bool b = ctrPrimary.ButtonB.pressing();
+                    bool statusClose = (promptExit.update(a, b) == 1);
+                    while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isFieldControl()){wait(20);}
+                    if (statusClose){//allow robot to exit competition when not connected
+                        break;
+                    }
+                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isFieldControl()){wait(20);}
+                }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.clearLine();
                     ctrPrimary.Screen.print("SK-Disabled");
-                    //bool a = ctrPrimary.ButtonA.pressing();
-                    //bool b = ctrPrimary.ButtonB.pressing();
-                    //statusClose = (promptExit.update(a, b) == 1);
-                    //while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isEnabled()){wait(20);}
-                    //if (statusClose){//allow robot to exit competition when disabled
-                    //    break;
-                    //}
-                    //wait(50); //Update at 20 hertz
-                    //while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isEnabled()){wait(20);}
                     while(!compControl.isEnabled()){wait(20);}
-                }
-                if (statusClose){
-                    break;
                 }
                 if(compControl.isEnabled() && compControl.isAutonomous()){
                         auton(autonMode);
