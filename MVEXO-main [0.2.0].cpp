@@ -188,13 +188,13 @@ bool confirmAuton(){//Confirms it is allowed to run auton
     return false;//return false otherwise
 }
 bool confirmDriver(){//Confirms it is allowed to run driver control
-    if (mode == 0 || mode == 3){//If in field control or skills mode, the competition control will be checked
+    if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
         if (compControl.isDriverControl() && compControl.isEnabled() && compControl.isFieldControl()){//return true if driver is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
     }
-    if (mode == 2 && !compControl.isFieldControl()){//if in driver mode, always allow
+    if (mode == 3 && !compControl.isFieldControl()){//if in driver mode, always allow
         return true;
     }
     return false;//return false otherwise
