@@ -42,7 +42,7 @@ void runDiagnostics(){
         ctrPrimary.Screen.setCursor(2,0);
         for (int i = 0; i < 10; i++){
             if (warning[i][0]){
-                ctrPrimary.Screen.print("%s", warningText[i]);
+                ctrPrimary.Screen.print("W: %s", warningText[i]);
             }
         }
     }
