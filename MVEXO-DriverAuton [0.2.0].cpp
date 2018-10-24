@@ -38,6 +38,7 @@ void driver(){
         if (mode == 3 && ctrPrimary.ButtonB.pressing()){
             break;//Option for quitting in test mode
         }
+        runDiagnotics();
         wait(20);//run at 50 Hz
     }
     
