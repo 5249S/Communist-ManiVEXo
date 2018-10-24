@@ -9,6 +9,7 @@ All notable changes will be documented in this file
 ## MVEXO [0.2.0]
 ### Added
 - Live diagnotics system
+- Field controller warnings for the driver
 ### Changed
 - Changed display to controller
 ## MVEXO [0.1.1] - 2018-10-17
