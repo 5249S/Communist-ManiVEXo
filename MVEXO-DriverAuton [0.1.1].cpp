@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*                The ManiVEXo                */
 /*                Driver/Auton                */
-/*                Version 0.1.1               */
+/*                Version 0.2.0               */
 /*--------------------------------------------*/
 
 void auton(int autonMode){
