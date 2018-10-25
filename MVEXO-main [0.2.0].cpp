@@ -95,7 +95,10 @@ void stopAllMotors(){
     mtrLiftLeft.stop(vex::brakeType::coast);
     mtrLiftRight.stop(vex::brakeType::coast);
     
-}     
+}
+bool isField(){
+    return compControl.isCompetitionSwitch() || compControl.isFieldControl();
+}
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
         private:
             int maxLines = 3;
@@ -160,11 +163,11 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         break;
                     }
                     while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
-                        if (compControl.isCompetitionSwitch()){
+                        if (isField()){
                             ctrPrimary.Screen.clearScreen();
                             ctrPrimary.Screen.setCursor(1,0);
                             ctrPrimary.Screen.print("Remove Field Cable");
-                            while (compControl.isCompetitionSwitch()){
+                            while (isField()){
                                 wait(20);
                             }
                             break;
@@ -177,24 +180,24 @@ class DisplaySelection {//Class created to hold and change the values needed to 
 };
 bool confirmAuton(){//Confirms it is allowed to run auton
     if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
-        if (compControl.isAutonomous() && compControl.isEnabled() && compControl.isCompetitionSwitch()){//return true if auton is on and the robot is enabled
+        if (compControl.isAutonomous() && compControl.isEnabled() && isField()){//return true if auton is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
     }
-    if (mode == 2 && !compControl.isCompetitionSwitch()){//if in auton testing mode, always allow
+    if (mode == 2 && !isField()){//if in auton testing mode, always allow
         return true;
     }
     return false;//return false otherwise
 }
 bool confirmDriver(){//Confirms it is allowed to run driver control
     if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
-        if (compControl.isDriverControl() && compControl.isEnabled() && compControl.isCompetitionSwitch()){//return true if driver is on and the robot is enabled
+        if (compControl.isDriverControl() && compControl.isEnabled() && isField()){//return true if driver is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
     }
-    if (mode == 3 && !compControl.isCompetitionSwitch()){//if in driver mode, always allow
+    if (mode == 3 && !isField()){//if in driver mode, always allow
         return true;
     }
     return false;//return false otherwise
@@ -235,13 +238,13 @@ int main() {
             colorSelect();//select team color
             int autonMode = selectAutonomous();//select auton to run
             while(true){//loop for competition
-                if (!compControl.isCompetitionSwitch()){
+                if (!isField()){
                     ctrPrimary.Screen.clearScreen();
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.print("Connect to Field");
                     ctrPrimary.Screen.newLine();
                     ctrPrimary.Screen.print("(B) Close");
-                    while(!ctrPrimary.ButtonB.pressing() && !compControl.isCompetitionSwitch()){wait(20);}
+                    while(!ctrPrimary.ButtonB.pressing() && !isField()){wait(20);}
                     if(ctrPrimary.ButtonB.pressing()){
                         break;
                     }
@@ -255,11 +258,11 @@ int main() {
                 
                 if(compControl.isEnabled() && compControl.isAutonomous()){//runs auton when enabled and autonomous
                         auton(autonMode);
-                        while(compControl.isEnabled() && compControl.isAutonomous() && compControl.isCompetitionSwitch()){wait(20);}//Waits for auton to end (50 Hertz)
+                        while(compControl.isEnabled() && compControl.isAutonomous() && isField()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
                 if(compControl.isEnabled() && compControl.isDriverControl()){//runs driver control when enabled and autonomous
                     driver();
-                    while(compControl.isEnabled() && compControl.isDriverControl() && compControl.isCompetitionSwitch()){wait(20);}//Waits for driver control to end (50 Hertz)
+                    while(compControl.isEnabled() && compControl.isDriverControl() && isField()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
                 stopAllMotors();
             }
@@ -270,13 +273,13 @@ int main() {
             int autonMode = selectAutonomous();
             ctrPrimary.Screen.clearScreen();
             while(true){
-                if (!compControl.isCompetitionSwitch()){
+                if (!isField()){
                     ctrPrimary.Screen.clearScreen();
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.print("Connect to Field");
                     ctrPrimary.Screen.newLine();
                     ctrPrimary.Screen.print("(B) Close");
-                    while(!ctrPrimary.ButtonB.pressing() && !compControl.isCompetitionSwitch()){wait(20);}
+                    while(!ctrPrimary.ButtonB.pressing() && !isField()){wait(20);}
                     if(ctrPrimary.ButtonB.pressing()){
                         break;
                     }
@@ -289,11 +292,11 @@ int main() {
                 }
                 if(compControl.isEnabled() && compControl.isAutonomous()){
                         auton(autonMode);
-                        while(compControl.isEnabled() && compControl.isAutonomous() && compControl.isCompetitionSwitch()){wait(20);}//Waits for auton to end (50 Hertz)
+                        while(compControl.isEnabled() && compControl.isAutonomous() && isField()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
                 if(compControl.isEnabled() && compControl.isDriverControl()){
                     driver();
-                    while(compControl.isEnabled() && compControl.isDriverControl() && compControl.isCompetitionSwitch()){wait(20);}//Waits for driver control to end (50 Hertz)
+                    while(compControl.isEnabled() && compControl.isDriverControl() && isField()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
                 stopAllMotors();
             }
