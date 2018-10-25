@@ -26,7 +26,7 @@ void driver(){
     //Declare variables here
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
-    ctrPrimary.Screen.print("Driver Control");
+    ctrPrimary.Screen.print("Party Time");
     DriveMethods robot;
     Lift lift;
     while (confirmDriver()){
