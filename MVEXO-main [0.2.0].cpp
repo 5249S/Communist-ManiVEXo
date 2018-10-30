@@ -19,10 +19,10 @@ void runDiagnostics(){
     }
     warning[0][0] = robotMain.Battery.capacity() < 25;
     warning[1][0] = robotMain.Battery.temperature() > 80;
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 80;
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 80;
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 80;
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 80;
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70;
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70;
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70;
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70;
     warning[6][0] = false;
     warning[7][0] = false;
     warning[8][0] = false;
@@ -42,7 +42,7 @@ void runDiagnostics(){
         ctrPrimary.Screen.setCursor(2,0);
         for (int i = 0; i < 10; i++){
             if (warning[i][0]){
-                ctrPrimary.Screen.print("W: %s", warningText[i]);
+                ctrPrimary.Screen.print("%s ", warningText[i]);
             }
         }
     }
