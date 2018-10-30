@@ -125,6 +125,9 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         topLine --;
                     }
                     current --;
+                } else {
+                    current = max - 1;
+                    topLine = max - maxLines < 0 ? 0 : max - maxLines;
                 }
             }
             int update(bool select, bool up, bool down){
