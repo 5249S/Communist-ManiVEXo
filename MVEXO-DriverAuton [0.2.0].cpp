@@ -30,6 +30,15 @@ void driver(){
     DriveMethods robot;
     Lift lift;
     while (confirmDriver()){
+        robotMain.Screen.clearScreen();
+        robotMain.Screen.setCursor(1,0);
+        robotMain.Screen.print("Gyro: %d", gyroLauncher.value(vex::analogUnits::range12bit));
+        robotMain.Screen.newLine();
+        robotMain.Screen.print("AccX: %d", accelLauncherX.value(vex::analogUnits::range12bit));
+        robotMain.Screen.newLine();
+        robotMain.Screen.print("AccY: %d", accelLauncherY.value(vex::analogUnits::range12bit));
+        robotMain.Screen.newLine();
+        robotMain.Screen.print("AccZ: %d", accelLauncherZ.value(vex::analogUnits::range12bit));
         //Run driver implementation here
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
