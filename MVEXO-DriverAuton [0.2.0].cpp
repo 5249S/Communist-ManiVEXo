@@ -2,15 +2,15 @@
 /*                    5249S                   */
 /*                The ManiVEXo                */
 /*                Driver/Auton                */
-/*                Version 0.1.1               */
+/*                Version 0.2.0               */
 /*--------------------------------------------*/
 
 void auton(int autonMode){
+    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.setCursor(1,0);
+    ctrPrimary.Screen.print("Autonomous");
     if (autonMode == 1){
         //Declare variable here
-        ctrPrimary.Screen.clearScreen();
-        ctrPrimary.Screen.setCursor(0,0);
-        ctrPrimary.Screen.print("Autonomous");
         int process = 0; //variable to control where in the auton you are
         while (confirmAuton() && process < 0){//Set process number to last process
             //Run auton implementation here
@@ -26,7 +26,7 @@ void driver(){
     //Declare variables here
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
-    ctrPrimary.Screen.print("Driver Control");
+    ctrPrimary.Screen.print("Party Time");
     DriveMethods robot;
     Lift lift;
     while (confirmDriver()){
@@ -38,6 +38,7 @@ void driver(){
         if (mode == 3 && ctrPrimary.ButtonB.pressing()){
             break;//Option for quitting in test mode
         }
+        runDiagnostics();
         wait(20);//run at 50 Hz
     }
     

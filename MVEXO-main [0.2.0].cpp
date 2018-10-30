@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*                The ManiVEXo                */
 /*                    Main                    */
-/*                Version 0.1.1               */
+/*                Version 0.2.0               */
 /*--------------------------------------------*/
 #include "robot-config.h"
 #include <cmath>
@@ -13,19 +13,39 @@ void auton(int);
 void driver();
 static bool warning[10][2];
 void runDiagnostics(){
+    char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};
     for (int i = 0; i < 10; i++){
         warning[i][1] = warning[i][0];
     }
-    warning[0][0] = robotmain.Battery.capacity() < 25;
-    warning[1][0] = robotmain.Battery.temperature() > 80;
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 80;
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 80;
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 80;
-    warning[5][0] = mtrRightLeft.temperature(vex::percentUnits::pct) > 80;
+    warning[0][0] = robotMain.Battery.capacity() < 25;
+    warning[1][0] = robotMain.Battery.temperature() > 80;
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70;
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70;
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70;
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70;
     warning[6][0] = false;
     warning[7][0] = false;
     warning[8][0] = false;
     warning[9][0] = false;
+    
+    
+    bool update = false;
+    for (int i = 0; i < 10; i++){
+        if ((warning[i][0] && !warning[i][1]) || (warning[i][1] && !warning[i][0])){
+            update = true;
+            break;
+        }
+    }
+    if (update) {
+        ctrPrimary.Screen.clearLine(2);
+        ctrPrimary.Screen.clearLine(3);
+        ctrPrimary.Screen.setCursor(2,0);
+        for (int i = 0; i < 10; i++){
+            if (warning[i][0]){
+                ctrPrimary.Screen.print("%s ", warningText[i]);
+            }
+        }
+    }
 }
 
 class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
@@ -75,10 +95,13 @@ void stopAllMotors(){
     mtrLiftLeft.stop(vex::brakeType::coast);
     mtrLiftRight.stop(vex::brakeType::coast);
     
-}     
+}
+bool isField(){
+    return compControl.isCompetitionSwitch() || compControl.isFieldControl();
+}
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
         private:
-            int maxLines = 5;
+            int maxLines = 3;
             int current = 0;
             int topLine = 0;
             bool selectionMade = false;
@@ -102,6 +125,9 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         topLine --;
                     }
                     current --;
+                } else {
+                    current = max - 1;
+                    topLine = max - maxLines < 0 ? 0 : max - maxLines;
                 }
             }
             int update(bool select, bool up, bool down){
@@ -114,7 +140,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 if(down){
                     moveDown();
                 }
-                robotMain.Screen.clearScreen();
+                ctrPrimary.Screen.clearScreen();
                 for (int i=0; i < maxLines; i++){
                     ctrPrimary.Screen.setCursor(i+1,3);
                     ctrPrimary.Screen.print("%s", text[i + topLine]);
@@ -139,58 +165,42 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         return status;//return number selected
                         break;
                     }
-                    wait(50); //Update at 20 hertz
-                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){wait(20);}
+                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
+                        if (isField()){
+                            ctrPrimary.Screen.clearScreen();
+                            ctrPrimary.Screen.setCursor(1,0);
+                            ctrPrimary.Screen.print("Remove Field Cable");
+                            while (isField()){
+                                wait(20);
+                            }
+                            break;
+                        }
+                        wait(20);
+                    }
                 }
             }
 
 };
-class PromptClose {//Handles whether the user wants to exit at a particular screen
-    private:
-        bool prompt = false;//bool for whether the second confirm close screen should be shown
-    public:
-        int update(bool A, bool B){//A and B are the values for selecting the different options
-            ctrPrimary.Screen.setCursor(1,0);
-            ctrPrimary.Screen.clearLine();
-            ctrPrimary.Screen.setCursor(2,0);
-            ctrPrimary.Screen.clearLine();
-            if((!prompt && B) || (prompt && !A && !B)){//Shows second screen if prompt is true or b is chosen on first screen
-                prompt = true;
-                ctrPrimary.Screen.setCursor(1,0);
-                ctrPrimary.Screen.print("(A) Close?");
-                ctrPrimary.Screen.newLine();
-                ctrPrimary.Screen.print("(B) Back");
-                return 0;
-            }
-            if((prompt && B) || (!prompt && !B)){//Shows first screen if prompt is false or if b is chosen on the second screen
-                prompt = false;
-                ctrPrimary.Screen.setCursor(1,0);
-                ctrPrimary.Screen.print("(B) Close");
-                return 0;
-            }
-            return 1;//returns 0 if there is no close chosen, returns 1 if close is chosen
-        }
-};
 bool confirmAuton(){//Confirms it is allowed to run auton
     if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
-        if (compControl.isAutonomous() && compControl.isEnabled()){//return true if auton is on and the robot is enabled
+        if (compControl.isAutonomous() && compControl.isEnabled() && isField()){//return true if auton is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
     }
-    if (mode == 2){//if in auton testing mode, always allow
+    if (mode == 2 && !isField()){//if in auton testing mode, always allow
         return true;
     }
     return false;//return false otherwise
 }
 bool confirmDriver(){//Confirms it is allowed to run driver control
-    if (mode == 0 || mode == 3){//If in field control or skills mode, the competition control will be checked
-        if (compControl.isDriverControl() && compControl.isEnabled()){//return true if driver is on and the robot is enabled
+    if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked
+        if (compControl.isDriverControl() && compControl.isEnabled() && isField()){//return true if driver is on and the robot is enabled
             return true;
         }
         return false;//otherwise return false
     }
-    if (mode == 2){//if in driver mode, always allow
+    if (mode == 3 && !isField()){//if in driver mode, always allow
         return true;
     }
     return false;//return false otherwise
@@ -231,34 +241,31 @@ int main() {
             colorSelect();//select team color
             int autonMode = selectAutonomous();//select auton to run
             while(true){//loop for competition
-                PromptClose promptExit = PromptClose();
-                ctrPrimary.Screen.clearLine(1);
-                ctrPrimary.Screen.print("FC-Disabled");
-                bool statusClose = false;
+                if (!isField()){
+                    ctrPrimary.Screen.clearScreen();
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.print("Connect to Field");
+                    ctrPrimary.Screen.newLine();
+                    ctrPrimary.Screen.print("(B) Close");
+                    while(!ctrPrimary.ButtonB.pressing() && !isField()){wait(20);}
+                    if(ctrPrimary.ButtonB.pressing()){
+                        break;
+                    }
+                }
                 while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.clearLine();
                     ctrPrimary.Screen.print("FC-Disabled");
-                    bool a = ctrPrimary.ButtonA.pressing();
-                    bool b = ctrPrimary.ButtonB.pressing();
-                    statusClose = (promptExit.update(a, b) == 1);
-                    while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isEnabled()){wait(20);}
-                    if (statusClose){//allow robot to exit competition when disabled
-                        break;
-                    }
-                    wait(50); //Update at 20 hertz
-                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isEnabled()){wait(20);}
+                    while(!compControl.isEnabled()){wait(20);}
                 }
-                if (statusClose){
-                    break;
-                }
+                
                 if(compControl.isEnabled() && compControl.isAutonomous()){//runs auton when enabled and autonomous
                         auton(autonMode);
-                        while(compControl.isEnabled() && compControl.isAutonomous()){wait(20);}//Waits for auton to end (50 Hertz)
+                        while(compControl.isEnabled() && compControl.isAutonomous() && isField()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
                 if(compControl.isEnabled() && compControl.isDriverControl()){//runs driver control when enabled and autonomous
                     driver();
-                    while(compControl.isEnabled() && compControl.isDriverControl()){wait(20);}//Waits for driver control to end (50 Hertz)
+                    while(compControl.isEnabled() && compControl.isDriverControl() && isField()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
                 stopAllMotors();
             }
@@ -269,34 +276,30 @@ int main() {
             int autonMode = selectAutonomous();
             ctrPrimary.Screen.clearScreen();
             while(true){
-                bool statusClose = false;
-                PromptClose promptExit = PromptClose();
-                ctrPrimary.Screen.clearLine(1);
-                ctrPrimary.Screen.print("SK-Disabled");
-                while(!compControl.isEnabled()){
+                if (!isField()){
+                    ctrPrimary.Screen.clearScreen();
+                    ctrPrimary.Screen.setCursor(1,0);
+                    ctrPrimary.Screen.print("Connect to Field");
+                    ctrPrimary.Screen.newLine();
+                    ctrPrimary.Screen.print("(B) Close");
+                    while(!ctrPrimary.ButtonB.pressing() && !isField()){wait(20);}
+                    if(ctrPrimary.ButtonB.pressing()){
+                        break;
+                    }
+                }
+                while(!compControl.isEnabled()){//While disabled, user has option to close field control 
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.clearLine();
                     ctrPrimary.Screen.print("SK-Disabled");
-                    bool a = ctrPrimary.ButtonA.pressing();
-                    bool b = ctrPrimary.ButtonB.pressing();
-                    statusClose = (promptExit.update(a, b) == 1);
-                    while((ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonB.pressing()) && !compControl.isEnabled()){wait(20);}
-                    if (statusClose){
-                        break;
-                    }
-                    wait(50); //Update at 20 hertz
-                    while(!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonB.pressing() && !compControl.isEnabled()){wait(20);}
-                }
-                if (statusClose){
-                    break;
+                    while(!compControl.isEnabled()){wait(20);}
                 }
                 if(compControl.isEnabled() && compControl.isAutonomous()){
                         auton(autonMode);
-                        while(compControl.isEnabled() && compControl.isAutonomous()){wait(20);}//Waits for auton to end (50 Hertz)
+                        while(compControl.isEnabled() && compControl.isAutonomous() && isField()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
                 if(compControl.isEnabled() && compControl.isDriverControl()){
                     driver();
-                    while(compControl.isEnabled() && compControl.isDriverControl()){wait(20);}//Waits for driver control to end (50 Hertz)
+                    while(compControl.isEnabled() && compControl.isDriverControl() && isField()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
                 stopAllMotors();
             }
@@ -338,4 +341,3 @@ int main() {
         }
     }
 }
-

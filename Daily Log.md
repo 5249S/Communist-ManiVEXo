@@ -67,5 +67,9 @@ All significant changes made to the software for 5249S will be documented here
 - Began 0.1.1, fixing update problems
 ### October 16, 2018
 - Finished 0.1.1, fixed problems
+## MVEXO [0.2.0]
 ### October 18, 2018
 - Began work on live diagnostics system
+### October 24, 2018
+- Finished live diagnostics system
+- Fixed field control problems
