@@ -49,7 +49,11 @@ void driver(){
                 mtrLauncherAngle.stop(vex::brakeType::hold);
             }
         }
-        if (ctrPrimary.ButtonX.pressing()
+        if (ctrPrimary.ButtonX.pressing()){
+            mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        } else {
+            mtrLauncherFire.stop(vex::brakeType::coast);
+        }
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
         lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));
