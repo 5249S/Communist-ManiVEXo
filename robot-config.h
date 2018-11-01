@@ -9,6 +9,9 @@ vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
 vex::motor mtrDriveRight = vex::motor(vex::PORT10, true);
 vex::motor mtrLiftLeft = vex::motor(vex::PORT2, true);
 vex::motor mtrLiftRight = vex::motor(vex::PORT9);
+vex::motor mtrClaw = vex::motor(vex::PORT4);
+vex::motor mtrLauncherAngle = vex::motor(vex::PORT5);
+vex::motor mtrLauncherFire = vex::motor(vex::PORT6);
 vex::vision visLauncher = vex::vision(vex::PORT3);
 vex::gyro gyroNav = vex::gyro(robotMain.ThreeWirePort.A);
 
