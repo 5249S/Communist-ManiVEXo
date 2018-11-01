@@ -6,6 +6,12 @@ All notable changes will be documented in this file
 - New methods for controlling the robot in auton
 - Ball launcher targeting system
 
+## R-MVEXO [0.3.0]
+### Added
+- Ball launcher targeting system
+- Driver Control of ball launcher
+### Changed
+- Changed Name
 ## MVEXO [0.2.0]
 ### Added
 - Live diagnotics system
