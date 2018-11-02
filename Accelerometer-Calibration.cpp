@@ -1,6 +1,6 @@
 class accelParam {
     private :
-        double det(int dim, double mat[6][6]){
+        double det(int dim, double mat[4][4]){
             double count = 0;
             if (dim == 2){
                 return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
