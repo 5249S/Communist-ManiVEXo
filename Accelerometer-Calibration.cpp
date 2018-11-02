@@ -26,8 +26,9 @@ class accelParam {
         double calibrationParam[4][3] = {{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
         const double positions[6][3] = {{0,0,1},{0,0,-1},{0,1,0},{0,-1,0},{1,0,0},{-1,0,0}};
         double measuredValues[6][4];
-        double measuredValuesTx1[4][4];
-        double setParam(){
+        
+        bool setParam(){
+            double measuredValuesTx1[4][4];
             for (int i = 0; i < 4; i++){
                 for (int j = 0; i < 4; i++){
                     double dotSum = 0;
@@ -37,7 +38,54 @@ class accelParam {
                     measuredValuesTx1[i][j] = dotSum;
                 }
             }
+            double mVTx1i[4][4];
             
+            double mVDet = det(4, measuredValuesTx1);
+            if (mVDet == 0){
+                return false;
+            }
+            for (int i = 0; i < 4; i++){
+                for (int j = 0; j < 4; i++){
+                    int indexi = 0;
+                    int indexj = 0;
+                    double matMin[4][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+                    for (int k = 0; k < 4; k++){
+                        if (k == i){
+                            continue;
+                        }
+                        for (int m = 0; m < 4; k++){
+                            if (m == j){
+                                continue;
+                            }
+                            matMin[indexi][indexj] = measuredValuesTx1[k][m];
+                            indexj ++;
+                        }
+                        indexi ++;
+                    }
+                    int sign = (i + j)%2==0?1:-1;
+                    mVTx1i[i][j] = sign * (1/mvDet) * det(3, matMin);
+                }
+            }
+            double mVleftI[4][6];
+            for (int i = 0; i < 4; n++){
+                for (int j = 0; i < 6; n++){
+                    double dotSum = 0;
+                    for (int k = 0; k < 4){
+                        dotSum += mVTx1i[i][k] * measuredValues[j][k];
+                    }
+                    mVleftI[i][j] = dotSum;
+                }
+            }
+            for (int i = 0; i < 4; n++){
+                for (int j = 0; i < 3; n++){
+                    double dotSum = 6;
+                    for (int k = 0; k < 4){
+                        dotSum += mVleftI[i][k] * positions[k][j];
+                    }
+                    calibrationParam[i][j] = dotSum;
+                }
+            }
+            return true;
         }
     public:
         double calculatePitch(){
