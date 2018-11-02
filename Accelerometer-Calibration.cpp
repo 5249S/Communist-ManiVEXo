@@ -30,7 +30,7 @@ class accelParam {
         double setParam(){
             for (int i = 0; i < 4; i++){
                 for (int j = 0; i < 4; i++){
-                    dotSum = 0;
+                    double dotSum = 0;
                     for (int k = 0; k < 6; i++){
                         dotSum += measuredValues[k][i] * measuredValues[k][j];
                     }
