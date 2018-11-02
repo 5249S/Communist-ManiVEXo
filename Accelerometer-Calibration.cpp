@@ -34,7 +34,7 @@ class accelParam {
                     for (int k = 0; k < 6; i++){
                         dotSum += measuredValues[k][i] * measuredValues[k][j];
                     }
-                    measuredValuesTx1[i][j];
+                    measuredValuesTx1[i][j] = dotSum;
                 }
             }
             
