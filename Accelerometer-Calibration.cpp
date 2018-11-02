@@ -26,10 +26,10 @@ class accelParam {
         double calibrationParam[4][3] = {{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
         const double positions[6][3] = {{0,0,1},{0,0,-1},{0,1,0},{0,-1,0},{1,0,0},{-1,0,0}};
         double measuredValues[6][4];
-        double measuredValuesTx1[6][6];
+        double measuredValuesTx1[4][4];
         double setParam(){
-            for (int i = 0; i < 6; i++){
-                for (int j = 0; i < 6; i++){
+            for (int i = 0; i < 4; i++){
+                for (int j = 0; i < 4; i++){
                     dotSum = 0;
                     for (int k = 0; k < 6; i++){
                         dotSum += measuredValues[k][i] * measuredValues[k][j];
