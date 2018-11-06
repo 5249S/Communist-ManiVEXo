@@ -43,10 +43,19 @@ void driver(){
         if (ctrPrimary.ButtonR1.pressing()){
             mtrLauncherAngle.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
         } else {
-            if(ctrPrimary.BUttonR2.pressing(){
+            if(ctrPrimary.ButtonR2.pressing()){
                 mtrLauncherAngle.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
             } else {
                 mtrLauncherAngle.stop(vex::brakeType::hold);
+            }
+        }
+        if (ctrPrimary.ButtonL1.pressing()){
+            mtrClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        } else {
+            if(ctrPrimary.ButtonL2.pressing()){
+                mtrClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+            } else {
+                mtrClaw.stop(vex::brakeType::hold);
             }
         }
         if (ctrPrimary.ButtonX.pressing()){
