@@ -12,6 +12,22 @@ static bool colorRed = true;
 void auton(int);
 void driver();
 static bool warning[10][2];
+double getAccelTiltAngle(){
+    double calibrationParam[4][3] = {{,,},{,,},{,,},{,,}};
+    int X = accelX.value(vex::analogUnits::range12bit);
+    int Y = accelY.value(vex::analogUnits::range12bit);
+    int Z = accelZ.value(vex::analogUnits::range12bit);
+    double measuredValues[4] = {(double)X,(double)Y,(double)Z,1};
+    double trueValues[3];
+    for (int i = 0;i < 3; i++){
+        double dotSum = 0;
+        for (int j = 0; j < 4; j++){
+            dotSum += measuredValues[j]*calibrationParam[j][i];
+        }
+        trueValues[i] = dotSum;
+    }
+    
+}
 void runDiagnostics(){
     char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};
     for (int i = 0; i < 10; i++){
