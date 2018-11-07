@@ -36,18 +36,7 @@ class Launcher : private Pid {
         double toDeg(double radians){//converts radians to degrees
             return radians * (180.0/pi);
         }
-        int accelToGyro(){//Sets gyro angle to 3- axis accelerometer based on gravity
-            int Z = accelLauncherZ.value(vex::analogUnits::range12bit);//Stores accelerometer values
-            int Y = accelLauncherY.value(vex::analogUnits::range12bit);
-            int offset = 0;//Offset varible to adjust for systematic error
-            if (Y == 0){//Angle is either 0 or 90 degrees
-                if (Z == 0){
-                    return 0;//Something is wrong if this happens, only here to prevent error
-                }
-                return (int)((toDeg(-asin((double)Z/abs(Z)))) + offset);//gives back either 0 or 90 degrees
-            }
-            return (int)(toDeg(-atan((double)(Z/Y))) + offset);//Calculates angle
-        }
+        
         Flag htzFlags[9];
         //The following values are for the vision sensor camera
         const float FOV = 47.0;//field of view
