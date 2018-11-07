@@ -41,10 +41,10 @@ void driver(){
         robotMain.Screen.print("AccZ: %d", accelLauncherZ.value(vex::analogUnits::range12bit));
         //Run driver implementation here
         if (ctrPrimary.ButtonR1.pressing()){
-            mtrLauncherAngle.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+            mtrLauncherAngle.spin(vex::directionType::fwd, 50, vex::velocityUnits::pct);
         } else {
             if(ctrPrimary.ButtonR2.pressing()){
-                mtrLauncherAngle.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+                mtrLauncherAngle.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
             } else {
                 mtrLauncherAngle.stop(vex::brakeType::hold);
             }
