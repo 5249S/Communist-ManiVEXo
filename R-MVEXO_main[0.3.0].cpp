@@ -110,7 +110,9 @@ void stopAllMotors(){
     mtrDriveRight.stop(vex::brakeType::coast);
     mtrLiftLeft.stop(vex::brakeType::coast);
     mtrLiftRight.stop(vex::brakeType::coast);
-    
+    mtrClaw.stop(vex::brakeType::coast);
+    mtrLauncherAngle.stop(vex::brakeType::coast);
+    mtrLauncherFire.stop(vex::brakeType::coast);
 }
 bool isField(){
     return compControl.isCompetitionSwitch() || compControl.isFieldControl();
