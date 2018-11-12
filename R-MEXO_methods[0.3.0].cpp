@@ -146,5 +146,22 @@ driveYaw.kP = 0;
 driveYaw.kI = 0;
 driveYaw.kD = 0;
 bool driveToPoint(float endpoint, float yaw){
-    driveSpeed.setPoint = 
+    const int maxSpeed = 100;
+    driveSpeed.setPoint = endpoint;
+    driveYaw.setPoint = yaw;
+    int speed = (int)driveSpeed.pidCalc(mtrDriveLeft.rotation(vex::rotationUnits::rev));
+    int turn = (int)driveYaw.pidCalc(gyroNav.value(vex::analogUnits::range12bit));
+    if (speed > maxSpeed){
+        speed = maxSpeed;
+    }
+    if (speed < -maxSpeed){
+        speed = -maxSpeed;
+    }
+    if (turn > maxSpeed){
+        turn = maxSpeed;
+    }
+    if (turn < -maxSpeed){
+        turn = -maxSpeed;
+    }
+    
 }
