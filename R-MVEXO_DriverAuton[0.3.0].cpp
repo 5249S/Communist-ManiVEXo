@@ -38,30 +38,11 @@ void driver(){
         robotMain.Screen.print("AccY: %d", accelLauncherY.value(vex::analogUnits::range12bit));
         robotMain.Screen.newLine();
         robotMain.Screen.print("AccZ: %d", accelLauncherZ.value(vex::analogUnits::range12bit));
+        
         //Run driver implementation here
-        if (ctrPrimary.ButtonR1.pressing()){
-            mtrLauncherAngle.spin(vex::directionType::fwd, 50, vex::velocityUnits::pct);
-        } else {
-            if(ctrPrimary.ButtonR2.pressing()){
-                mtrLauncherAngle.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
-            } else {
-                mtrLauncherAngle.stop(vex::brakeType::hold);
-            }
-        }
-        if (ctrPrimary.ButtonL1.pressing()){
-            mtrClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-        } else {
-            if(ctrPrimary.ButtonL2.pressing()){
-                mtrClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
-            } else {
-                mtrClaw.stop(vex::brakeType::hold);
-            }
-        }
-        if (ctrPrimary.ButtonX.pressing()){
-            mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-        } else {
-            mtrLauncherFire.stop(vex::brakeType::coast);
-        }
+        robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());
+        robot.launchFire(ctrPrimary.ButtonX.pressing());
+        robot.claw(ctrPrimary.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing())
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
         lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));
