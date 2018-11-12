@@ -53,7 +53,10 @@ class Pid {
             //return adjustment, new error, and pidIntegral
             return adjust;
         }
-        
+        void resetPID(){
+            pidIntegral = 0;
+            prevError = 0;
+        }
 };
 class Lift {
     public:
@@ -134,3 +137,14 @@ class DriveMethods {
         }
     
 };
+Pid driveSpeed;
+Pid driveYaw;
+driveSpeed.kP = 0;
+driveSpeed.kI = 0;
+driveSpeed.kD = 0;
+driveYaw.kP = 0;
+driveYaw.kI = 0;
+driveYaw.kD = 0;
+bool driveToPoint(float endpoint, float yaw){
+    driveSpeed.setPoint = 
+}
