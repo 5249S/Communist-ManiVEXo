@@ -58,6 +58,41 @@ class Pid {
             prevError = 0;
         }
 };
+class Launcher {
+    public: 
+        void launchAngle(bool up, bool down){
+            if (up){
+                mtrLauncherAngle.spin(vex::directionType::fwd, 50, vex::velocityUnits::pct);
+            } else {
+                if(down){
+                    mtrLauncherAngle.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
+                } else {
+                    mtrLauncherAngle.stop(vex::brakeType::hold);
+                }
+            }
+        }
+        void launchFire(bool power){
+            if (power){
+                mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+            } else {
+                mtrLauncherFire.stop(vex::brakeType::coast);
+            }
+        }
+}
+class Claw {
+    public: 
+        void claw(bool up, bool down){
+            if (up){
+                mtrClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+            } else {
+                if(down){
+                    mtrClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+                } else {
+                    mtrClaw.stop(vex::brakeType::hold);
+                }
+            }
+        }
+}
 class Lift {
     public:
         void lift(int power){
@@ -134,7 +169,7 @@ class DriveMethods {
         }
     
 };
-class RobotControl: public Lift, public DriveMethods {
+class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher {
     
 }
 
