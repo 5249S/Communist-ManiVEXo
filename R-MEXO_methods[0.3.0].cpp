@@ -60,7 +60,7 @@ class Pid {
 };
 class Lift {
     public:
-        void drive(int power){
+        void lift(int power){
             if (power < 0){
                 mtrLiftLeft.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
                 mtrLiftRight.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
@@ -108,9 +108,6 @@ class DriveMethods {
     public:
     
         DriveMethods() { }
-    
-        Pid drive; //Creates a PID object for controlling driving
-        Pid turn;  //Creates a PID object for controlling turning
         void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
             //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
             if (y < 3 && y > -3) {
@@ -137,20 +134,25 @@ class DriveMethods {
         }
     
 };
-Pid driveSpeed;
-Pid driveYaw;
-driveSpeed.kP = 0;
-driveSpeed.kI = 0;
-driveSpeed.kD = 0;
-driveYaw.kP = 0;
-driveYaw.kI = 0;
-driveYaw.kD = 0;
+class RobotControl: public Lift, public DriveMethods {
+    
+}
+
+RobotControl robot;
+Pid driveSpeedPID;
+Pid driveYawPID;
+driveSpeedPID.kP = 0;
+driveSpeedPID.kI = 0;
+driveSpeedPID.kD = 0;
+driveYawPID.kP = 0;
+driveYawPID.kI = 0;
+driveYawPID.kD = 0;
 bool driveToPoint(float endpoint, float yaw){
     const int maxSpeed = 100;
-    driveSpeed.setPoint = endpoint;
-    driveYaw.setPoint = yaw;
-    int speed = (int)driveSpeed.pidCalc(mtrDriveLeft.rotation(vex::rotationUnits::rev));
-    int turn = (int)driveYaw.pidCalc(gyroNav.value(vex::analogUnits::range12bit));
+    driveSpeedPID.setPoint = endpoint;
+    driveYawPID.setPoint = yaw;
+    int speed = (int)driveSpeedPID.pidCalc(mtrDriveLeft.rotation(vex::rotationUnits::rev));
+    int turn = (int)driveYawPID.pidCalc(gyroNav.value(vex::analogUnits::range12bit));
     if (speed > maxSpeed){
         speed = maxSpeed;
     }
@@ -163,5 +165,5 @@ bool driveToPoint(float endpoint, float yaw){
     if (turn < -maxSpeed){
         turn = -maxSpeed;
     }
-    
+    robot.driveH(speed, turn);
 }
