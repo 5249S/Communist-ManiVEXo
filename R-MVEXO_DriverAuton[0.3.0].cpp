@@ -27,8 +27,7 @@ void driver(){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
     ctrPrimary.Screen.print("Party Time");
-    DriveMethods robot;
-    Lift lift;
+    
     while (confirmDriver()){
         robotMain.Screen.clearScreen();
         robotMain.Screen.setCursor(1,0);
