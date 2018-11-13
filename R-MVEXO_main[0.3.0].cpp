@@ -143,7 +143,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 }
             }
             void moveUp(){
-                if (getCurrent != 0){
+                if (getCurrent() != 0){
                     if (position == 0){
                         topLine --;
                     } else {
@@ -164,11 +164,8 @@ class DisplaySelection {//Class created to hold and change the values needed to 
             }
             int select(){
                 while(true){//repeat update until a selection is chosen
-                    bool selectBtn = ;
-                    bool up = ctrPrimary.ButtonUp.pressing();
-                    bool down = ctrPrimary.ButtonDown.pressing();
                     if(ctrPrimary.ButtonA.pressing()){//Return the current number if a selection has been made
-                        return getCurrent;
+                        return getCurrent();
                     }
                     if(ctrPrimary.ButtonUp.pressing()){
                         moveUp();
@@ -181,7 +178,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                         ctrPrimary.Screen.setCursor(i+1,3);
                         ctrPrimary.Screen.print("%s", text[i + topLine]);
                     }
-                    ctrPrimary.Screen.setCursor(position()+1,0);
+                    ctrPrimary.Screen.setCursor(position+1,0);
                     ctrPrimary.Screen.print("->");
                     while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
                     while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
