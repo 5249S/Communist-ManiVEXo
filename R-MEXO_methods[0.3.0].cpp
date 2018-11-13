@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*                The ManiVEXo                */
 /*                   Methods                  */
-/*                Version 0.2.0               */
+/*                Version 0.3.0               */
 /*--------------------------------------------*/
 
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
