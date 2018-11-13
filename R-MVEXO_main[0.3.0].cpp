@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*                The ManiVEXo                */
 /*                    Main                    */
-/*                Version 0.2.0               */
+/*                Version 0.3.0               */
 /*--------------------------------------------*/
 #include "robot-config.h"
 #include <cmath>
