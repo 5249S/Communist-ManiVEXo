@@ -12,11 +12,11 @@ static bool colorRed = true;
 void auton(int);
 void driver();
 static bool warning[10][2];
-double getAccelTiltAngle(){
+/*double getAccelTiltAngle(){
     double calibrationParam[4][3] = {{,,},{,,},{,,},{,,}};
-    int X = accelX.value(vex::analogUnits::range12bit);
-    int Y = accelY.value(vex::analogUnits::range12bit);
-    int Z = accelZ.value(vex::analogUnits::range12bit);
+    int X = accelLauncherX.value(vex::analogUnits::range12bit);
+    int Y = accelLauncherY.value(vex::analogUnits::range12bit);
+    int Z = accelLauncherZ.value(vex::analogUnits::range12bit);
     double measuredValues[4] = {(double)X,(double)Y,(double)Z,1};
     double trueValues[3];
     for (int i = 0;i < 3; i++){
@@ -27,7 +27,7 @@ double getAccelTiltAngle(){
         trueValues[i] = dotSum;
     }
     
-}
+}*/
 void runDiagnostics(){
     char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};
     for (int i = 0; i < 10; i++){
@@ -145,7 +145,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                     current --;
                 } else {
                     current = max - 1;
-                    topLine = max - maxLines < 0 ? 0 : max - maxLines;
+                    topLine = max < maxLines? 0 : max - maxLines;
                 }
             }
             int update(bool select, bool up, bool down){
@@ -206,7 +206,7 @@ bool confirmAuton(){//Confirms it is allowed to run auton
         }
         return false;//otherwise return false
     }
-    if (mode == 2 && !isField()){//if in auton testing mode, always allow
+    if (mode == 2 && !isField() && !ctrPrimary.ButtonB.pressing()){//if in auton testing mode, always allow
         return true;
     }
     return false;//return false otherwise
@@ -218,7 +218,7 @@ bool confirmDriver(){//Confirms it is allowed to run driver control
         }
         return false;//otherwise return false
     }
-    if (mode == 3 && !isField()){//if in driver mode, always allow
+    if (mode == 3 && !isField() && !ctrPrimary.ButtonB.pressing()){//if in driver mode, always allow
         return true;
     }
     return false;//return false otherwise
