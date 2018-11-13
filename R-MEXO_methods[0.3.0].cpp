@@ -12,8 +12,6 @@ class Pid {
         float prevError = 0;
         float pidIntegral = 0;
     public:
-    
-        Pid() { }
         
         float setPoint = 0;
         float kP = 0.0;
@@ -78,7 +76,7 @@ class Launcher {
                 mtrLauncherFire.stop(vex::brakeType::coast);
             }
         }
-}
+};
 class Claw {
     public: 
         void claw(bool up, bool down){
@@ -92,7 +90,7 @@ class Claw {
                 }
             }
         }
-}
+};
 class Lift {
     public:
         void lift(int power){
@@ -171,18 +169,19 @@ class DriveMethods {
 };
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher {
     
-}
+};
 
 RobotControl robot;
 Pid driveSpeedPID;
 Pid driveYawPID;
-driveSpeedPID.kP = 0;
-driveSpeedPID.kI = 0;
-driveSpeedPID.kD = 0;
-driveYawPID.kP = 0;
-driveYawPID.kI = 0;
-driveYawPID.kD = 0;
-bool driveToPoint(float endpoint, float yaw){
+
+void driveToPoint(float endpoint, float yaw){
+    driveSpeedPID.kP = 0;
+    driveSpeedPID.kI = 0;
+    driveSpeedPID.kD = 0;
+    driveYawPID.kP = 0;
+    driveYawPID.kI = 0;
+    driveYawPID.kD = 0;
     const int maxSpeed = 100;
     driveSpeedPID.setPoint = endpoint;
     driveYawPID.setPoint = yaw;
