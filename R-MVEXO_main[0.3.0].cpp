@@ -120,6 +120,41 @@ bool isField(){//Method for checking if either field control device is connected
     return compControl.isCompetitionSwitch() || compControl.isFieldControl();
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
+        private: 
+            int maxLines = 3;
+            int topLine = 0;
+            int position = 0;
+            unsigned int max = 0;
+            bool selectionMade = false;
+    
+            int getCurrent(){
+                return topLine + position;
+            }
+            void moveDown(){
+                if (getCurrent() != max - 1){
+                    if (position == maxLines - 1){
+                        topLine ++;
+                    } else {
+                        position ++;
+                    }
+                } else {
+                    topLine = 0;
+                    position = 0;
+                }
+            }
+            void moveUp(){
+                if (getCurrent != 0){
+                    if (position == 0){
+                        topLine --;
+                    } else {
+                        position --;
+                    }
+                } else {
+                    position = maxLines - 1;
+                    topLine = max - maxLines;
+                }
+            }
+            
         private:
             int maxLines = 3;//Number of lines displayed
             int current = 0;//Currently selected choice
