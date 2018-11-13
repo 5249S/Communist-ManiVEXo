@@ -143,18 +143,18 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                 }
             }
             void moveUp(){//Moves the selection up
-                if (current != 0){
+                if (current != 0){//If the current selection is not the first selection, move the cursor up
                     if (current == topLine){
-                        topLine --;
+                        topLine --;//Move the list of options up if the arrow is on the top row
                     }
-                    current --;
-                } else {
+                    current --;//Move the arrow up
+                } else {//If the cursor is at the top, move the selection to the bottom
                     current = max - 1;
-                    topLine = max < maxLines? 0 : max - maxLines;
+                    topLine = max < maxLines? max - 1 : max - maxLines;
                 }
             }
-            int update(bool select, bool up, bool down){
-                if(select){
+            int update(bool select, bool up, bool down){//Updates the screen based on inputs
+                if(select){//Return the current number if a selection has been made
                     return current;
                 }
                 if(up){
