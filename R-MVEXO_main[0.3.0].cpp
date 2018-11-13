@@ -28,17 +28,17 @@ static bool warning[10][2];
     }
     
 }*/
-void runDiagnostics(){
-    char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};
-    for (int i = 0; i < 10; i++){
+void runDiagnostics(){//Method for displaying any problems with the robot
+    char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};//array of warning texts
+    for (int i = 0; i < 10; i++){ //store the previous state of each error to check for a change
         warning[i][1] = warning[i][0];
     }
-    warning[0][0] = robotMain.Battery.capacity() < 25;
-    warning[1][0] = robotMain.Battery.temperature() > 80;
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70;
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70;
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70;
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70;
+    warning[0][0] = robotMain.Battery.capacity() < 25;//Battery capacity < 25%
+    warning[1][0] = robotMain.Battery.temperature() > 80; //Battery temperature > 80%
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70; //Left Drive Motor >70%
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70; //Right Drive Motor >70%
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70; //Left Lift Motor >70%
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70; //Right Lift Motor >70%
     warning[6][0] = false;
     warning[7][0] = false;
     warning[8][0] = false;
@@ -47,12 +47,12 @@ void runDiagnostics(){
     
     bool update = false;
     for (int i = 0; i < 10; i++){
-        if ((warning[i][0] && !warning[i][1]) || (warning[i][1] && !warning[i][0])){
-            update = true;
+        if ((warning[i][0] && !warning[i][1]) || (warning[i][1] && !warning[i][0])){ //Update the display if any of the warnings have changed
+            update = true; 
             break;
         }
     }
-    if (update) {
+    if (update) {//Display all warnings
         ctrPrimary.Screen.clearLine(2);
         ctrPrimary.Screen.clearLine(3);
         ctrPrimary.Screen.setCursor(2,0);
@@ -92,11 +92,13 @@ void calibrateGyros(){//Calibrates gyros
     robotMain.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
     gyroLauncher.startCalibration();
-    while(gyroNav.isCalibrating() || gyroLauncher.isCalibrating()){//waits for both gyros to finish 
+    int timer = 0;
+    while((gyroNav.isCalibrating() || gyroLauncher.isCalibrating()) && timer < 3000){//waits for both gyros to finish 
         if (ctrPrimary.ButtonB.pressing()){
             break;//allows bypass
         }
         wait(20);
+        timer += 20;
     }
     while(ctrPrimary.ButtonB.pressing()){wait(20);}
     gyroNavSet.setValues(0, gyroNav.value(vex::rotationUnits::deg), false);
@@ -105,7 +107,7 @@ void calibrateGyros(){//Calibrates gyros
     
     
 }
-void stopAllMotors(){
+void stopAllMotors(){//stops all motors on the robot
     mtrDriveLeft.stop(vex::brakeType::coast);
     mtrDriveRight.stop(vex::brakeType::coast);
     mtrLiftLeft.stop(vex::brakeType::coast);
@@ -114,30 +116,33 @@ void stopAllMotors(){
     mtrLauncherAngle.stop(vex::brakeType::coast);
     mtrLauncherFire.stop(vex::brakeType::coast);
 }
-bool isField(){
+bool isField(){//Method for checking if either field control device is connected
     return compControl.isCompetitionSwitch() || compControl.isFieldControl();
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
         private:
-            int maxLines = 3;
-            int current = 0;
-            int topLine = 0;
-            bool selectionMade = false;
+            int maxLines = 3;//Number of lines displayed
+            int current = 0;//Currently selected choice
+            int topLine = 0;//Choice displayed on the top line
+            bool selectionMade = false;//Turns true when a selection is made
 
-            unsigned int max = 0;
-            int getPosition(){
+            unsigned int max = 0;//The number of options to be displayed
+            int getPosition(){//method for getting the line the current choice is on
                 return current - topLine;
             }
 
-            void moveDown(){
-                if (current != max - 1){
+            void moveDown(){//Moves the selection down
+                if (current != max - 1){//If the current selection is not the last selection, move the cursor down
                     if (current == topLine + maxLines - 1){
-                        topLine ++;
+                        topLine ++;//Move the list of options down if the arrow is on the bottom row
                     }
-                    current ++;
+                    current ++;//Move the arrow down
+                } else {//If the cursor is at the bottom, move the selection to the top
+                    topLine = 0;
+                    current = 0;
                 }
             }
-            void moveUp(){
+            void moveUp(){//Moves the selection up
                 if (current != 0){
                     if (current == topLine){
                         topLine --;
@@ -243,7 +248,6 @@ void colorSelect(){//method for selecting field color
 }
 int main() {
     robotMain.Screen.setFont(vex::fontType::mono40);
-    robotMain.Screen.setPenColor("00FF00");
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(1,0);
     while(true){
