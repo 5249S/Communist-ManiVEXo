@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*                The ManiVEXo                */
 /*                Driver/Auton                */
-/*                Version 0.2.0               */
+/*                Version 0.3.0               */
 /*--------------------------------------------*/
 
 void auton(int autonMode){
@@ -14,9 +14,6 @@ void auton(int autonMode){
         int process = 0; //variable to control where in the auton you are
         while (confirmAuton() && process < 0){//Set process number to last process
             //Run auton implementation here
-            if (mode == 2 && ctrPrimary.ButtonB.pressing()){
-                break;//Option for quitting in test mode
-            }
             wait(20);//run at 50 Hz
         }
     }
@@ -42,14 +39,11 @@ void driver(){
         //Run driver implementation here
         robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());
         robot.launchFire(ctrPrimary.ButtonX.pressing());
-        robot.claw(ctrPrimary.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing())
+        robot.claw(ctrPrimary.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing());
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
-        lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));
+        robot.lift(ctrPrimary.Axis2.position(vex::percentUnits::pct));
         robot.driveH(y, x);
-        if (mode == 3 && ctrPrimary.ButtonB.pressing()){
-            break;//Option for quitting in test mode
-        }
         runDiagnostics();
         wait(20);//run at 50 Hz
     }
