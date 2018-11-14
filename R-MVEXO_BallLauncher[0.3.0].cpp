@@ -2,7 +2,7 @@ class Flag {
     private:
         const double GRAVITY = -9.8; //m/s^2 Acceleration of gravity
         const double INITIAL_VELOCITY = 0; //m/s Initial velocity of ball
-        const double FLAG_HEIGHT = 0; //meters known height of flag object
+        const double FLAG_HEIGHT = 0.14; //meters known height of flag object
         double distance= 0; //Variable for holding distance
         double height = 0; //Variable holding height to bottom of flag
         
