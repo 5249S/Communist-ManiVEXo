@@ -45,7 +45,7 @@ class BallLauncher : private Pid {
         
         Flag htzFlags[9];
         //The following values are for the vision sensor camera
-        const float FOV = 47.0;//field of view
+        const float FOV = 60;//field of view
         const float FOCAL_LENGTH = 320/tan(toRad(FOV/2));//Focal length of the camera based on field of view 
         const int htzMax = 205;//Upper limit of horizontal target zone
         const int htzMin = 195;//Lower limit of horizontal target zone
@@ -119,7 +119,7 @@ class BallLauncher : private Pid {
                 }
             }
             if (shortestAngle != -1){
-                runAngleMotor((int)htzFlags[shortestAngle].calculateRequiredAngle());//Run the motor to reach selected angle.
+                runAngleMotor((int)htzFlags[shortestAngle].calculateRequiredAngle() - 44);//Run the motor to reach selected angle.
             } else {
                 robotMain.Screen.clearScreen();
             }
