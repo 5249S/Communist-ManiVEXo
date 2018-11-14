@@ -75,7 +75,7 @@ class BallLauncher : private Pid {
         }
     public:
         BallLauncher(){//Constructor, just sets gyro to 
-            gyroLauncherSet.setValues(getAccelTiltAngle(), gyroLauncher.value(vex::analogUnits::range12bit), true);
+            gyroLauncherSet.setValues(getAccelTiltAngle()*10, gyroLauncher.value(vex::analogUnits::range12bit), true);
             kP = 0.0;
             kI = 0.0;
             kD = 0.0;
@@ -101,7 +101,7 @@ class BallLauncher : private Pid {
         void targetSpecificFlag(){
             float angles[htzIndex][2];
             for (int i = 0; i < htzIndex; i++){//Calculate the difference between the needed angle and gyro angle for all flags in the htz
-                angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
+                angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg))/10);
                 if (htzFlags[i].inRange){
                     angles[i][1] = 1;
                 } else {
