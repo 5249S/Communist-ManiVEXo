@@ -12,8 +12,8 @@ static bool colorRed = true;
 void auton(int);
 void driver();
 static bool warning[10][2];
-/*double getAccelTiltAngle(){
-    double calibrationParam[4][3] = {{,,},{,,},{,,},{,,}};
+double getAccelTiltAngle(){
+    double calibrationParam[4][3];// = {{,,},{,,},{,,},{,,}};
     int X = accelLauncherX.value(vex::analogUnits::range12bit);
     int Y = accelLauncherY.value(vex::analogUnits::range12bit);
     int Z = accelLauncherZ.value(vex::analogUnits::range12bit);
@@ -26,8 +26,8 @@ static bool warning[10][2];
         }
         trueValues[i] = dotSum;
     }
-    
-}*/
+    return 0;
+}
 void runDiagnostics(){//Method for displaying any problems with the robot
     char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};//array of warning texts
     for (int i = 0; i < 10; i++){ //store the previous state of each error to check for a change
@@ -120,74 +120,67 @@ bool isField(){//Method for checking if either field control device is connected
     return compControl.isCompetitionSwitch() || compControl.isFieldControl();
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
-        private:
-            int maxLines = 3;//Number of lines displayed
-            int current = 0;//Currently selected choice
-            int topLine = 0;//Choice displayed on the top line
-            bool selectionMade = false;//Turns true when a selection is made
-
-            unsigned int max = 0;//The number of options to be displayed
-            int getPosition(){//method for getting the line the current choice is on
-                return current - topLine;
+        private: 
+            int maxLines = 3;
+            int topLine = 0;
+            int position = 0;
+            unsigned int max = 0;
+            bool selectionMade = false;
+    
+            int getCurrent(){
+                return topLine + position;
             }
-
-            void moveDown(){//Moves the selection down
-                if (current != max - 1){//If the current selection is not the last selection, move the cursor down
-                    if (current == topLine + maxLines - 1){
-                        topLine ++;//Move the list of options down if the arrow is on the bottom row
+            void moveDown(){
+                if (getCurrent() != max - 1){
+                    if (position == maxLines - 1){
+                        topLine ++;
+                    } else {
+                        position ++;
                     }
-                    current ++;//Move the arrow down
-                } else {//If the cursor is at the bottom, move the selection to the top
+                } else {
                     topLine = 0;
-                    current = 0;
+                    position = 0;
                 }
             }
-            void moveUp(){//Moves the selection up
-                if (current != 0){//If the current selection is not the first selection, move the cursor up
-                    if (current == topLine){
-                        topLine --;//Move the list of options up if the arrow is on the top row
+            void moveUp(){
+                if (getCurrent() != 0){
+                    if (position == 0){
+                        topLine --;
+                    } else {
+                        position --;
                     }
-                    current --;//Move the arrow up
-                } else {//If the cursor is at the top, move the selection to the bottom
-                    current = max - 1;
-                    topLine = max < maxLines? max - 1 : max - maxLines;
+                } else {
+                    position = maxLines - 1;
+                    topLine = max - maxLines;
                 }
-            }
-            int update(bool select, bool up, bool down){//Updates the screen based on inputs
-                if(select){//Return the current number if a selection has been made
-                    return current;
-                }
-                if(up){
-                    moveUp();
-                } 
-                if(down){
-                    moveDown();
-                }
-                ctrPrimary.Screen.clearScreen();
-                for (int i=0; i < maxLines; i++){
-                    ctrPrimary.Screen.setCursor(i+1,3);
-                    ctrPrimary.Screen.print("%s", text[i + topLine]);
-                }
-                ctrPrimary.Screen.setCursor(getPosition()+1,0);
-                ctrPrimary.Screen.print("->");
-                return -1;
             }
         public:
             char text[8][32];
             DisplaySelection(unsigned int maxOptions){
+                if (maxOptions < maxLines){
+                    maxLines = maxOptions;
+                }
                 max = maxOptions;
             }
             int select(){
                 while(true){//repeat update until a selection is chosen
-                    bool selectBtn = ctrPrimary.ButtonA.pressing();
-                    bool up = ctrPrimary.ButtonUp.pressing();
-                    bool down = ctrPrimary.ButtonDown.pressing();
-                    int status = update(selectBtn, up, down);//call update function
-                    while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
-                    if (status != -1){//repeat loop until selection is made (update return something other than -1)
-                        return status;//return number selected
-                        break;
+                    if(ctrPrimary.ButtonA.pressing()){//Return the current number if a selection has been made
+                        return getCurrent();
                     }
+                    if(ctrPrimary.ButtonUp.pressing()){
+                        moveUp();
+                    } 
+                    if(ctrPrimary.ButtonDown.pressing()){
+                        moveDown();
+                    }
+                    ctrPrimary.Screen.clearScreen();
+                    for (int i=0; i < maxLines; i++){
+                        ctrPrimary.Screen.setCursor(i+1,3);
+                        ctrPrimary.Screen.print("%s", text[i + topLine]);
+                    }
+                    ctrPrimary.Screen.setCursor(position+1,0);
+                    ctrPrimary.Screen.print("->");
+                    while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
                     while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
                         if (isField()){
                             ctrPrimary.Screen.clearScreen();
@@ -202,7 +195,6 @@ class DisplaySelection {//Class created to hold and change the values needed to 
                     }
                 }
             }
-
 };
 bool confirmAuton(){//Confirms it is allowed to run auton
     if (mode == 0 || mode == 1){//If in field control or skills mode, the competition control will be checked

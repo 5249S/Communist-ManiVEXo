@@ -3,10 +3,11 @@ class Flag {
         const double GRAVITY = -9.8; //m/s^2 Acceleration of gravity
         const double INITIAL_VELOCITY = 0; //m/s Initial velocity of ball
         const double FLAG_HEIGHT = 0; //meters known height of flag object
-        float double = 0; //Variable for holding distance
-        float double = 0; //Variable holding height to bottom of flag
+        double distance= 0; //Variable for holding distance
+        double height = 0; //Variable holding height to bottom of flag
         
     public:
+        bool inRange = false;
         //Equations are based on inmatic formulas
         void calculateDistance(double alpha, double beta){//Takes angle values and sets instance varibles to distance an height
             int offset = 0; //
@@ -20,8 +21,10 @@ class Flag {
             double d = distance;
             int offset = 0.0;//Offset varible to adjust for systematic error
             if (pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0)) < 0){
+                inRange = false;
                 return -10.0;
             }
+            inRange = true;
             return (float)(atan((pow(v,2.0) - sqrt(pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0))))/(g*d) + offset));//calculates angle required, casting between numbers where needed
         }
         bool checkForHit(){
@@ -43,17 +46,19 @@ class BallLauncher : private Pid {
         Flag htzFlags[9];
         //The following values are for the vision sensor camera
         const float FOV = 47.0;//field of view
-        const float FOCAL_LENGTH = 200/tan(toRad(FOV/2));//Focal length of the camera based on field of view 
-        const int htzMax = 340;//Upper limit of horizontal target zone
-        const int htzMin = 300;//Lower limit of horizontal target zone
+        const float FOCAL_LENGTH = 320/tan(toRad(FOV/2));//Focal length of the camera based on field of view 
+        const int htzMax = 205;//Upper limit of horizontal target zone
+        const int htzMin = 195;//Lower limit of horizontal target zone
         float angleAtPoint(int y){//calculates the verticle angle to a specific point on the camera using the field of view and focal length
             float offset = 0;//Offset for systematic error
-            int yP = y - 200;//Makes center the origin
+            int yP = -y + 320;//Makes center the origin
             return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH)))) + offset;//Returns angle at point
         }
         
         void runAngleMotor(int angle){//Runs motor to set launcher to an angle
-            
+            /*kP = 2;
+            kD = 0;
+            kI = 0;
             setPoint = angle;
             float fix = pidCalc(gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
             if (fix > 100){
@@ -61,11 +66,16 @@ class BallLauncher : private Pid {
             }
             if (fix < -100){
                 return;
-            }
+            }*/
+            robotMain.Screen.clearScreen();
+            robotMain.Screen.setCursor(1,0);
+            robotMain.Screen.print("Current Angle: %d", gyroLauncherSet.value(gyroLauncher.value(vex::analogUnits::range12bit)));
+            robotMain.Screen.newLine();
+            robotMain.Screen.print("Required Angle: %d", angle);
         }
     public:
-        Launcher(){//Constructor, just sets gyro to 
-            gyroLauncherSet.setValues(accelToGyro(), gyroLauncher.value(vex::rotationUnits::deg), false);
+        BallLauncher(){//Constructor, just sets gyro to 
+            gyroLauncherSet.setValues(getAccelTiltAngle(), gyroLauncher.value(vex::analogUnits::range12bit), true);
             kP = 0.0;
             kI = 0.0;
             kD = 0.0;
@@ -73,15 +83,15 @@ class BallLauncher : private Pid {
         int flagX[9];
         void scanForFlags(){//
             if (colorRed){
-                visLauncher.takeSnapshot(SIG_BLUE_FLAG);
+                visLauncher.takeSnapshot(SIG_FLAG_BLUE);
             } else {
-                visLauncher.takeSnapshot(SIG_RED_FLAG);
+                visLauncher.takeSnapshot(SIG_FLAG_RED);
             }
             htzIndex = 0;
             for (int i = 0; i < visLauncher.objectCount; i++){
                 if (visLauncher.objects[i].centerX < htzMax && visLauncher.objects[i].centerX > htzMin){
-                    float beta = angleAtPoint(visLauncher.objects[i].originY);
-                    float alpha = angleAtPoint(visLauncher.objects[i].originY - 2 * (visLauncher.objects[i].originY - visLauncher.objects[i].centerY));
+                    float beta = angleAtPoint(visLauncher.objects[i].originX);
+                    float alpha = angleAtPoint(visLauncher.objects[i].originX + visLauncher.objects[i].width);
                     htzFlags[htzIndex].calculateDistance(alpha, beta);
                     htzIndex ++;
                 }
@@ -89,13 +99,22 @@ class BallLauncher : private Pid {
             }
         }
         void targetSpecificFlag(){
-            float angles[htzIndex];
+            float angles[htzIndex][2];
             for (int i = 0; i < htzIndex; i++){//Calculate the difference between the needed angle and gyro angle for all flags in the htz
-                angles[i] = fabs(htzFlags[i].calculateRequiredAngle() - (float)gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
+                angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
+                if (htzFlags[i].inRange){
+                    angles[i][1] = 1;
+                } else {
+                    angles[i][1] = 0;
+                }
             }
-            int shortestAngle = 0;//set the first angle to the shortest angle
-            for (int i = 1; i < htzIndex; i++){
-                if (angles[i] < angles[shortestAngle]){//If any other angle is closer to the gyro angle, set that to the closest angle
+            int shortestAngle = -1;//set the first angle to the shortest angle
+            for (int i = 0; i < htzIndex; i++){
+                if (shortestAngle == -1 && angles[i][1] == 1){
+                    shortestAngle = i;
+                    continue;
+                }
+                if (angles[i] < angles[shortestAngle] && angles[i][1] == 1){//If any other angle is closer to the gyro angle, set that to the closest angle
                     shortestAngle = i;
                 }
             }
