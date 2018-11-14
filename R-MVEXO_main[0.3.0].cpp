@@ -12,8 +12,8 @@ static bool colorRed = true;
 void auton(int);
 void driver();
 static bool warning[10][2];
-/*double getAccelTiltAngle(){
-    double calibrationParam[4][3] = {{,,},{,,},{,,},{,,}};
+double getAccelTiltAngle(){
+    double calibrationParam[4][3];// = {{,,},{,,},{,,},{,,}};
     int X = accelLauncherX.value(vex::analogUnits::range12bit);
     int Y = accelLauncherY.value(vex::analogUnits::range12bit);
     int Z = accelLauncherZ.value(vex::analogUnits::range12bit);
@@ -26,8 +26,8 @@ static bool warning[10][2];
         }
         trueValues[i] = dotSum;
     }
-    
-}*/
+    return 0;
+}
 void runDiagnostics(){//Method for displaying any problems with the robot
     char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};//array of warning texts
     for (int i = 0; i < 10; i++){ //store the previous state of each error to check for a change
