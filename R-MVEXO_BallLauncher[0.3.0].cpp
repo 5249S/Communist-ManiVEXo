@@ -118,6 +118,10 @@ class BallLauncher : private Pid {
                     shortestAngle = i;
                 }
             }
-            runAngleMotor((int)htzFlags[shortestAngle].calculateRequiredAngle());//Run the motor to reach selected angle.
+            if (shortestAngle != -1){
+                runAngleMotor((int)htzFlags[shortestAngle].calculateRequiredAngle());//Run the motor to reach selected angle.
+            } else {
+                robotMain.Screen.clearScreen();
+            }
         }
 };
