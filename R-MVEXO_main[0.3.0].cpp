@@ -13,7 +13,7 @@ void auton(int);
 void driver();
 static bool warning[10][2];
 double getAccelTiltAngle(){
-    double calibrationParam[4][3] = {{-328141E-10,36174E-8,736303E-10},{398013E-10,-469610E-10,-372480E-8},{-350956E-8,-130104E-10,-459309E-10},{7.20023,-7.29033,7.57130}};
+    double calibrationParam[4][3] = {{-328141E-10,361739E-8,736303E-10},{398013E-10,-469610E-10,-372480E-8},{-350956E-8,-130104E-10,-459309E-10},{7.20023,-7.29033,7.57130}};
     int X = accelLauncherX.value(vex::analogUnits::range12bit);
     int Y = accelLauncherY.value(vex::analogUnits::range12bit);
     int Z = accelLauncherZ.value(vex::analogUnits::range12bit);
