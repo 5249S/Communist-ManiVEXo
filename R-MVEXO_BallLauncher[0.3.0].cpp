@@ -19,7 +19,7 @@ class Flag {
             double g = GRAVITY;
             double h = height + FLAG_HEIGHT/2;//height of middle of flag
             double d = distance;
-            int offset = 0.0;//Offset varible to adjust for systematic error
+            int offset = -11;//Offset varible to adjust for systematic error
             if (pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0)) < 0){
                 inRange = false;
                 return -10.0;
