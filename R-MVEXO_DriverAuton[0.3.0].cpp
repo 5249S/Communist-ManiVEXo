@@ -24,12 +24,9 @@ void driver(){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
     ctrPrimary.Screen.print("Party Time");
-    gyroLauncherSet.setValues(getAccelTiltAngle()*10, gyroLauncher.value(vex::analogUnits::range12bit)*10, true);
+    BallLauncher targetSystem;
     while (confirmDriver()){
-        robotMain.Screen.clearScreen();
-        robotMain.Screen.setCursor(1,0);
-        robotMain.Screen.print("Gyro: %d", gyroLauncherSet.value(gyroLauncher.value(vex::analogUnits::range12bit)));
-        robotMain.Screen.newLine();
+        /*
         robotMain.Screen.print("Gyro: %d", gyroLauncher.value(vex::analogUnits::range12bit));
         robotMain.Screen.newLine();
         robotMain.Screen.print("AccX: %d", accelLauncherX.value(vex::analogUnits::range12bit));
@@ -37,7 +34,14 @@ void driver(){
         robotMain.Screen.print("AccY: %d", accelLauncherY.value(vex::analogUnits::range12bit));
         robotMain.Screen.newLine();
         robotMain.Screen.print("AccZ: %d", accelLauncherZ.value(vex::analogUnits::range12bit));
+        */
+        robotMain.Screen.clearScreen();
+        robotMain.Screen.setCursor(1,0);
+        robotMain.Screen.print("Current Angle: %d", getAccelTiltAngle()+11);
+        robotMain.Screen.newLine();
+        targetSystem.scanForFlags();
         
+        robotMain.Screen.print("Required Angle: %f", targetSystem.targetSpecificFlag());
         robotMain.Screen.print("Tilt: %f", getAccelTiltAngle());
         //Run driver implementation here
         robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());
