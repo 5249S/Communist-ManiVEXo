@@ -24,7 +24,7 @@ void driver(){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
     ctrPrimary.Screen.print("Party Time");
-    gyroLauncherSet.setValues(getAccelTiltAngle(), gyroLauncher.value(vex::analogUnits::range12bit)*10, true);
+    gyroLauncherSet.setValues(getAccelTiltAngle()*10, gyroLauncher.value(vex::analogUnits::range12bit)*10, true);
     while (confirmDriver()){
         robotMain.Screen.clearScreen();
         robotMain.Screen.setCursor(1,0);
