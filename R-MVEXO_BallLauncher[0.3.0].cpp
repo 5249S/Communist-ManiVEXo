@@ -54,25 +54,6 @@ class BallLauncher : private Pid {
             int yP = -y + 320;//Makes center the origin
             return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH)))) + offset;//Returns angle at point
         }
-        
-        void runAngleMotor(int angle){//Runs motor to set launcher to an angle
-            /*kP = 2;
-            kD = 0;
-            kI = 0;
-            setPoint = angle;
-            float fix = pidCalc(gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg)));
-            if (fix > 100){
-                return;
-            }
-            if (fix < -100){
-                return;
-            }*/
-            robotMain.Screen.clearScreen();
-            robotMain.Screen.setCursor(1,0);
-            robotMain.Screen.print("Current Angle: %d", gyroLauncherSet.value(gyroLauncher.value(vex::analogUnits::range12bit)));
-            robotMain.Screen.newLine();
-            robotMain.Screen.print("Required Angle: %d", angle);
-        }
     public:
         BallLauncher(){//Constructor, just sets gyro to 
             gyroLauncherSet.setValues(getAccelTiltAngle()*10, gyroLauncher.value(vex::analogUnits::range12bit), true);
@@ -101,7 +82,7 @@ class BallLauncher : private Pid {
         void targetSpecificFlag(){
             float angles[htzIndex][2];
             for (int i = 0; i < htzIndex; i++){//Calculate the difference between the needed angle and gyro angle for all flags in the htz
-                angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)gyroLauncherSet.value(gyroLauncher.value(vex::rotationUnits::deg))/10);
+                angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)getAccelTiltAngle());
                 if (htzFlags[i].inRange){
                     angles[i][1] = 1;
                 } else {
@@ -119,9 +100,9 @@ class BallLauncher : private Pid {
                 }
             }
             if (shortestAngle != -1){
-                runAngleMotor((int)htzFlags[shortestAngle].calculateRequiredAngle() - 44);//Run the motor to reach selected angle.
+                return angles[shortestAngle];//Run the motor to reach selected angle.
             } else {
-                robotMain.Screen.clearScreen();
+                return -1;
             }
         }
 };
