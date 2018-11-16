@@ -9,7 +9,8 @@ All notable changes will be documented in this file
 ## R-MVEXO [0.3.0]
 ### Added
 - Ball launcher targeting system
-- Driver Control of ball launcher
+- Driver Control of ball launcher and claw
+- Accelerometer tilt angle calculation for the ball launcher
 ### Changed
 - Changed Name
 ## MVEXO [0.2.0]
