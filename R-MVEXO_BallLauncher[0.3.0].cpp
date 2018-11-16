@@ -1,3 +1,9 @@
+/*--------------------------------------------*/
+/*                    5249S                   */
+/*              Robotic ManiVEXo              */
+/*                Ball Launcher               */
+/*                Version 0.3.0               */
+/*--------------------------------------------*/
 class Flag {
     private:
         const double GRAVITY = -9.8; //m/s^2 Acceleration of gravity
