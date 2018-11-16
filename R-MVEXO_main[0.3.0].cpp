@@ -80,7 +80,6 @@ class GyroSettings {//Class used to set gyros to specific values, as they can't 
 void wait(int time){
     vex::task::sleep(time);
 }
-GyroSettings gyroLauncherSet;
 GyroSettings gyroNavSet;
 void calibrateGyros(){//Calibrates gyros
     robotMain.Screen.clearScreen();
@@ -91,22 +90,17 @@ void calibrateGyros(){//Calibrates gyros
     robotMain.Screen.newLine();
     robotMain.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
-    gyroLauncher.startCalibration();
     int timer = 0;
-    while((gyroNav.isCalibrating() || gyroLauncher.isCalibrating()) && timer < 3000){//waits for both gyros to finish 
+    while(gyroNav.isCalibrating() && timer < 3000){//waits for both gyros to finish 
         if (ctrPrimary.ButtonB.pressing()){
             break;//allows bypass
         }
         wait(20);
         timer += 20;
     }
-    wait(3000);
     while(ctrPrimary.ButtonB.pressing()){wait(20);}
     gyroNavSet.setValues(0, gyroNav.value(vex::rotationUnits::deg), false);
-    gyroLauncherSet.setValues(0, gyroLauncher.value(vex::rotationUnits::deg), false);
     robotMain.Screen.clearScreen();
-    
-    
 }
 void stopAllMotors(){//stops all motors on the robot
     mtrDriveLeft.stop(vex::brakeType::coast);
