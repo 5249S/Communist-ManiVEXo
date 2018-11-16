@@ -198,7 +198,7 @@ RobotControl robot;
 Pid driveSpeedPID;
 Pid driveYawPID;
 
-void driveToPoint(float endpoint, float yaw){
+bool driveToPoint(float endpoint, float yaw){
     driveSpeedPID.kP = 0;
     driveSpeedPID.kI = 0;
     driveSpeedPID.kD = 0;
@@ -223,4 +223,19 @@ void driveToPoint(float endpoint, float yaw){
         turn = -maxSpeed;
     }
     robot.driveH(speed, turn);
+}
+bool pointTurn(float yaw){
+    const int maxSpeed = 100;
+    driveYawPID.kP = 0;
+    driveYawPID.kI = 0;
+    driveYawPID.kD = 0;
+    driveYawPID.setPoint = yaw;
+    int turnSpeed = (int)driveYawPID.pidCalc(gyroNav.value(vex::analogUnits::range12bit));
+    if (turnSpeed > maxSpeed){
+        turnSpeed = maxSpeed;
+    }
+    if (turnSpeed < -maxSpeed){
+        turnSpeed = -maxSpeed;
+    }
+    robot.driveH(0, turnSpeed);
 }
