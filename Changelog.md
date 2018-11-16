@@ -13,7 +13,7 @@ All notable changes will be documented in this file
 - Accelerometer tilt angle calculation for the ball launcher
 ### Changed
 - Changed Name
-## MVEXO [0.2.0]
+## MVEXO [0.2.0] - 2018-10-30
 ### Added
 - Live diagnotics system
 - Field controller warnings for the driver
