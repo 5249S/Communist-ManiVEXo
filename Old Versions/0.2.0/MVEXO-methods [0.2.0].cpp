@@ -55,7 +55,7 @@ class Pid {
         }
         
 };
-class Lift {
+class Lift {//method for powering lift based on power inputs
     public:
         void drive(int power){
             if (power < 0){
