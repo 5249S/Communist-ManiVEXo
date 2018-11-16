@@ -31,7 +31,7 @@ class Flag {
             return false;
         }
 };
-class BallLauncher : private Pid {
+class BallLauncher {
     private:
         
         int htzIndex = 0;//Number of flags in horizontal target zone
@@ -55,14 +55,9 @@ class BallLauncher : private Pid {
             return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH)))) + offset;//Returns angle at point
         }
     public:
-        BallLauncher(){//Constructor, just sets gyro to 
-            gyroLauncherSet.setValues(getAccelTiltAngle()*10, gyroLauncher.value(vex::analogUnits::range12bit), true);
-            kP = 0.0;
-            kI = 0.0;
-            kD = 0.0;
-        }
+        
         int flagX[9];
-        void scanForFlags(){//
+        int scanForFlags(){//
             if (colorRed){
                 visLauncher.takeSnapshot(SIG_FLAG_BLUE);
             } else {
@@ -70,7 +65,7 @@ class BallLauncher : private Pid {
             }
             htzIndex = 0;
             for (int i = 0; i < visLauncher.objectCount; i++){
-                if (visLauncher.objects[i].centerX < htzMax && visLauncher.objects[i].centerX > htzMin){
+                if (visLauncher.objects[i].centerY < htzMax && visLauncher.objects[i].centerY > htzMin){
                     float beta = angleAtPoint(visLauncher.objects[i].originX);
                     float alpha = angleAtPoint(visLauncher.objects[i].originX + visLauncher.objects[i].width);
                     htzFlags[htzIndex].calculateDistance(alpha, beta);
@@ -78,8 +73,9 @@ class BallLauncher : private Pid {
                 }
                 flagX[i] = visLauncher.objects[i].centerX;
             }
+            return htzIndex;
         }
-        void targetSpecificFlag(){
+        float targetSpecificFlag(){
             float angles[htzIndex][2];
             for (int i = 0; i < htzIndex; i++){//Calculate the difference between the needed angle and gyro angle for all flags in the htz
                 angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)getAccelTiltAngle());
