@@ -1,3 +1,4 @@
+//Not ready to be used on robot, needs to be refined
 class Flag {
     private:
         const double GRAVITY = -9.8; //m/s^2 Acceleration of gravity
