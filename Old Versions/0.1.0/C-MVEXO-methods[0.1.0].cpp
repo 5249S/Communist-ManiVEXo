@@ -55,7 +55,7 @@ class Pid {
         }
         
 };
-class Lift {
+class Lift {//Class for driving the lift
     public:
         void drive(int power){
             if (power < 0){
