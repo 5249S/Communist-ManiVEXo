@@ -98,16 +98,16 @@ class DriveMethods {
         Pid turn;  //Creates a PID object for controlling turning
         void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
             //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
-            if (y < 10 && y > -10) {
+            if (y < 10 && y > -10) {//Threshold values to prevent drift
                 y = 0;
             }
             if (x < 10 && x > -10) {
                 x = 0;
             }
 
-            int leftPower = leftMotor(y, x);
+            int leftPower = leftMotor(y, x);//Gets the power for the left and right side of the chassis
             int rightPower = rightMotor(y, x);
-            if (leftPower < 0){
+            if (leftPower < 0){//Powers the motors to the correct power
                 mtrDriveLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
             } else {
                 mtrDriveLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
@@ -124,7 +124,7 @@ class DriveMethods {
 };
 
 
-void wait(int time){
+void wait(int time){//function to wait a specific amount of milliseconds
     vex::timer timer;
     timer.clear();
     while (timer.time() < time){}
@@ -132,7 +132,7 @@ void wait(int time){
 
 int main() {
     DriveMethods robot;
-    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.clearScreen();//Displays name and version number on controller screen
     ctrPrimary.Screen.setCursor(0, 0);
     ctrPrimary.Screen.print("C-MVEXO 5249S");
     ctrPrimary.Screen.newLine();
@@ -141,7 +141,7 @@ int main() {
     ctrPrimary.Screen.print("Driver Control");
 
     while (true){
-        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
+        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);//Runs robot chassis based on joystick inputs
         int x = ctrPrimary.Axis1.position(vex::percentUnits::pct);
 
         robot.driveH(y, x);
