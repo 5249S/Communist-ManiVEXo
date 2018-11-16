@@ -11,21 +11,21 @@ class Flag {
         //Equations are based on inmatic formulas
         void calculateDistance(double alpha, double beta){//Takes angle values and sets instance varibles to distance an height
             int offset = 0; //
-            distance = (float)(FLAG_HEIGHT/(tan(beta)-tan(alpha)) + offset);
-            height = distance * (float)(tan(alpha));
+            distance = (FLAG_HEIGHT/(tan(beta)-tan(alpha)) + offset);
+            height = distance * (tan(alpha));
         }
-        float calculateRequiredAngle(){//Returns angle required to hit flag in radians
+        double calculateRequiredAngle(){//Returns angle required to hit flag in radians
             double v = INITIAL_VELOCITY;//variables to hold values, for simplicity
             double g = GRAVITY;
             double h = height + FLAG_HEIGHT/2;//height of middle of flag
             double d = distance;
-            int offset = -11;//Offset varible to adjust for systematic error
+            double offset = -11;//Offset varible to adjust for systematic error
             if (pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0)) < 0){
                 inRange = false;
                 return -10.0;
             }
             inRange = true;
-            return (float)(atan((pow(v,2.0) - sqrt(pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0))))/(g*d) + offset));//calculates angle required, casting between numbers where needed
+            return (atan((pow(v,2.0) - sqrt(pow(v,4.0)-g*(g*pow(d,2.0)-2*h*pow(v, 2.0))))/(g*d)) + offset);//calculates angle required, casting between numbers where needed
         }
         bool checkForHit(){
             return false;
@@ -45,14 +45,14 @@ class BallLauncher {
         
         Flag htzFlags[9];
         //The following values are for the vision sensor camera
-        const float FOV = 60;//field of view
-        const float FOCAL_LENGTH = 320/tan(toRad(FOV/2));//Focal length of the camera based on field of view 
+        const double FOV = 60;//field of view
+        const double FOCAL_LENGTH = 320/tan(toRad(FOV/2));//Focal length of the camera based on field of view 
         const int htzMax = 205;//Upper limit of horizontal target zone
         const int htzMin = 195;//Lower limit of horizontal target zone
-        float angleAtPoint(int y){//calculates the verticle angle to a specific point on the camera using the field of view and focal length
-            float offset = 0;//Offset for systematic error
+        double angleAtPoint(int y){//calculates the verticle angle to a specific point on the camera using the field of view and focal length
+            double offset = 0;//Offset for systematic error
             int yP = -y + 320;//Makes center the origin
-            return (float)(toDeg(atan((double)(yP/FOCAL_LENGTH)))) + offset;//Returns angle at point
+            return (atan((yP/FOCAL_LENGTH))) + offset;//Returns angle at point
         }
     public:
         
@@ -66,8 +66,8 @@ class BallLauncher {
             htzIndex = 0;
             for (int i = 0; i < visLauncher.objectCount; i++){
                 if (visLauncher.objects[i].centerY < htzMax && visLauncher.objects[i].centerY > htzMin){
-                    float beta = angleAtPoint(visLauncher.objects[i].originX);
-                    float alpha = angleAtPoint(visLauncher.objects[i].originX + visLauncher.objects[i].width);
+                    double beta = angleAtPoint(visLauncher.objects[i].originX);
+                    double alpha = angleAtPoint(visLauncher.objects[i].originX + visLauncher.objects[i].width);
                     htzFlags[htzIndex].calculateDistance(alpha, beta);
                     htzIndex ++;
                 }
@@ -75,10 +75,10 @@ class BallLauncher {
             }
             return htzIndex;
         }
-        float targetSpecificFlag(){
-            float angles[htzIndex][2];
+        double targetSpecificFlag(){
+            double angles[htzIndex][2];
             for (int i = 0; i < htzIndex; i++){//Calculate the difference between the needed angle and gyro angle for all flags in the htz
-                angles[i][0] = fabs(htzFlags[i].calculateRequiredAngle() - (float)getAccelTiltAngle());
+                angles[i][0] = fabs(toDeg(htzFlags[i].calculateRequiredAngle()) - getAccelTiltAngle());
                 if (htzFlags[i].inRange){
                     angles[i][1] = 1;
                 } else {
@@ -88,7 +88,6 @@ class BallLauncher {
             int shortestAngle = -1;//set the first angle to the shortest angle
             for (int i = 0; i < htzIndex; i++){
                 if (shortestAngle == -1 && angles[i][1] == 1){
-                    shortestAngle = i;
                     continue;
                 }
                 if (angles[i] < angles[shortestAngle] && angles[i][1] == 1){//If any other angle is closer to the gyro angle, set that to the closest angle
@@ -96,7 +95,7 @@ class BallLauncher {
                 }
             }
             if (shortestAngle != -1){
-                return angles[shortestAngle];//Run the motor to reach selected angle.
+                return toDeg(htzFlags[shortestAngle].calculateRequiredAngle());//Run the motor to reach selected angle.
             } else {
                 return -1;
             }
