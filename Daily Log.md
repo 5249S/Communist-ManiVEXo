@@ -73,3 +73,15 @@ All significant changes made to the software for 5249S will be documented here
 ### October 24, 2018
 - Finished live diagnostics system
 - Fixed field control problems
+## R-MVEXO [0.3.0]
+### November 8, 2018
+- Added driver control for ball launcher and claw
+### November 13, 2018
+- Re-wired robot
+- Updated code for targeting system 
+- Began writing PID methods for auton driving
+### November 14, 2018
+- Calibrated accelerometer
+### November 15, 2018
+- Fixed tilt angle problem
+- Finished code for first test of targetting system
