@@ -4,21 +4,30 @@
 /*                    Main                    */
 /*                Version 0.3.0               */
 /*--------------------------------------------*/
-#include "robot-config.h"
-#include <cmath>
+/*      Place files in following order:       */
+/*                    Main                    */
+/*                   Methods                  */
+/*                Ball Launcher               */
+/*                Auton Methods               */
+/*                Driver Auton                */
+/*--------------------------------------------*/
+#include "robot-config.h"//Includes config file
+#include <cmath> //Includes math operations Ex: pow, sin, sqrt
     
-static int mode = -1;
-static bool colorRed = true;
-void auton(int);
+static int mode = -1;//Mode for the robot to operate in
+static bool colorRed = true;//True if on red alliance, false if on blue
+void auton(int);//Declares Auton and driver functions, initialized in Driver Auton file
 void driver();
-static bool warning[10][2];
-double getAccelTiltAngle(){
+static bool warning[10][2];//Array of warning statuses for warning the driver of problems with the robot
+double getAccelTiltAngle(){//Method for getting the tilt angle of the ball launcher using the accelerometer
     double calibrationParam[4][3] = {{-328141E-10,361739E-8,736303E-10},{398013E-10,-469610E-10,-372480E-8},{-350956E-8,-130104E-10,-459309E-10},{7.20023,-7.29033,7.57130}};
-    int X = accelLauncherX.value(vex::analogUnits::range12bit);
+    //12 parameter calibration matrix
+    int X = accelLauncherX.value(vex::analogUnits::range12bit);//Gets analog values from all three axes
     int Y = accelLauncherY.value(vex::analogUnits::range12bit);
     int Z = accelLauncherZ.value(vex::analogUnits::range12bit);
-    double measuredValues[4] = {(double)X,(double)Y,(double)Z,1};
-    double trueValues[3];
+    double measuredValues[4] = {(double)X,(double)Y,(double)Z,1};//Sets values in matrix
+    double trueValues[3];//Declares true accelerometer values matrix
+    //Multiplies the parameter matrix by the analog values
     for (int i = 0;i < 3; i++){
         double dotSum = 0;
         for (int j = 0; j < 4; j++){
@@ -26,10 +35,10 @@ double getAccelTiltAngle(){
         }
         trueValues[i] = dotSum;
     }
-    if (pow(trueValues[1],2)+pow(trueValues[2],2) == 0){
+    if (pow(trueValues[1],2)+pow(trueValues[2],2) == 0){//Prevents a divide by zero error in the next calculation
         return 90;
     }
-    return (180/3.141592)*atan((trueValues[0])/(sqrt(pow(trueValues[1],2)+pow(trueValues[2],2))));
+    return (180/3.141592)*atan((trueValues[0])/(sqrt(pow(trueValues[1],2)+pow(trueValues[2],2))));//Calculates tilt angle
 }
 void runDiagnostics(){//Method for displaying any problems with the robot
     char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};//array of warning texts
@@ -38,16 +47,16 @@ void runDiagnostics(){//Method for displaying any problems with the robot
     }
     warning[0][0] = robotMain.Battery.capacity() < 25;//Battery capacity < 25%
     warning[1][0] = robotMain.Battery.temperature() > 80; //Battery temperature > 80%
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70; //Left Drive Motor >70%
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70; //Right Drive Motor >70%
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70; //Left Lift Motor >70%
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70; //Right Lift Motor >70%
-    warning[6][0] = false;
-    warning[7][0] = false;
-    warning[8][0] = false;
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70; //Left Drive Motor Temp >70%
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70; //Right Drive Motor Temp >70%
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70; //Left Lift Motor Temp >70%
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70; //Right Lift Motor Temp >70%
+    warning[6][0] = mtrClaw.temperature(vex::percentUnits::pct) > 70; //Claw Motor Temp >70%
+    warning[7][0] = mtrLauncherAngle.temperature(vex::percentUnits::pct) > 70; //Launcher Angle Motor Temp >70%
+    warning[8][0] = mtrLauncherFire.temperature(vex::percentUnits::pct) > 70; //Launcher Fire Motor Temp >70%
     warning[9][0] = false;
     
-    
+    //Checks if a value has changed and needs to be updated to comply with controller screen's slow update rate
     bool update = false;
     for (int i = 0; i < 10; i++){
         if ((warning[i][0] && !warning[i][1]) || (warning[i][1] && !warning[i][0])){ //Update the display if any of the warnings have changed
@@ -61,13 +70,13 @@ void runDiagnostics(){//Method for displaying any problems with the robot
         ctrPrimary.Screen.setCursor(2,0);
         for (int i = 0; i < 10; i++){
             if (warning[i][0]){
-                ctrPrimary.Screen.print("%s ", warningText[i]);
+                ctrPrimary.Screen.print("%s ", warningText[i]);//Display all warning text in succession
             }
         }
     }
 }
 
-class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the program
+class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the current API
     private:
         int gyroBias = 0;
         int reverse = 1;
@@ -76,7 +85,7 @@ class GyroSettings {//Class used to set gyros to specific values, as they can't 
             reverse = rev?-1:1;
             gyroBias = currentValue - reverse * trueValue;
         }
-        int value(int currentValue){//returns true value with wanted shift
+        int value(int currentValue){//returns true value with wanted bias value
             return reverse * (currentValue - gyroBias);
         }
 };
