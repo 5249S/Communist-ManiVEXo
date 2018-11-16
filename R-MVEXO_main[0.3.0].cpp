@@ -26,6 +26,9 @@ double getAccelTiltAngle(){
         }
         trueValues[i] = dotSum;
     }
+    if (pow(trueValues[1],2)+pow(trueValues[2],2) == 0){
+        return 90;
+    }
     return (180/3.141592)*atan((trueValues[0])/(sqrt(pow(trueValues[1],2)+pow(trueValues[2],2))));
 }
 void runDiagnostics(){//Method for displaying any problems with the robot
