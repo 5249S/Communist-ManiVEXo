@@ -69,6 +69,17 @@ class Launcher {
                 }
             }
         }
+        void launchAnglePower(int power){
+            if (power < 0){
+                mtrLauncherAngle.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+            } else {
+                if (power > 0){
+                    mtrLauncherAngle.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+                } else {
+                    mtrLauncherAngle.stop(vex::brakeType::hold);
+                }
+            }
+        }
         void launchFire(bool power){
             if (power){
                 mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
@@ -89,6 +100,18 @@ class Claw {
                     mtrClaw.stop(vex::brakeType::hold);
                 }
             }
+        }
+        void clawPower(int power){
+            if (power < 0){
+                mtrClaw.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+            } else {
+                if (power > 0){
+                    mtrClaw.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+                } else {
+                    mtrClaw.stop(vex::brakeType::hold);
+                }
+            }
+            
         }
 };
 class Lift {
