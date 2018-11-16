@@ -39,10 +39,9 @@ void driver(){
         robotMain.Screen.setCursor(1,0);
         robotMain.Screen.print("Current Angle: %d", getAccelTiltAngle()+11);
         robotMain.Screen.newLine();
-        targetSystem.scanForFlags();
-        
+        robotMain.Screen.print("Flags in Line: %d", targetSystem.scanForFlags(););
+        robotMain.Screen.newLine();
         robotMain.Screen.print("Required Angle: %f", targetSystem.targetSpecificFlag());
-        robotMain.Screen.print("Tilt: %f", getAccelTiltAngle());
         //Run driver implementation here
         robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());
         robot.launchFire(ctrPrimary.ButtonX.pressing());
