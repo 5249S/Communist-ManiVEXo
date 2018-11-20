@@ -7,7 +7,7 @@ vex::competition compControl;
 vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
 vex::motor mtrDriveRight = vex::motor(vex::PORT10, true);
 vex::motor mtrLiftLeft = vex::motor(vex::PORT3, true);
-vex::motor mtrLiftRight = vex::motor(vex::PORT9);
+vex::motor mtrLiftRight = vex::motor(vex::PORT8);
 vex::motor mtrClaw = vex::motor(vex::PORT4, true);
 vex::motor mtrLauncherAngle = vex::motor(vex::PORT5);
 vex::motor mtrLauncherFire = vex::motor(vex::PORT6);
