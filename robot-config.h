@@ -10,7 +10,7 @@ vex::motor mtrLiftLeft = vex::motor(vex::PORT3, true);
 vex::motor mtrLiftRight = vex::motor(vex::PORT8);
 vex::motor mtrClaw = vex::motor(vex::PORT4, true);
 vex::motor mtrLauncherAngle = vex::motor(vex::PORT5);
-vex::motor mtrLauncherFire = vex::motor(vex::PORT6);
+vex::motor mtrLauncherFire = vex::motor(vex::PORT11);
 
 vex::vision::signature SIG_FLAG_RED (1, 0, 0, 0, 0, 0, 0, 2.5, 0);
 vex::vision::signature SIG_FLAG_BLUE (2, 0, 0, 0, 0, 0, 0, 2.5, 0);
