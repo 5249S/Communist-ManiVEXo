@@ -172,6 +172,7 @@ class DisplaySelection {//Class created to hold and change the values needed to 
             int select(){
                 while(true){//repeat update until a selection is chosen
                     if(ctrPrimary.ButtonA.pressing()){//Return the current number if a selection has been made
+                        while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}
                         return getCurrent();
                     }
                     if(ctrPrimary.ButtonUp.pressing()){
