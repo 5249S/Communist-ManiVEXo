@@ -27,6 +27,7 @@ bool driveToPoint(float endpoint, float yaw){
         turn = -maxSpeed;
     }
     robot.driveH(speed, turn);
+    return true;
 }
 bool pointTurn(float yaw){
     const int maxSpeed = 100;
@@ -42,4 +43,5 @@ bool pointTurn(float yaw){
         turnSpeed = -maxSpeed;
     }
     robot.driveH(0, turnSpeed);
+    return true;
 }
