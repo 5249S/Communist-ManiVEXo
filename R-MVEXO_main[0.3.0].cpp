@@ -47,13 +47,13 @@ void runDiagnostics(){//Method for displaying any problems with the robot
     }
     warning[0][0] = robotMain.Battery.capacity() < 25;//Battery capacity < 25%
     warning[1][0] = robotMain.Battery.temperature() > 80; //Battery temperature > 80%
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70; //Left Drive Motor Temp >70%
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70; //Right Drive Motor Temp >70%
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70; //Left Lift Motor Temp >70%
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70; //Right Lift Motor Temp >70%
-    warning[6][0] = mtrClaw.temperature(vex::percentUnits::pct) > 70; //Claw Motor Temp >70%
-    warning[7][0] = mtrLauncherAngle.temperature(vex::percentUnits::pct) > 70; //Launcher Angle Motor Temp >70%
-    warning[8][0] = mtrLauncherFire.temperature(vex::percentUnits::pct) > 70; //Launcher Fire Motor Temp >70%
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 45; //Left Drive Motor Temp >70%
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) >45; //Right Drive Motor Temp >70%
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 45; //Left Lift Motor Temp >70%
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 45; //Right Lift Motor Temp >70%
+    warning[6][0] = mtrClaw.temperature(vex::percentUnits::pct) > 45; //Claw Motor Temp >70%
+    warning[7][0] = mtrLauncherAngle.temperature(vex::percentUnits::pct) >45; //Launcher Angle Motor Temp >70%
+    warning[8][0] = mtrLauncherFire.temperature(vex::percentUnits::pct) > 45; //Launcher Fire Motor Temp >70%
     warning[9][0] = false;
     
     //Checks if a value has changed and needs to be updated to comply with controller screen's slow update rate
@@ -68,14 +68,21 @@ void runDiagnostics(){//Method for displaying any problems with the robot
         ctrPrimary.Screen.clearLine(2);
         ctrPrimary.Screen.clearLine(3);
         ctrPrimary.Screen.setCursor(2,0);
+        int cursor = 0;
         for (int i = 0; i < 10; i++){
             if (warning[i][0]){
                 ctrPrimary.Screen.print("%s ", warningText[i]);//Display all warning text in succession
+                cursor += 6;
+                ctrPrimary.Screen.setCursor(2,cursor);
             }
         }
     }
 }
-
+void clearDiagnostics(){
+    for (int i = 0; i < 10;i++){
+        warning[i][1] = false;
+    }
+}
 class GyroSettings {//Class used to set gyros to specific values, as they can't be changed in the current API
     private:
         int gyroBias = 0;
@@ -94,16 +101,16 @@ void wait(int time){
 }
 GyroSettings gyroNavSet;
 void calibrateGyros(){//Calibrates gyros
-    robotMain.Screen.clearScreen();
-    robotMain.Screen.setCursor(0,0);
-    robotMain.Screen.print("Gyros Calibrating");
-    robotMain.Screen.newLine();
-    robotMain.Screen.print("Do Not Touch Robot!");
-    robotMain.Screen.newLine();
-    robotMain.Screen.print("(B) Bypass");
+    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.setCursor(1,0);
+    ctrPrimary.Screen.print("Gyros Calibrating");
+    ctrPrimary.Screen.newLine();
+    ctrPrimary.Screen.print("Do Not Touch Robot!");
+    ctrPrimary.Screen.newLine();
+    ctrPrimary.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
     int timer = 0;
-    while(gyroNav.isCalibrating() && timer < 3000){//waits for both gyros to finish 
+    while(gyroNav.isCalibrating() || timer < 3000){//waits for both gyros to finish 
         if (ctrPrimary.ButtonB.pressing()){
             break;//allows bypass
         }
@@ -112,7 +119,7 @@ void calibrateGyros(){//Calibrates gyros
     }
     while(ctrPrimary.ButtonB.pressing()){wait(20);}
     gyroNavSet.setValues(0, gyroNav.value(vex::rotationUnits::deg), false);
-    robotMain.Screen.clearScreen();
+    ctrPrimary.Screen.clearScreen();
 }
 void stopAllMotors(){//stops all motors on the robot
     mtrDriveLeft.stop(vex::brakeType::coast);
@@ -122,6 +129,7 @@ void stopAllMotors(){//stops all motors on the robot
     mtrClaw.stop(vex::brakeType::coast);
     mtrLauncherAngle.stop(vex::brakeType::coast);
     mtrLauncherFire.stop(vex::brakeType::coast);
+    clearDiagnostics();
 }
 bool isField(){//Method for checking if either field control device is connected
     return compControl.isCompetitionSwitch() || compControl.isFieldControl();
@@ -250,6 +258,8 @@ int main() {
     robotMain.Screen.setFont(vex::fontType::mono40);
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(1,0);
+    vex::digital_out led = vex::digital_out(robotMain.ThreeWirePort.H);
+    led.set(false);
     while(true){
         DisplaySelection selectMode = DisplaySelection(5); //Create Display object
         strcpy(selectMode.text[0], "Field Control");//set values in array to options
@@ -335,6 +345,7 @@ int main() {
                     ctrPrimary.Screen.print("Setup Robot");
                     ctrPrimary.Screen.newLine();
                     ctrPrimary.Screen.print("(A) Done");//Waits until robot is placed properly for auton
+                    while (!ctrPrimary.ButtonA.pressing()){wait(20);}
                     if (ctrPrimary.ButtonA.pressing()){
                         break;
                     }
