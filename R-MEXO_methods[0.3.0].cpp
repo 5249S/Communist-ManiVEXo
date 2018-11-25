@@ -1,11 +1,9 @@
 /*--------------------------------------------*/
 /*                    5249S                   */
-/*             Communist ManiVEXo             */
-/*                Version 0.0.0               */
+/*              Robotic ManiVEXo              */
+/*                   Methods                  */
+/*                Version 0.3.0               */
 /*--------------------------------------------*/
-
-#include <cmath>
-#include "robot-config.h"
 
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
 class Pid {
@@ -14,21 +12,20 @@ class Pid {
         float prevError = 0;
         float pidIntegral = 0;
     public:
-    
-        Pid() { }
         
         float setPoint = 0;
         float kP = 0.0;
         float kI = 0.0;
         float kD = 0.0;
-    
+        float prevDerivative = 0;
+        float derivative = 0;
         float pidCalc(float processVar){
             //This is a single calculation for one cycle of a PID calculator, run in while loop, put output into control system
             //Define variables
             float pidProportional = 0.0;
             float pidDerivative = 0.0;
             float pidError = 0.0;
-
+            prevDerivative = derivative;
             //Calculate Error
             pidError = setPoint - processVar;
 
@@ -37,7 +34,7 @@ class Pid {
             
             //Calculate Derivative
             pidDerivative = (pidError - prevError) * kD;
-
+            derivative = pidError - prevError;
             //Calculate Integral
             if (fabs((double)pidIntegral) < 50) {
                     pidIntegral += (pidError + prevError)/2;
@@ -55,7 +52,86 @@ class Pid {
             //return adjustment, new error, and pidIntegral
             return adjust;
         }
-        
+        void reset(){
+            pidIntegral = 0;
+            prevError = 0;
+        }
+        void resetIntegral(){
+            pidIntegral = 0;
+        }
+};
+class Launcher {
+    public: 
+        void launchAngle(bool up, bool down){
+            if (up && getAccelTiltAngle() < 32){
+                mtrLauncherAngle.spin(vex::directionType::fwd, 30, vex::velocityUnits::pct);
+            } else {
+                if(down && getAccelTiltAngle() > 10){
+                    mtrLauncherAngle.spin(vex::directionType::rev, 30, vex::velocityUnits::pct);
+                } else {
+                    mtrLauncherAngle.stop(vex::brakeType::hold);
+                }
+            }
+        }
+        void launchAnglePower(int power){
+            if (power < 0  && getAccelTiltAngle() > 10){
+                mtrLauncherAngle.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+            } else {
+                if (power > 0 && getAccelTiltAngle() < 32){
+                    mtrLauncherAngle.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+                } else {
+                    mtrLauncherAngle.stop(vex::brakeType::hold);
+                }
+            }
+        }
+        void launchFire(bool power){
+            if (power){
+                mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+            } else {
+                mtrLauncherFire.stop(vex::brakeType::coast);
+            }
+        }
+};
+class Claw {
+    public: 
+        void claw(bool up, bool down){
+            if (up){
+                mtrClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+            } else {
+                if(down){
+                    mtrClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+                } else {
+                    mtrClaw.stop(vex::brakeType::hold);
+                }
+            }
+        }
+        void clawPower(int power){
+            if (power < 0){
+                mtrClaw.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+            } else {
+                if (power > 0){
+                    mtrClaw.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+                } else {
+                    mtrClaw.stop(vex::brakeType::hold);
+                }
+            }
+            
+        }
+};
+class Lift {
+    public:
+        void lift(int power){
+            if (power < 0){
+                mtrLiftLeft.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+                mtrLiftRight.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
+            } else if (power > 0){
+                mtrLiftLeft.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+                mtrLiftRight.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
+            } else {
+                mtrLiftLeft.stop(vex::brakeType::hold);
+                mtrLiftRight.stop(vex::brakeType::hold);
+            }
+        }
 };
 class DriveMethods {
     //Class for methods for driving the robot around the field
@@ -87,27 +163,23 @@ class DriveMethods {
             return powerLeft;
         }
         int rightMotor(int y, int x){
-            x *= -1;
-            return leftMotor(y, x);
+            return leftMotor(y, -x);
         }
     public:
     
         DriveMethods() { }
-    
-        Pid drive; //Creates a PID object for controlling driving
-        Pid turn;  //Creates a PID object for controlling turning
         void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
             //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
-            if (y < 10 && y > -10) {//Threshold values to prevent drift
+            if (y < 3 && y > -3) {
                 y = 0;
             }
-            if (x < 10 && x > -10) {
+            if (x < 3 && x > -3) {
                 x = 0;
             }
 
-            int leftPower = leftMotor(y, x);//Gets the power for the left and right side of the chassis
+            int leftPower = leftMotor(y, x);
             int rightPower = rightMotor(y, x);
-            if (leftPower < 0){//Powers the motors to the correct power
+            if (leftPower < 0){
                 mtrDriveLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
             } else {
                 mtrDriveLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
@@ -122,30 +194,6 @@ class DriveMethods {
         }
     
 };
-
-
-void wait(int time){//function to wait a specific amount of milliseconds
-    vex::timer timer;
-    timer.clear();
-    while (timer.time() < time){}
-}
-
-int main() {
-    DriveMethods robot;
-    ctrPrimary.Screen.clearScreen();//Displays name and version number on controller screen
-    ctrPrimary.Screen.setCursor(0, 0);
-    ctrPrimary.Screen.print("C-MVEXO 5249S");
-    ctrPrimary.Screen.newLine();
-    ctrPrimary.Screen.print("Ver: 0.0.0");
-    ctrPrimary.Screen.newLine();
-    ctrPrimary.Screen.print("Driver Control");
-
-    while (true){
-        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);//Runs robot chassis based on joystick inputs
-        int x = ctrPrimary.Axis1.position(vex::percentUnits::pct);
-
-        robot.driveH(y, x);
-        wait(20);
-    }
-    return 0;
-}
+class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher {
+    
+};

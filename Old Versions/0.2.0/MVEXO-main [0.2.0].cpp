@@ -4,45 +4,45 @@
 /*                    Main                    */
 /*                Version 0.2.0               */
 /*--------------------------------------------*/
-#include "robot-config.h"
-#include <cmath>
+#include "robot-config.h"//Includes config file
+#include <cmath>//Includes math operations Ex: pow, sin, sqrt
     
-static int mode = -1;
-static bool colorRed = true;
-void auton(int);
+static int mode = -1;//Mode for the robot to operate in
+static bool colorRed = true;//True if on red alliance, false if on blue
+void auton(int);//Declares Auton and driver functions, initialized in Driver Auton file
 void driver();
-static bool warning[10][2];
-void runDiagnostics(){
+static bool warning[10][2];//Array of warning statuses for warning the driver of problems with the robot
+void runDiagnostics(){//Method for displaying any problems with the robot
     char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};
-    for (int i = 0; i < 10; i++){
+    for (int i = 0; i < 10; i++){//store the previous state of each error to check for a change
         warning[i][1] = warning[i][0];
     }
-    warning[0][0] = robotMain.Battery.capacity() < 25;
-    warning[1][0] = robotMain.Battery.temperature() > 80;
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70;
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70;
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70;
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70;
+    warning[0][0] = robotMain.Battery.capacity() < 25;//Battery capacity < 25%
+    warning[1][0] = robotMain.Battery.temperature() > 80;//Battery temperature > 80%
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 70;//Left Drive Motor Temp >70%
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) > 70;//Right Drive Motor Temp >70%
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 70;//Left Lift Motor Temp >70%
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 70;//Right Lift Motor Temp >70%
     warning[6][0] = false;
     warning[7][0] = false;
     warning[8][0] = false;
     warning[9][0] = false;
     
     
-    bool update = false;
+    bool update = false;//Checks if a value has changed and needs to be updated to comply with controller screen's slow update rate
     for (int i = 0; i < 10; i++){
-        if ((warning[i][0] && !warning[i][1]) || (warning[i][1] && !warning[i][0])){
+        if ((warning[i][0] && !warning[i][1]) || (warning[i][1] && !warning[i][0])){//Update the display if any of the warnings have changed
             update = true;
             break;
         }
     }
-    if (update) {
+    if (update) {//Display all warnings
         ctrPrimary.Screen.clearLine(2);
         ctrPrimary.Screen.clearLine(3);
         ctrPrimary.Screen.setCursor(2,0);
         for (int i = 0; i < 10; i++){
             if (warning[i][0]){
-                ctrPrimary.Screen.print("%s ", warningText[i]);
+                ctrPrimary.Screen.print("%s ", warningText[i]);//Display all warning text in succession
             }
         }
     }

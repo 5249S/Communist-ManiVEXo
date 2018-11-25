@@ -6,7 +6,16 @@ All notable changes will be documented in this file
 - New methods for controlling the robot in auton
 - Ball launcher targeting system
 
-## MVEXO [0.2.0]
+## R-MVEXO [0.3.0]
+### Added
+- Ball launcher targeting system
+- Driver Control of ball launcher and claw
+- Accelerometer tilt angle calculation for the ball launcher
+### Changed
+- Changed Name
+### Removed
+- Launcher gyroscope
+## MVEXO [0.2.0] - 2018-10-30
 ### Added
 - Live diagnotics system
 - Field controller warnings for the driver

@@ -31,9 +31,9 @@ void driver(){
     Lift lift;
     while (confirmDriver()){
         //Run driver implementation here
-        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
+        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);//Runs chassis with left joystick values
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
-        lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));
+        lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));//Runs lift with right joystick values
         robot.driveH(y, x);
         if (mode == 3 && ctrPrimary.ButtonB.pressing()){
             break;//Option for quitting in test mode

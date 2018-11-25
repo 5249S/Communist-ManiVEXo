@@ -30,7 +30,7 @@ void driver(){
     DriveMethods robot;
     Lift lift;
     while (confirmDriver()){
-        robotMain.Screen.clearScreen();
+        robotMain.Screen.clearScreen();//Displays gyro and accelerometer values
         robotMain.Screen.setCursor(1,0);
         robotMain.Screen.print("Gyro: %d", gyroLauncher.value(vex::analogUnits::range12bit));
         robotMain.Screen.newLine();
@@ -40,9 +40,9 @@ void driver(){
         robotMain.Screen.newLine();
         robotMain.Screen.print("AccZ: %d", accelLauncherZ.value(vex::analogUnits::range12bit));
         //Run driver implementation here
-        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);
+        int y = ctrPrimary.Axis3.position(vex::percentUnits::pct);//Runs chassis off of left joystick values
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
-        lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));
+        lift.drive(ctrPrimary.Axis2.position(vex::percentUnits::pct));//Runs lift off of right joystic value
         robot.driveH(y, x);
         if (mode == 3 && ctrPrimary.ButtonB.pressing()){
             break;//Option for quitting in test mode
