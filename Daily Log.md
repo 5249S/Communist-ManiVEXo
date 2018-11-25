@@ -85,3 +85,12 @@ All significant changes made to the software for 5249S will be documented here
 ### November 15, 2018
 - Fixed tilt angle problem
 - Finished code for first test of targetting system
+### November 21, 2018
+- Began testing of Ball Launcher program
+### November 23, 2018
+- Successfully aimed ball launcher using targetting system
+- Began tuning PIDs for driving in auton
+### November 24, 2018
+- Created a PID for auto-aiming the ball launcher at flags
+- Wrote a basic auton for testing 
+- Wrote code for an indicator light targeting guide
