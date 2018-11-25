@@ -17,14 +17,15 @@ class Pid {
         float kP = 0.0;
         float kI = 0.0;
         float kD = 0.0;
-    
+        float prevDerivative = 0;
+        float derivative = 0;
         float pidCalc(float processVar){
             //This is a single calculation for one cycle of a PID calculator, run in while loop, put output into control system
             //Define variables
             float pidProportional = 0.0;
             float pidDerivative = 0.0;
             float pidError = 0.0;
-
+            prevDerivative = derivative;
             //Calculate Error
             pidError = setPoint - processVar;
 
@@ -33,7 +34,7 @@ class Pid {
             
             //Calculate Derivative
             pidDerivative = (pidError - prevError) * kD;
-
+            derivative = pidError - prevError;
             //Calculate Integral
             if (fabs((double)pidIntegral) < 50) {
                     pidIntegral += (pidError + prevError)/2;
@@ -51,29 +52,32 @@ class Pid {
             //return adjustment, new error, and pidIntegral
             return adjust;
         }
-        void resetPID(){
+        void reset(){
             pidIntegral = 0;
             prevError = 0;
+        }
+        void resetIntegral(){
+            pidIntegral = 0;
         }
 };
 class Launcher {
     public: 
         void launchAngle(bool up, bool down){
-            if (up){
-                mtrLauncherAngle.spin(vex::directionType::fwd, 50, vex::velocityUnits::pct);
+            if (up && getAccelTiltAngle() < 32){
+                mtrLauncherAngle.spin(vex::directionType::fwd, 30, vex::velocityUnits::pct);
             } else {
-                if(down){
-                    mtrLauncherAngle.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
+                if(down && getAccelTiltAngle() > 10){
+                    mtrLauncherAngle.spin(vex::directionType::rev, 30, vex::velocityUnits::pct);
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
                 }
             }
         }
         void launchAnglePower(int power){
-            if (power < 0){
+            if (power < 0  && getAccelTiltAngle() > 10){
                 mtrLauncherAngle.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
             } else {
-                if (power > 0){
+                if (power > 0 && getAccelTiltAngle() < 32){
                     mtrLauncherAngle.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
