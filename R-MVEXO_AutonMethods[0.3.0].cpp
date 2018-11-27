@@ -4,26 +4,11 @@
 /*                Auton Methods               */
 /*                Version 0.3.0               */
 /*--------------------------------------------*/
-void setLights(int lightCode){
-    if (lightCode > 6){
-        return;
-    }
-    int states[7] = {0, 1, 3, 12, 8, 6, 15};
-    int quotient = states[lightCode];
-    bool lights[4];
-    for (int i = 3; i >= 0; i--){
-        lights[i] = quotient%2 != 1;
-        quotient = (quotient-(quotient%2))/2;
-    }
-    redLightLeft.set(lights[0]);
-    greenLightLeft.set(lights[1]);
-    greenLightRight.set(lights[2]);
-    redLightRight.set(lights[3]);
-}
 RobotControl robot;
 Pid driveSpeedPID;
 Pid driveYawPID;
 Pid launchAnglePID;
+Pid visionHorizontalPID;
 bool driveToPoint(float endpoint, float yaw){
     driveSpeedPID.kP = 1;
     driveSpeedPID.kI = 4.35;
