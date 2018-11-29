@@ -94,3 +94,8 @@ All significant changes made to the software for 5249S will be documented here
 - Created a PID for auto-aiming the ball launcher at flags
 - Wrote a basic auton for testing 
 - Wrote code for an indicator light targeting guide
+### November 26, 2018
+- Created a horizontal alignment program for the targeting system
+### November 28, 2018
+- Fixed horizontal alignment program
+- Finalized 0.3.0
