@@ -60,9 +60,9 @@ class Pid {
             pidIntegral = 0;
         }
 };
-class Launcher {
+class Launcher {//Methods for controlling the ball launcher motors
     public: 
-        void launchAngle(bool up, bool down){
+        void launchAngle(bool up, bool down){//Run with boolean controls
             if (up && getAccelTiltAngle() < 32){
                 mtrLauncherAngle.spin(vex::directionType::fwd, 30, vex::velocityUnits::pct);
             } else {
@@ -73,7 +73,7 @@ class Launcher {
                 }
             }
         }
-        void launchAnglePower(int power){
+        void launchAnglePower(int power){//Run at specific power
             if (power < 0  && getAccelTiltAngle() > 10){
                 mtrLauncherAngle.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
             } else {
@@ -84,7 +84,7 @@ class Launcher {
                 }
             }
         }
-        void launchFire(bool power){
+        void launchFire(bool power){//Fire the ball launcher
             if (power){
                 mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
             } else {
@@ -92,9 +92,9 @@ class Launcher {
             }
         }
 };
-class Claw {
+class Claw {//Methods for running the claw
     public: 
-        void claw(bool up, bool down){
+        void claw(bool up, bool down){//Run with booleans
             if (up){
                 mtrClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
             } else {
@@ -105,7 +105,7 @@ class Claw {
                 }
             }
         }
-        void clawPower(int power){
+        void clawPower(int power){//Run at specific power
             if (power < 0){
                 mtrClaw.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
             } else {
@@ -118,9 +118,9 @@ class Claw {
             
         }
 };
-class Lift {
+class Lift {//Methods for running the lift
     public:
-        void lift(int power){
+        void lift(int power){//Run lift at specific power
             if (power < 0){
                 mtrLiftLeft.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
                 mtrLiftRight.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
@@ -194,6 +194,20 @@ class DriveMethods {
         }
     
 };
-class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher {
+class BallLift {//Methods for controlling the ball intake
+    public:
+    void liftBall(bool up, bool down){//Run with boolean values
+        if (up){
+            mtrBallLift.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+        } else {
+            if(down){
+                mtrBallLift.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+            } else {
+                mtrBallLift.stop(vex::brakeType::coast);
+            }
+        }
+    }
+};
+class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
     
 };
