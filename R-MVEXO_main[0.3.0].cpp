@@ -47,13 +47,13 @@ void runDiagnostics(){//Method for displaying any problems with the robot
     }
     warning[0][0] = robotMain.Battery.capacity() < 25;//Battery capacity < 25%
     warning[1][0] = robotMain.Battery.temperature() > 80; //Battery temperature > 80%
-    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 45; //Left Drive Motor Temp >70%
-    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) >45; //Right Drive Motor Temp >70%
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 45; //Left Lift Motor Temp >70%
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 45; //Right Lift Motor Temp >70%
-    warning[6][0] = mtrClaw.temperature(vex::percentUnits::pct) > 45; //Claw Motor Temp >70%
-    warning[7][0] = mtrLauncherAngle.temperature(vex::percentUnits::pct) >45; //Launcher Angle Motor Temp >70%
-    warning[8][0] = mtrLauncherFire.temperature(vex::percentUnits::pct) > 45; //Launcher Fire Motor Temp >70%
+    warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 45; //Left Drive Motor Temp >45%
+    warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) >45; //Right Drive Motor Temp >45%
+    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 45; //Left Lift Motor Temp >45%
+    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 45; //Right Lift Motor Temp >45%
+    warning[6][0] = mtrClaw.temperature(vex::percentUnits::pct) > 45; //Claw Motor Temp >45%
+    warning[7][0] = mtrLauncherAngle.temperature(vex::percentUnits::pct) >45; //Launcher Angle Motor Temp >45%
+    warning[8][0] = mtrLauncherFire.temperature(vex::percentUnits::pct) > 45; //Launcher Fire Motor Temp >45%
     warning[9][0] = false;
     
     //Checks if a value has changed and needs to be updated to comply with controller screen's slow update rate
@@ -66,7 +66,6 @@ void runDiagnostics(){//Method for displaying any problems with the robot
     }
     if (update) {//Display all warnings
         ctrPrimary.Screen.clearLine(2);
-        ctrPrimary.Screen.clearLine(3);
         ctrPrimary.Screen.setCursor(2,0);
         int cursor = 0;
         for (int i = 0; i < 10; i++){
@@ -78,7 +77,7 @@ void runDiagnostics(){//Method for displaying any problems with the robot
         }
     }
 }
-void clearDiagnostics(){
+void clearDiagnostics(){//Clears the diagnostic warnings
     for (int i = 0; i < 10;i++){
         warning[i][1] = false;
     }
@@ -96,12 +95,12 @@ class GyroSettings {//Class used to set gyros to specific values, as they can't 
             return reverse * (currentValue - gyroBias);
         }
 };
-void wait(int time){
+void wait(int time){//waits a number of milliseconds
     vex::task::sleep(time);
 }
 GyroSettings gyroNavSet;
 void calibrateGyros(){//Calibrates gyros
-    ctrPrimary.Screen.clearScreen();
+    ctrPrimary.Screen.clearScreen();//Display calibration message on the controller
     ctrPrimary.Screen.setCursor(1,0);
     ctrPrimary.Screen.print("Gyros Calibrating");
     ctrPrimary.Screen.newLine();
@@ -110,7 +109,7 @@ void calibrateGyros(){//Calibrates gyros
     ctrPrimary.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
     int timer = 0;
-    while(gyroNav.isCalibrating() || timer < 3000){//waits for both gyros to finish 
+    while(gyroNav.isCalibrating() || timer < 3000){//waits for both gyros to finish or three seconds have passed
         if (ctrPrimary.ButtonB.pressing()){
             break;//allows bypass
         }
@@ -129,6 +128,7 @@ void stopAllMotors(){//stops all motors on the robot
     mtrClaw.stop(vex::brakeType::coast);
     mtrLauncherAngle.stop(vex::brakeType::coast);
     mtrLauncherFire.stop(vex::brakeType::coast);
+	  mtrBallLift.stop(vex::brakeType::coast);
     clearDiagnostics();
 }
 bool isField(){//Method for checking if either field control device is connected
@@ -136,76 +136,76 @@ bool isField(){//Method for checking if either field control device is connected
 }
 class DisplaySelection {//Class created to hold and change the values needed to move the display up and down
         private: 
-            int maxLines = 3;
-            int topLine = 0;
-            int position = 0;
-            unsigned int max = 0;
+            int maxLines = 3;//Number of controller display lines
+            int topLine = 0;//Choice on the top line of the controller
+            int position = 0;//Position of the arrow
+            unsigned int max = 0;//Max number of choices
             bool selectionMade = false;
     
-            int getCurrent(){
+            int getCurrent(){//returns the option the arrow is on
                 return topLine + position;
             }
-            void moveDown(){
-                if (getCurrent() != max - 1){
-                    if (position == maxLines - 1){
+            void moveDown(){//Moves display down
+                if (getCurrent() != max - 1){//If the arrow is not at the last choice, move everything down
+                    if (position == maxLines - 1){//Move the options down if the arrow is at the bottom
                         topLine ++;
-                    } else {
+                    } else {//Move the arrow down otherwise
                         position ++;
                     }
-                } else {
+                } else {//If the arrow is at the last choice, return to the top
                     topLine = 0;
                     position = 0;
                 }
             }
-            void moveUp(){
-                if (getCurrent() != 0){
-                    if (position == 0){
+            void moveUp(){//Moves Display up
+                if (getCurrent() != 0){//If the arrow is at not at the first selection, move everything up
+                    if (position == 0){//move the options up if the arrow is at the top
                         topLine --;
-                    } else {
+                    } else {//Otherwise move the arrow up
                         position --;
                     }
-                } else {
+                } else {//If the arrow is at the first choice, go to the bottom
                     position = maxLines - 1;
                     topLine = max - maxLines;
                 }
             }
         public:
-            char text[8][32];
-            DisplaySelection(unsigned int maxOptions){
-                if (maxOptions < maxLines){
+            char text[8][32];//storage for text options
+            DisplaySelection(unsigned int maxOptions){//Constructor
+                if (maxOptions < maxLines){//Sets the maxlines to the option number in case there are less options that usable lines
                     maxLines = maxOptions;
                 }
-                max = maxOptions;
+                max = maxOptions;//Set the max number of options
             }
-            int select(){
+            int select(){//returns the chosen selection
                 while(true){//repeat update until a selection is chosen
                     if(ctrPrimary.ButtonA.pressing()){//Return the current number if a selection has been made
                         while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}
                         return getCurrent();
                     }
-                    if(ctrPrimary.ButtonUp.pressing()){
+                    if(ctrPrimary.ButtonUp.pressing()){//Move up if up button is pressed
                         moveUp();
                     } 
-                    if(ctrPrimary.ButtonDown.pressing()){
+                    if(ctrPrimary.ButtonDown.pressing()){//Move down if down button is pressed
                         moveDown();
                     }
-                    ctrPrimary.Screen.clearScreen();
-                    for (int i=0; i < maxLines; i++){
-                        ctrPrimary.Screen.setCursor(i+1,3);
+                    ctrPrimary.Screen.clearScreen();//clears the screen
+                    for (int i=0; i < maxLines; i++){//Displays lines of text based on instance variables
+                        ctrPrimary.Screen.setCursor(i+1,3);//
                         ctrPrimary.Screen.print("%s", text[i + topLine]);
                     }
                     ctrPrimary.Screen.setCursor(position+1,0);
-                    ctrPrimary.Screen.print("->");
+                    ctrPrimary.Screen.print("->");//Print the arrow at the position
                     while(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing()){wait(20);}//wait for all buttons to be released
-                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){
-                        if (isField()){
+                    while(!(ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonUp.pressing() || ctrPrimary.ButtonDown.pressing())){//Waits for a button to be pressed to prevent controller lag
+                        if (isField()){//If the robot is connected to the field, display message to remove the cable
                             ctrPrimary.Screen.clearScreen();
                             ctrPrimary.Screen.setCursor(1,0);
                             ctrPrimary.Screen.print("Remove Field Cable");
-                            while (isField()){
+                            while (isField()){//Wait for field cable to be removed
                                 wait(20);
                             }
-                            break;
+                            break;//Break the loop to redisplay the options
                         }
                         wait(20);
                     }
@@ -273,7 +273,7 @@ int main() {
             colorSelect();//select team color
             int autonMode = selectAutonomous();//select auton to run
             while(true){//loop for competition
-                if (!isField()){
+                if (!isField()){//Waits for the user to connect to the field after selections are made
                     ctrPrimary.Screen.clearScreen();
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.print("Connect to Field");
@@ -284,7 +284,7 @@ int main() {
                         break;
                     }
                 }
-                while(!compControl.isEnabled()){//While disabled, user has option to close field control 
+                while(!compControl.isEnabled()){//Wait while the robot is disabled
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.clearLine();
                     ctrPrimary.Screen.print("FC-Disabled");
@@ -295,7 +295,7 @@ int main() {
                         auton(autonMode);
                         while(compControl.isEnabled() && compControl.isAutonomous() && isField()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
-                if(compControl.isEnabled() && compControl.isDriverControl()){//runs driver control when enabled and autonomous
+                if(compControl.isEnabled() && compControl.isDriverControl()){//runs driver control when enabled and driver control
                     driver();
                     while(compControl.isEnabled() && compControl.isDriverControl() && isField()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
@@ -319,17 +319,17 @@ int main() {
                         break;
                     }
                 }
-                while(!compControl.isEnabled()){//While disabled, user has option to close field control 
+                while(!compControl.isEnabled()){//Waits while robot is disabled
                     ctrPrimary.Screen.setCursor(1,0);
                     ctrPrimary.Screen.clearLine();
                     ctrPrimary.Screen.print("SK-Disabled");
                     while(!compControl.isEnabled()){wait(20);}
                 }
-                if(compControl.isEnabled() && compControl.isAutonomous()){
+                if(compControl.isEnabled() && compControl.isAutonomous()){//runs auton when enabled and autonomous
                         auton(autonMode);
                         while(compControl.isEnabled() && compControl.isAutonomous() && isField()){wait(20);}//Waits for auton to end (50 Hertz)
                 }
-                if(compControl.isEnabled() && compControl.isDriverControl()){
+                if(compControl.isEnabled() && compControl.isDriverControl()){//runs driver control when driver control
                     driver();
                     while(compControl.isEnabled() && compControl.isDriverControl() && isField()){wait(20);}//Waits for driver control to end (50 Hertz)
                 }
@@ -354,7 +354,7 @@ int main() {
                 while(ctrPrimary.ButtonA.pressing()){wait(20);}
                 calibrateGyros();
                 int selection = selectAutonomous();
-                if(selection == 0){
+                if(selection == 0){//exits if auton 1 is selected
                     break;
                 }
                 colorSelect();//select color
@@ -363,13 +363,13 @@ int main() {
                 while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
             }
         }
-        if(mode == 3){
+        if(mode == 3){//Runs driver control
             calibrateGyros();
             driver();
             stopAllMotors();
             while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
         }
-        if(mode == 4){
+        if(mode == 4){//Exits program
             return 0;
         }
     }
