@@ -17,9 +17,11 @@ void auton(int autonMode){
         int process = 0; //variable to control where in the auton you are
         mtrDriveLeft.resetRotation();
         mtrDriveRight.resetRotation();
+        mtrClaw.resetRotation();
         driveYawPID.reset();
         driveSpeedPID.reset();
-        while (confirmAuton() && process < 3){//Set process number to last process
+        mtrLauncherFire.resetRotation();
+        while (confirmAuton() && process < 4){//Set process number to last process
             //Run auton implementation here
             
             /*if (driveSpeedPID.prevDerivative < 0 && driveSpeedPID.derivative >= 0){
@@ -27,8 +29,19 @@ void auton(int autonMode){
                 robotMain.Screen.print("%d", clock);
                 clock = 0;
             }*/
+            targetSystem.scanForFlags();
+            double angle = targetSystem.targetSpecificFlag();
+            if (angle != -1){
+                if(setLauncherToAngle(angle) < 1){
+                    robotMain.Screen.clearScreen();
+                    robotMain.Screen.setCursor(1,0);
+                    robotMain.Screen.print("%f", getAccelTiltAngle());
+                }
+            } else {
+                mtrLauncherAngle.stop(vex::brakeType::hold);
+            }
             if(process == 0){//Process 0
-                if (driveToPoint(360, 0)){//Wait until the robot drives 360 degrees
+                if (driveToPoint(-80, 0)){//Wait until the robot drives 360 degrees
                     mtrDriveLeft.resetRotation();//Reset motors
                     mtrDriveRight.resetRotation();
                     driveYawPID.reset();
@@ -38,28 +51,31 @@ void auton(int autonMode){
                 }
             };
             if(process == 1){//Process 1
-                if (pointTurn(-650)){//Wait until the robot turns 90 degrees to the left
+                if (mtrClaw.rotation(vex::rotationUnits::deg) > -500){//Wait until the robot turns 90 degrees to the left
+                    mtrClaw.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
+                } else {
                     mtrDriveLeft.resetRotation();//Reset motors
                     mtrDriveRight.resetRotation();
                     driveYawPID.reset();
                     driveSpeedPID.reset();
                     stopAllMotors();
                     process++;//go to process 2
-                    wait(150);//Wait 150 mSec
                 }
             }
             if (process == 2){//Process 2
-                if (driveToPoint(360, -900)){//Wait until the robot drives 360 degrees forward
+                if (clock > 1000){//Wait until the robot drives 360 degrees forward
                     process++;//go to process 3
                 }
-                robotMain.Screen.clearScreen();
-                robotMain.Screen.setCursor(1,0);
-                robotMain.Screen.print("Gyro: %d", gyroNav.value(vex::analogUnits::range12bit));
-                robotMain.Screen.newLine();
+            }
+            if (process == 3){
+                if (mtrLauncherFire.rotation(vex::rotationUnits::deg) < 1080){
+                    mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+                } else {
+                    process ++;
+                }
             }
             runDiagnostics();//display warnings
             wait(20);//run at 50 Hz
-            clock ++;
         }
     }
     if (autonMode == 2){//Aligns ball launcher
@@ -93,7 +109,6 @@ void driver(){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(0,0);
     ctrPrimary.Screen.print("Party Time");//Party Time
-    BallLauncher targetSystem;
     bool autoTarget = false;
     bool waitForReleaseA = false;
     ctrPrimary.Screen.setCursor(3,0);
@@ -124,6 +139,8 @@ void driver(){
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
                 }
+            } else {
+                robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());//Angle launcher manually
             }
             if (ctrPrimary.ButtonLeft.pressing()){//Run the chassis on limited controls
                 robot.driveH(0,-30);
@@ -131,7 +148,8 @@ void driver(){
                 if (ctrPrimary.ButtonRight.pressing()){
                     robot.driveH(0,30);
                 } else {
-                    horizontalAlignFlag(targetSystem.closestPositionX);
+                    //horizontalAlignFlag(targetSystem.closestPositionX);
+                    robot.driveH(0,0);
                 }
             }
         } else {
@@ -139,8 +157,9 @@ void driver(){
             int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
             robot.lift(ctrPrimary.Axis2.position(vex::percentUnits::pct));
             robot.driveH(y, x);
+            robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());//Angle launcher manually
         }
-        robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());//Angle launcher manually
+        
         robot.liftBall(ctrPrimary.ButtonUp.pressing(), ctrPrimary.ButtonDown.pressing());//Ball Lift
         robot.launchFire(ctrPrimary.ButtonX.pressing());//Fire the launcher
         robot.claw(ctrPrimary.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing());//Run the claw
