@@ -10,6 +10,7 @@ Pid driveSpeedPID;
 Pid driveYawPID;
 Pid launchAnglePID;
 Pid visionHorizontalPID;
+BallLauncher targetSystem;
 bool driveToPoint(float endpoint, float yaw){//Drives to a specific distance in a certain direction
     driveSpeedPID.kP = 1;//Set gains for both pids
     driveSpeedPID.kI = 4.35;
@@ -87,7 +88,7 @@ void horizontalAlignFlag(int position){//Aligns the launcher horizontally
     visionHorizontalPID.kI = 0;
     visionHorizontalPID.kD = 1.7;
     visionHorizontalPID.setPoint = 140;//Set setpoint
-    int speed = (int)visionHorizontalPID.pidCalc((float)position);//Calculate correction
+    int speed = -(int)visionHorizontalPID.pidCalc((float)position);//Calculate correction
     //Limit speed in both directions
     if (speed > maxSpeed){
         speed = maxSpeed;
