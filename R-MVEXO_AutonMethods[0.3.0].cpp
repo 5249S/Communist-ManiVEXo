@@ -15,9 +15,9 @@ bool driveToPoint(float endpoint, float yaw){//Drives to a specific distance in 
     driveSpeedPID.kP = 1;//Set gains for both pids
     driveSpeedPID.kI = 4.35;
     driveSpeedPID.kD = 0.153;
-    driveYawPID.kP = 0.7;
+    driveYawPID.kP = 0;
     driveYawPID.kI = 0;
-    driveYawPID.kD = 0.3;
+    driveYawPID.kD = 0;
     const int maxSpeed = 100;//Set motor power limit
     driveSpeedPID.setPoint = endpoint;//Set the setpoints of the pids
     driveYawPID.setPoint = yaw;
