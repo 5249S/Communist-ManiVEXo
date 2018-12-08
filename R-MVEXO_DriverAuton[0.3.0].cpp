@@ -51,7 +51,7 @@ void auton(int autonMode){
                 }
             };
             if(process == 1){//Process 1
-                if (mtrClaw.rotation(vex::rotationUnits::deg) > -500){//Wait until the robot turns 90 degrees to the left
+                if (mtrClaw.rotation(vex::rotationUnits::deg) > -540){//Wait until the robot turns 90 degrees to the left
                     mtrClaw.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
                 } else {
                     mtrDriveLeft.resetRotation();//Reset motors
@@ -65,15 +65,20 @@ void auton(int autonMode){
             if (process == 2){//Process 2
                 if (clock > 1000){//Wait until the robot drives 360 degrees forward
                     process++;//go to process 3
+                    clock = 0;
+                }
+                else {
+                    clock += 20;
                 }
             }
             if (process == 3){
-                if (mtrLauncherFire.rotation(vex::rotationUnits::deg) < 1080){
+                if (clock < 2000){
                     mtrLauncherFire.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
                 } else {
                     process ++;
                 }
-            }
+                clock += 20;
+                }
             runDiagnostics();//display warnings
             wait(20);//run at 50 Hz
         }
@@ -160,9 +165,9 @@ void driver(){
             robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());//Angle launcher manually
         }
         
-        robot.liftBall(ctrPrimary.ButtonUp.pressing(), ctrPrimary.ButtonDown.pressing());//Ball Lift
+        robot.liftBall(ctrPrimary.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing());//Ball Lift
         robot.launchFire(ctrPrimary.ButtonX.pressing());//Fire the launcher
-        robot.claw(ctrPrimary.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing());//Run the claw
+        robot.claw(ctrPrimary.ButtonUp.pressing(), ctrPrimary.ButtonDown.pressing());//Run the claw
         runDiagnostics();//Check for warnings and display
         robotMain.Screen.clearScreen();//Display the gyros value on the processor
         robotMain.Screen.setCursor(1,0);
