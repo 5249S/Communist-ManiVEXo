@@ -11,7 +11,7 @@ vex::motor mtrLiftRight = vex::motor(vex::PORT8);
 vex::motor mtrClaw = vex::motor(vex::PORT4, true);
 vex::motor mtrLauncherAngle = vex::motor(vex::PORT5);
 vex::motor mtrLauncherFire = vex::motor(vex::PORT11);
-vex::motor mtrBallLift = vex::motor(vex::PORT6);
+vex::motor mtrBallLift = vex::motor(vex::PORT6, true);
 
 vex::vision::signature SIG_FLAG_RED (1, 7079, 7977, 7528, 409, 1415, 912, 8.199999809265137, 0);
 vex::vision::signature SIG_FLAG_BLUE (2, -4121, -3129, -3625, 13045, 15237, 14141, 9.300000190734863, 0);
