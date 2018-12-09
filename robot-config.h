@@ -21,12 +21,12 @@ vex::vision::signature SIG_5 (5, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision::signature SIG_6 (6, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision::signature SIG_7 (7, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision visLauncher (vex::PORT7, 61, SIG_FLAG_RED, SIG_FLAG_BLUE, SIG_3, SIG_4, SIG_5, SIG_6, SIG_7);
-vex::gyro gyroNav = vex::gyro(robotMain.ThreeWirePort.A);
 
 vex::accelerometer accelLauncherX = vex::accelerometer(robotMain.ThreeWirePort.B);
 vex::accelerometer accelLauncherY = vex::accelerometer(robotMain.ThreeWirePort.C);
 vex::accelerometer accelLauncherZ = vex::accelerometer(robotMain.ThreeWirePort.D);
-vex::digital_out redLightLeft = vex::digital_out(robotMain.ThreeWirePort.E);
-vex::digital_out greenLightLeft = vex::digital_out(robotMain.ThreeWirePort.F);
-vex::digital_out greenLightRight = vex::digital_out(robotMain.ThreeWirePort.G);
+
+vex::gyro gyroNav = vex::gyro(robotMain.ThreeWirePort.E);
+vex::accelerometer accelNavX = vex::accelerometer(robotMain.ThreeWirePort.F);
+vex::accelerometer accelNavY = vex::accelerometer(robotMain.ThreeWirePort.G);
 vex::digital_out redLightRight = vex::digital_out(robotMain.ThreeWirePort.H);
