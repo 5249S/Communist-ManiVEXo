@@ -219,36 +219,47 @@ class Navigation {
         double prevAccelY = 0;
         double prevVelocityX = 0;
         double prevVelocityY = 0;
-        const double toRad = 3.14159265/1800;
+        const double toRad = 3.14159265/1800;//Converts gyro value to angle in radians
         double getAccelXValue(){
             double accelOffsetX = 0;
             double analogPerGX = 0;
-            return ((double)accelNavX.value() - accelOffsetX)/analogPerGX * 9.8;
+            return ((double)accelNavX.value(vex::analogUnits::range12Bit) - accelOffsetX)/analogPerGX * 9.8;
         }
         double getAccelYValue(){
             double accelOffsetY = 0;
             double analogPerGY = 0;
-            return ((double)accelNavY.value() - accelOffsetY)/analogPerGY * 9.8;
+            return ((double)accelNavY.value(vex::analogUnits::range12Bit) - accelOffsetY)/analogPerGY * 9.8;
         }
     public:
-        double getXPosition(){
-            return positionX;
-        }
-        double getYPosition(){
-            return positionY;
-        }
-        void calculatePositions(int time){
-            accelX = getAccelXValue();
-            accelY = getAccelYValue();
-            velocityX += (accelX + prevAccelX) * (time/1000) / 2;
+        struct CurrentPosition {
+            double position[2];
+            double velocity[2];
+            double acceleration[2];
+            int yaw;
+        };
+        CurrentPosition calculatePositions(int time){
+            CurrentPosition returnPos;
+            returnPos.yaw = gyroNav.value(vex::analogUnits::range12Bit);//Get angle the robot is heading
+            double accelerometerX = getAccelXValue();//Get the accelerometer values on both axes in meters/second^2
+            double accelerometerY = getAccelYValue();
+            double accelX = accelerometerX * cos(returnPos.yaw * toRad) + accelerometerY * sin(returnPos.yaw * toRad);//Using the angle, calculate the robot's velocity in each direction
+            double accelY = accelerometerX * sin(returnPos.yaw * toRad) - accelerometerY * cos(returnPos.yaw * toRad);
+            velocityX += (accelX + prevAccelX) * (time/1000) / 2;//Integrate the acceleration to get the velocity on each axis
             velocityY += (accelY + prevAccelY) * (time/1000) / 2;
-            positionX += (velocityX + prevVelocityX) * (time/1000) / 2;
+            positionX += (velocityX + prevVelocityX) * (time/1000) / 2;//Integrate the velocity to get the position on each axis
             positionY += (velocityY + prevVelocityY) * (time/1000) / 2;
+            returnPos.position[0] = positionX;
+            returnPos.position[1] = positionY;
+            returnPos.velocity[0] = velocityX;
+            returnPos.velocity[1] = velocityY;
+            returnPos.acceleration[0] = accelX;
+            returnPos.acceleration[1] = accelY;
             
             prevAccelX = accelX;
             prevAccelY = accelY;
             prevVelocityX = velocityX;
             prevVelocityY = velocityY;
+            return returnPos;
         }
 }
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
