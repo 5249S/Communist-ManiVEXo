@@ -221,13 +221,34 @@ class Navigation {
         double prevVelocityY = 0;
         const double toRad = 3.14159265/1800;
         double getAccelXValue(){
-            accelOffsetX = 0;
-            analogUnitsPerGX = 0;
-            analogAccelX = 
+            double accelOffsetX = 0;
+            double analogPerGX = 0;
+            return ((double)accelNavX.value() - accelOffsetX)/analogPerGX * 9.8;
         }
         double getAccelYValue(){
-            accelOffsetY = 0;
-            analogUnitsPerGY = 0;
+            double accelOffsetY = 0;
+            double analogPerGY = 0;
+            return ((double)accelNavY.value() - accelOffsetY)/analogPerGY * 9.8;
+        }
+    public:
+        double getXPosition(){
+            return positionX;
+        }
+        double getYPosition(){
+            return positionY;
+        }
+        void calculatePositions(int time){
+            accelX = getAccelXValue();
+            accelY = getAccelYValue();
+            velocityX += (accelX + prevAccelX) * (time/1000) / 2;
+            velocityY += (accelY + prevAccelY) * (time/1000) / 2;
+            positionX += (velocityX + prevVelocityX) * (time/1000) / 2;
+            positionY += (velocityY + prevVelocityY) * (time/1000) / 2;
+            
+            prevAccelX = accelX;
+            prevAccelY = accelY;
+            prevVelocityX = velocityX;
+            prevVelocityY = velocityY;
         }
 }
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
