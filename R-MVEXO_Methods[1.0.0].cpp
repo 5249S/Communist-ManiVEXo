@@ -208,6 +208,28 @@ class BallLift {//Methods for controlling the ball intake
         }
     }
 };
+class Navigation {
+    private:
+        double positionX = 0;
+        double positionY = 0;
+        double velocityX = 0;
+        double velocityY = 0;
+    
+        double prevAccelX = 0;
+        double prevAccelY = 0;
+        double prevVelocityX = 0;
+        double prevVelocityY = 0;
+        const double toRad = 3.14159265/1800;
+        double getAccelXValue(){
+            accelOffsetX = 0;
+            analogUnitsPerGX = 0;
+            analogAccelX = 
+        }
+        double getAccelYValue(){
+            accelOffsetY = 0;
+            analogUnitsPerGY = 0;
+        }
+}
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
     
 };
