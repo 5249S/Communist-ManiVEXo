@@ -261,6 +261,17 @@ class Navigation {
             prevVelocityY = velocityY;
             return returnPos;
         }
+        CurrentPosition getCurrentPosition(){
+            CurrentPosition returnPos;
+            returnPos.yaw = gyroNav.value(vex::analogUnits::range12Bit);//Get angle the robot is heading
+            returnPos.position[0] = positionX;
+            returnPos.position[1] = positionY;
+            returnPos.velocity[0] = velocityX;
+            returnPos.velocity[1] = velocityY;
+            returnPos.acceleration[0] = prevAccelX;
+            returnPos.acceleration[1] = prevAccelY;
+            return returnPos;
+        }
 }
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
     
