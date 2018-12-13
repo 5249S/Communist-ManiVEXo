@@ -304,6 +304,7 @@ int main() {
             stopAllMotors();
         }
         if(mode == 1){//Skills mode- same as field control, except no color selection
+	    calibrateGyros();
             colorRed = true;
             int autonMode = selectAutonomous();
             ctrPrimary.Screen.clearScreen();
