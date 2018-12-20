@@ -223,12 +223,12 @@ class Navigation {
         double getAccelXValue(){
             double accelOffsetX = 0;
             double analogPerGX = 0;
-            return ((double)accelNavX.value(vex::analogUnits::range12Bit) - accelOffsetX)/analogPerGX * 9.8;
+            return ((double)accelNavX.value(vex::analogUnits::range12bit) - accelOffsetX)/analogPerGX * 9.8;
         }
         double getAccelYValue(){
             double accelOffsetY = 0;
             double analogPerGY = 0;
-            return ((double)accelNavY.value(vex::analogUnits::range12Bit) - accelOffsetY)/analogPerGY * 9.8;
+            return ((double)accelNavY.value(vex::analogUnits::range12bit) - accelOffsetY)/analogPerGY * 9.8;
         }
     public:
         struct CurrentPosition {
@@ -239,7 +239,7 @@ class Navigation {
         };
         CurrentPosition calculatePositions(int time){
             CurrentPosition returnPos;
-            returnPos.yaw = gyroNav.value(vex::analogUnits::range12Bit);//Get angle the robot is heading
+            returnPos.yaw = gyroNav.value(vex::analogUnits::range12bit);//Get angle the robot is heading
             double accelerometerX = getAccelXValue();//Get the accelerometer values on both axes in meters/second^2
             double accelerometerY = getAccelYValue();
             double accelX = accelerometerX * cos(returnPos.yaw * toRad) + accelerometerY * sin(returnPos.yaw * toRad);//Using the angle, calculate the robot's velocity in each direction
@@ -263,7 +263,7 @@ class Navigation {
         }
         CurrentPosition getCurrentPosition(){
             CurrentPosition returnPos;
-            returnPos.yaw = gyroNav.value(vex::analogUnits::range12Bit);//Get angle the robot is heading
+            returnPos.yaw = gyroNav.value(vex::analogUnits::range12bit);//Get angle the robot is heading
             returnPos.position[0] = positionX;
             returnPos.position[1] = positionY;
             returnPos.velocity[0] = velocityX;
@@ -272,7 +272,7 @@ class Navigation {
             returnPos.acceleration[1] = prevAccelY;
             return returnPos;
         }
-}
+};
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
     
 };
