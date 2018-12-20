@@ -23,9 +23,9 @@ double driveToLocation(int driveMode, double x, double y){//Modes: 0 for turning
     const double toDeg = 180/3.14159265;
     int speed = 0;
     int turn = 0;
-    Navigation::CurrentPosition positionInfo = positionTracker.calculatePosition(10);
+    Navigation::CurrentPosition positionInfo = positionTracker.calculatePositions(10);
     double distanceX = x - positionInfo.position[0];
-    double distanceX = y - positionInfo.position[1];
+    double distanceY = y - positionInfo.position[1];
     double distance = sqrt(pow(distanceX, 2) + pow(distanceY, 2));
     double currentAngle = -(double)positionInfo.yaw/10;
     double requiredAngle = toDeg * atan(distanceY/distanceX) + distanceX > 0?0:180;
@@ -43,7 +43,7 @@ double driveToLocation(int driveMode, double x, double y){//Modes: 0 for turning
             requiredAngle -= 180;
         }
         driveYawPID.setPoint = requiredAngle;
-        turn = (int)driveYaw.PID.pidCalc(currentAngle);
+        turn = (int)driveYawPID.pidCalc(currentAngle);
     } else {
         turn = 0;
     }
