@@ -63,7 +63,7 @@ class Pid {
 class Launcher {//Methods for controlling the ball launcher motors
     public: 
         void launchAngle(bool up, bool down){//Run with boolean controls
-            if (up && getAccelTiltAngle() < 32){
+            if (up && getAccelTiltAngle() < 28){
                 mtrLauncherAngle.spin(vex::directionType::fwd, 30, vex::velocityUnits::pct);
             } else {
                 if(down && getAccelTiltAngle() > 10){
@@ -77,7 +77,7 @@ class Launcher {//Methods for controlling the ball launcher motors
             if (power < 0  && getAccelTiltAngle() > 10){
                 mtrLauncherAngle.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
             } else {
-                if (power > 0 && getAccelTiltAngle() < 32){
+                if (power > 0 && getAccelTiltAngle() < 28){
                     mtrLauncherAngle.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
@@ -117,6 +117,9 @@ class Claw {//Methods for running the claw
             }
             
         }
+        void flipClaw(bool flipped){
+            mtrClaw.startRotateTo(flipped?0:180, vex::rotationUnits::deg, 30, vex::velocityUnits::pct);
+        }
 };
 class Lift {//Methods for running the lift
     public:
@@ -131,6 +134,14 @@ class Lift {//Methods for running the lift
                 mtrLiftLeft.stop(vex::brakeType::hold);
                 mtrLiftRight.stop(vex::brakeType::hold);
             }
+        }
+        void setLiftLevel(int level){
+            const double levels[6] = {0, 100, 420, 550, 614, 740};
+            if (level > 5){
+                return;
+            }
+            mtrLiftLeft.startRotateTo(levels[level], vex::rotationUnits::deg, 30, vex::velocityUnits::pct);
+            mtrLiftRight.startRotateTo(levels[level], vex::rotationUnits::deg, 30, vex::velocityUnits::pct);
         }
 };
 class DriveMethods {
@@ -207,71 +218,6 @@ class BallLift {//Methods for controlling the ball intake
             }
         }
     }
-};
-class Navigation {
-    private:
-        double positionX = 0;
-        double positionY = 0;
-        double velocityX = 0;
-        double velocityY = 0;
-    
-        double prevAccelX = 0;
-        double prevAccelY = 0;
-        double prevVelocityX = 0;
-        double prevVelocityY = 0;
-        const double toRad = 3.14159265/1800;//Converts gyro value to angle in radians
-        double getAccelXValue(){
-            double accelOffsetX = 0;
-            double analogPerGX = 0;
-            return ((double)accelNavX.value(vex::analogUnits::range12bit) - accelOffsetX)/analogPerGX * 9.8;
-        }
-        double getAccelYValue(){
-            double accelOffsetY = 0;
-            double analogPerGY = 0;
-            return ((double)accelNavY.value(vex::analogUnits::range12bit) - accelOffsetY)/analogPerGY * 9.8;
-        }
-    public:
-        struct CurrentPosition {
-            double position[2];
-            double velocity[2];
-            double acceleration[2];
-            int yaw;
-        };
-        CurrentPosition calculatePositions(int time){
-            CurrentPosition returnPos;
-            returnPos.yaw = gyroNav.value(vex::analogUnits::range12bit);//Get angle the robot is heading
-            double accelerometerX = getAccelXValue();//Get the accelerometer values on both axes in meters/second^2
-            double accelerometerY = getAccelYValue();
-            double accelX = accelerometerX * cos(returnPos.yaw * toRad) + accelerometerY * sin(returnPos.yaw * toRad);//Using the angle, calculate the robot's velocity in each direction
-            double accelY = accelerometerX * sin(returnPos.yaw * toRad) - accelerometerY * cos(returnPos.yaw * toRad);
-            velocityX += (accelX + prevAccelX) * (time/1000) / 2;//Integrate the acceleration to get the velocity on each axis
-            velocityY += (accelY + prevAccelY) * (time/1000) / 2;
-            positionX += (velocityX + prevVelocityX) * (time/1000) / 2;//Integrate the velocity to get the position on each axis
-            positionY += (velocityY + prevVelocityY) * (time/1000) / 2;
-            returnPos.position[0] = positionX;
-            returnPos.position[1] = positionY;
-            returnPos.velocity[0] = velocityX;
-            returnPos.velocity[1] = velocityY;
-            returnPos.acceleration[0] = accelX;
-            returnPos.acceleration[1] = accelY;
-            
-            prevAccelX = accelX;
-            prevAccelY = accelY;
-            prevVelocityX = velocityX;
-            prevVelocityY = velocityY;
-            return returnPos;
-        }
-        CurrentPosition getCurrentPosition(){
-            CurrentPosition returnPos;
-            returnPos.yaw = gyroNav.value(vex::analogUnits::range12bit);//Get angle the robot is heading
-            returnPos.position[0] = positionX;
-            returnPos.position[1] = positionY;
-            returnPos.velocity[0] = velocityX;
-            returnPos.velocity[1] = velocityY;
-            returnPos.acceleration[0] = prevAccelX;
-            returnPos.acceleration[1] = prevAccelY;
-            return returnPos;
-        }
 };
 class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
     
