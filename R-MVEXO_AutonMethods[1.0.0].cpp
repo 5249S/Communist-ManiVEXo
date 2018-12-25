@@ -11,73 +11,6 @@ Pid driveYawPID;
 Pid launchAnglePID;
 Pid visionHorizontalPID;
 BallLauncher targetSystem;
-Navigation positionTracker;
-double driveToLocation(int driveMode, double x, double y){//Modes: 0 for turning, 1 for driving and turning, 2 for driving
-    driveSpeedPID.kP = 0;//Set gains for both pids
-    driveSpeedPID.kI = 0;
-    driveSpeedPID.kD = 0;
-    driveYawPID.kP = 0;
-    driveYawPID.kI = 0;
-    driveYawPID.kD = 0;
-    const int maxSpeed = 100;
-    const double toDeg = 180/3.14159265;
-    int speed = 0;
-    int turn = 0;
-    Navigation::CurrentPosition positionInfo = positionTracker.calculatePositions(10);
-    double distanceX = x - positionInfo.position[0];
-    double distanceY = y - positionInfo.position[1];
-    double distance = sqrt(pow(distanceX, 2) + pow(distanceY, 2));
-    double currentAngle = -(double)positionInfo.yaw/10;
-    double requiredAngle = toDeg * atan(distanceY/distanceX) + distanceX > 0?0:180;
-    if (driveMode == 0 || driveMode == 1){
-        if (currentAngle < 0){
-            currentAngle += 360;
-        }
-        if (requiredAngle < 0){
-            requiredAngle += 360;
-        }
-        if (requiredAngle - currentAngle < -180){
-            currentAngle -= 180;
-        }
-        if (requiredAngle - currentAngle > 180){
-            requiredAngle -= 180;
-        }
-        driveYawPID.setPoint = requiredAngle;
-        turn = (int)driveYawPID.pidCalc(currentAngle);
-    } else {
-        turn = 0;
-    }
-    if (driveMode == 1 || driveMode == 2){
-        driveSpeedPID.setPoint = 0;
-        speed = (int)driveSpeedPID.pidCalc(distance);
-    } else {
-        speed = 0;
-    }
-    if (speed > maxSpeed){
-        speed = maxSpeed;
-        driveSpeedPID.resetIntegral();
-    }
-    if (speed < -maxSpeed){
-        speed = -maxSpeed;
-        driveSpeedPID.resetIntegral();
-    }
-    if (turn > maxSpeed){
-        turn = maxSpeed;
-        driveYawPID.resetIntegral();
-    }
-    if (turn < -maxSpeed){
-        turn = -maxSpeed;
-        driveYawPID.resetIntegral();
-    }
-    robot.driveH(speed, turn);//Drive the chassis
-    if (driveMode == 0){
-        return fabs(requiredAngle - currentAngle);
-    }
-    if (driveMode == 1 || driveMode == 2){
-        return distance;
-    }
-    return 0;
-}
 bool driveToPoint(float endpoint, float yaw){//Drives to a specific distance in a certain direction
     driveSpeedPID.kP = 1;//Set gains for both pids
     driveSpeedPID.kI = 4.35;
@@ -166,4 +99,18 @@ void horizontalAlignFlag(int position){//Aligns the launcher horizontally
         visionHorizontalPID.resetIntegral();
     }
     robot.driveH(0, speed);//Power chassis
+}
+void driveForward(double tiles, double velocity){
+    double leftRotation = mtrDriveLeft.rotation(vex::rotationUnits::deg) + tiles * 652;
+    double rightRotation = mtrDriveRight.rotation(vex::rotationUnits::deg) + tiles * 652;
+    mtrDriveLeft.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+    mtrDriveRight.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+}
+void driveTurn(double degrees, double velocity){
+    double currentHeading = (mtrDriveLeft.rotation(vex::rotationUnits::deg)-mtrDriveRight.rotation(vex::rotationUnits::deg)) * 90/684;
+    double headingChange = degrees - currentHeading;
+    double leftRotation = mtrDriveLeft.rotation(vex::rotationUnits::deg) + headingChange * 342/90;
+    double rightRotation = mtrDriveLeft.rotation(vex::rotationUnits::deg) - headingChange * 342/90;
+    mtrDriveLeft.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+    mtrDriveRight.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
 }
