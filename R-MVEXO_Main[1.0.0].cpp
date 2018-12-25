@@ -131,6 +131,16 @@ void stopAllMotors(){//stops all motors on the robot
 	  mtrBallLift.stop(vex::brakeType::coast);
     clearDiagnostics();
 }
+void clearMotorRotations(){
+    mtrDriveLeft.resetRotation();
+    mtrDriveRight.resetRotation();
+    mtrLiftLeft.resetRotation();
+    mtrLiftRight.resetRotation();
+    mtrClaw.resetRotation();
+    mtrLauncherAngle.resetRotation();
+    mtrLauncherFire.resetRotation();
+    mtrBallLift.resetRotation();
+}
 bool isField(){//Method for checking if either field control device is connected
     return compControl.isCompetitionSwitch() || compControl.isFieldControl();
 }
@@ -270,6 +280,7 @@ int main() {
         mode = selectMode.select();
         if(mode == 0){//Field control was selected
             calibrateGyros();//Calibrate gyro sensors
+            clearMotorRotations();
             colorSelect();//select team color
             int autonMode = selectAutonomous();//select auton to run
             while(true){//loop for competition
@@ -304,7 +315,8 @@ int main() {
             stopAllMotors();
         }
         if(mode == 1){//Skills mode- same as field control, except no color selection
-	    calibrateGyros();
+	        calibrateGyros();
+            clearMotorRotations();
             colorRed = true;
             int autonMode = selectAutonomous();
             ctrPrimary.Screen.clearScreen();
@@ -354,6 +366,7 @@ int main() {
                 }
                 while(ctrPrimary.ButtonA.pressing()){wait(20);}
                 calibrateGyros();
+                clearMotorRotations();
                 int selection = selectAutonomous();
                 if(selection == 0){//exits if auton 1 is selected
                     break;
@@ -366,6 +379,7 @@ int main() {
         }
         if(mode == 3){//Runs driver control
             calibrateGyros();
+            clearMotorRotations();
             driver();
             stopAllMotors();
             while(ctrPrimary.ButtonB.pressing()){wait(20);}//wait for exit button to be released
