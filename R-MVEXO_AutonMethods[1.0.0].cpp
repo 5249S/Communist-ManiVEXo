@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
 /*                Auton Methods               */
-/*                Version 0.3.0               */
+/*                Version 1.0.0               */
 /*--------------------------------------------*/
 RobotControl robot;
 //Create pid objects for the following methods
@@ -12,9 +12,9 @@ Pid launchAnglePID;
 Pid visionHorizontalPID;
 BallLauncher targetSystem;
 bool driveToPoint(float endpoint, float yaw){//Drives to a specific distance in a certain direction
-    driveSpeedPID.kP = 1;//Set gains for both pids
-    driveSpeedPID.kI = 4.35;
-    driveSpeedPID.kD = 0.153;
+    driveSpeedPID.kP = 0.3;//Set gains for both pids
+    driveSpeedPID.kI = 0;
+    driveSpeedPID.kD = 0.050;
     driveYawPID.kP = 0;
     driveYawPID.kI = 0;
     driveYawPID.kD = 0;
@@ -110,7 +110,7 @@ void driveTurn(double degrees, double velocity){
     double currentHeading = (mtrDriveLeft.rotation(vex::rotationUnits::deg)-mtrDriveRight.rotation(vex::rotationUnits::deg)) * 90/684;
     double headingChange = degrees - currentHeading;
     double leftRotation = mtrDriveLeft.rotation(vex::rotationUnits::deg) + headingChange * 342/90;
-    double rightRotation = mtrDriveLeft.rotation(vex::rotationUnits::deg) - headingChange * 342/90;
+    double rightRotation = mtrDriveRight.rotation(vex::rotationUnits::deg) - headingChange * 342/90;
     mtrDriveLeft.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
     mtrDriveRight.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
 }
