@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
 /*                   Methods                  */
-/*                Version 0.3.0               */
+/*                Version 1.0.0               */
 /*--------------------------------------------*/
 
 //The methods used in these classes will not contain while loops, to prevent linearity and to prevent freezing of autons
@@ -135,13 +135,13 @@ class Lift {//Methods for running the lift
                 mtrLiftRight.stop(vex::brakeType::hold);
             }
         }
-        void setLiftLevel(int level){
+        void setLiftLevel(int level, double power = 30){
             const double levels[6] = {0, 100, 420, 550, 614, 740};
             if (level > 5){
                 return;
             }
-            mtrLiftLeft.startRotateTo(levels[level], vex::rotationUnits::deg, 30, vex::velocityUnits::pct);
-            mtrLiftRight.startRotateTo(levels[level], vex::rotationUnits::deg, 30, vex::velocityUnits::pct);
+            mtrLiftLeft.startRotateTo(levels[level], vex::rotationUnits::deg, power, vex::velocityUnits::pct);
+            mtrLiftRight.startRotateTo(levels[level], vex::rotationUnits::deg, power, vex::velocityUnits::pct);
         }
 };
 class DriveMethods {
