@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
 /*                    Main                    */
-/*                Version 0.3.0               */
+/*                Version 1.0.0               */
 /*--------------------------------------------*/
 /*      Place files in following order:       */
 /*                    Main                    */
