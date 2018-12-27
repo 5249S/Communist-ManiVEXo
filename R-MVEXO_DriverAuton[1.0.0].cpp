@@ -2,7 +2,7 @@
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
 /*                Driver/Auton                */
-/*                Version 0.3.0               */
+/*                Version 1.0.0               */
 /*--------------------------------------------*/
 
 void auton(int autonMode){
@@ -23,9 +23,11 @@ void auton(int autonMode){
         driveYawPID.reset();
         driveSpeedPID.reset();
         mtrLauncherFire.resetRotation();
-        while (confirmAuton() && process < 7){//Set process number to last process
+        while (confirmAuton() && process < 24){//Set process number to last process
             if(process == 0){
-                driveForward(-1, 100);
+                robot.setLiftLevel(0);
+                driveForward(-0.1, 80);
+                robot.flipClaw(false);
                 process ++;
             }
             if (process == 1){
@@ -34,9 +36,9 @@ void auton(int autonMode){
                     process ++;
                 }
             }
-            if (process == 2){
+            if(process == 2){
                 if (clock >= 100){
-                    driveTurn(90, 100);
+                    driveTurn(45, 80);
                     process ++;
                 }
             }
@@ -48,15 +50,155 @@ void auton(int autonMode){
             }
             if (process == 4){
                 if (clock >= 100){
-                    driveForward(-1.5, 100);
+                    driveForward(-0.796, 60);
                     process ++;
                 }
             }
             if (process == 5){
                 if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    driveForward(-0.25, 20);
+                    process ++;
+                }
+            }
+            if (process == 6){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    clock = 0;
+                    process ++;
+                }
+            }
+            if (process == 7){
+                if (clock >= 100){
+                    robot.setLiftLevel(1, 15);
+                    clock = 0;
+                    process ++;
+                }
+            }
+            if (process == 8){
+                if (clock >= 250){
+                    driveForward(0.56, 30);
+                    process ++;
+                }
+            }
+            if (process == 9){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    clock = 0;
+                    process ++;
+                }
+            }
+            if (process == 10){
+                if(clock >= 100){
+                    driveTurn(180, 25);
+                    process ++;
+                }
+            }
+            if (process == 11){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    clock = 0;
+                    process ++;
+                }
+            }
+            if (process == 12){
+                if(clock >= 100){
+                    driveForward(-1.2, 40);
+                    process ++;
+                }
+            }
+            if (process == 13){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    clock = 0;
+                    process ++;
+                }
+            }
+            if (process == 14){
+                if(clock >= 100){
+                    driveTurn(270, 25);
+                    process ++;
+                }
+            }
+            if (process == 15){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    robot.flipClaw(true);
                     robot.setLiftLevel(5);
                     process ++;
                 }
+            }
+            if (process == 16){
+                if (!mtrLiftLeft.isSpinning() && !mtrLiftRight.isSpinning()){
+                    driveForward(-0.4, 30);
+                    process ++;
+                }
+            }
+            if (process == 17){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    robot.setLiftLevel(4);
+                    process ++;
+                }
+            }
+            if (process == 18){
+                if (!mtrLiftLeft.isSpinning() && !mtrLiftRight.isSpinning()){
+                    driveForward(0.275, 30);
+                    process ++;
+                }
+            }
+            if (process == 19){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    robot.setLiftLevel(0);
+                    driveTurn(178, 60);
+                    process ++;
+                }
+            }
+            if (process == 20){
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    clock = 0;
+                    process ++;
+                }
+            }
+            if (process == 21 && clock >=100){
+                process ++;
+            }
+            if (process == 22 || process == 23){
+                targetSystem.scanForFlags();//Run target system
+                double angle = targetSystem.targetSpecificFlag();
+                if (angle != -1){
+                    setLauncherToAngle(angle);                    
+                } else {
+                    mtrLauncherAngle.stop(vex::brakeType::hold);
+                }
+                if (process == 22 && clock >= 3100){
+                    mtrLauncherFire.startRotateTo(1800, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                    process ++;
+                }
+                if (process == 23 && !mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    process ++;
+                }
+            }
+            robotMain.Screen.clearScreen();
+            robotMain.Screen.setCursor(1,0);
+            robotMain.Screen.print("Left: %f", mtrDriveLeft.rotation(vex::rotationUnits::deg));
+            robotMain.Screen.newLine();
+            robotMain.Screen.print("Right: %f", mtrDriveRight.rotation(vex::rotationUnits::deg));
+            wait(20);
+            clock += 20;
+        }
+    }
+    if (autonMode == 2){
+        //Declare variable here
+        robotMain.Screen.clearScreen();
+        robotMain.Screen.setCursor(1,0);
+        int clock = 0;//Reset clock, motors, and process
+        int process = 0; //variable to control where in the auton you are
+        mtrDriveLeft.resetRotation();
+        mtrDriveRight.resetRotation();
+        mtrClaw.resetRotation();
+        mtrLiftLeft.resetRotation();
+        mtrLiftRight.resetRotation();
+        driveYawPID.reset();
+        driveSpeedPID.reset();
+        while (confirmAuton() && process < 2){
+            if(process == 0){
+                mtrDriveLeft.stop(vex::brakeType::hold);
+                mtrDriveRight.stop(vex::brakeType::hold);
+                process ++;
             }
             robotMain.Screen.clearScreen();
             robotMain.Screen.setCursor(1,0);
