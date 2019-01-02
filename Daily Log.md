@@ -99,3 +99,7 @@ All significant changes made to the software for 5249S will be documented here
 ### November 28, 2018
 - Fixed horizontal alignment program
 - Finalized 0.3.0
+### December 1, 2018
+- First Competition
+## R-MVEXO [1.0.0]
+### December 
