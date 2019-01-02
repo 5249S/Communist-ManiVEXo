@@ -101,5 +101,6 @@ All significant changes made to the software for 5249S will be documented here
 - Finalized 0.3.0
 ### December 1, 2018
 - First Competition
+- Wrote first auton
 ## R-MVEXO [1.0.0]
 ### December 
