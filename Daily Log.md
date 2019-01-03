@@ -102,5 +102,36 @@ All significant changes made to the software for 5249S will be documented here
 ### December 1, 2018
 - First Competition
 - Wrote first auton
+#### Successes
+- Target system was successful
+- Won Innovate award for the ball launcher autotarget system
+#### Failures
+- Ball launcher wasn't able to work well with the ball intake
+- No auton besides just using the preload to hit flags
 ## R-MVEXO [1.0.0]
-### December 
+### December 8, 2018
+- Began work on 1.0.0
+- Began work on a navigation system for autons
+### December 9, 2018
+- Began coding an acceleration tracking system for navigation
+### December 12, 2018
+- Wrote methods for using the tracking system in autons
+### December 20, 2018
+- Began debugging the tracking system code
+### December 22, 2018
+- Found our gyroscope was shorting out and overheating
+- Abandoned tracking system because the accelerometer sensor was too noisy to integrate its values accurately
+- Started working with motor encoder count commands
+- Began first auton with encoder counts
+### December 23, 2018
+- Coded a lift positioning system to help the driver position the lift to place caps on poles
+- Coded a toggle for flipping the claw
+### December 25, 2018
+- Continued coding a skills auton 
+### December 27, 2018
+- Coded a skills auton which places a flag on a pole and fires a ball at a flag
+- Tested auton successfully
+### Dec 28, 2018
+- Extended the auton for skills to 12 points, not yet tested
+- Coded a game auton to ideally score 11 points, not tested
+- Coded an alternative auton that scores 4 points, not tested
