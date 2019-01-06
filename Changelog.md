@@ -1,6 +1,16 @@
 # Changelog
 All notable changes will be documented in this file
 
+## R-MVEXO [1.0.0]
+### Added
+- Auton control using motor encoders
+- 12 Point Skills Auton
+- 11 and 6 Point Game Auton
+- Lift height settings
+- Claw flip button
+- Launch and Lift modes in driver control
+### Deprecated
+- PID functions for autons
 ## R-MVEXO [0.3.0]
 ### Added
 - Ball launcher targeting system
