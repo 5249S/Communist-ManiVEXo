@@ -5,7 +5,7 @@ All notable changes will be documented in this file
 ### Added
 - Auton control using motor encoders
 - 12 Point Skills Auton
-- 11 and 6 Point Game Auton
+- 11 and 4 Point Game Auton
 - Lift height settings
 - Claw flip button
 - Launch and Lift modes in driver control
