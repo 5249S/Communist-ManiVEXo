@@ -131,7 +131,11 @@ All significant changes made to the software for 5249S will be documented here
 ### December 27, 2018
 - Coded a skills auton which places a flag on a pole and fires a ball at a flag
 - Tested auton successfully
-### Dec 28, 2018
+### December 28, 2018
 - Extended the auton for skills to 12 points, not yet tested
 - Coded a game auton to ideally score 11 points, not tested
 - Coded an alternative auton that scores 4 points, not tested
+### January 7, 2019
+- Happy New Year
+- Tested each auton once
+- Fixed mistakes in initial tests
