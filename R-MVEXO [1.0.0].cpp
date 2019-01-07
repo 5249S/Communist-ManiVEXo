@@ -31,6 +31,7 @@ vex::accelerometer accelNavX = vex::accelerometer(robotMain.ThreeWirePort.E);
 vex::accelerometer accelNavY = vex::accelerometer(robotMain.ThreeWirePort.F);
 vex::digital_out redLightRight = vex::digital_out(robotMain.ThreeWirePort.H);
 
+
 /*--------------------------------------------*/
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
@@ -281,7 +282,7 @@ bool confirmDriver(){//Confirms it is allowed to run driver control
 }
 int selectAutonomous(){//method for selecting autons
     DisplaySelection selectAuton = DisplaySelection(8);//create display selection object
-    strcpy(selectAuton.text[0], "Exit");//place names of autons in array
+    strcpy(selectAuton.text[0], "Bypass");//place names of autons in array
     strcpy(selectAuton.text[1], "Skill12");
     strcpy(selectAuton.text[2], "Red11P");
     strcpy(selectAuton.text[3], "Red8NP");
@@ -304,8 +305,6 @@ int main() {
     robotMain.Screen.setFont(vex::fontType::mono40);
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(1,0);
-    vex::digital_out led = vex::digital_out(robotMain.ThreeWirePort.H);
-    led.set(false);
     while(true){
         DisplaySelection selectMode = DisplaySelection(5); //Create Display object
         strcpy(selectMode.text[0], "Field Control");//set values in array to options
@@ -394,19 +393,21 @@ int main() {
                     ctrPrimary.Screen.print("Setup Robot");
                     ctrPrimary.Screen.newLine();
                     ctrPrimary.Screen.print("(A) Done");//Waits until robot is placed properly for auton
-                    while (!ctrPrimary.ButtonA.pressing()){wait(20);}
-                    if (ctrPrimary.ButtonA.pressing()){
+                    ctrPrimary.Screen.newLine();
+                    ctrPrimary.Screen.print("(Y) Exit");
+                    while (!ctrPrimary.ButtonA.pressing() && !ctrPrimary.ButtonY.pressing()){wait(20);}
+                    if (ctrPrimary.ButtonA.pressing() || ctrPrimary.ButtonY.pressing()){
                         break;
                     }
                     wait(50); //Update at 20 hertz
+                }
+                if (ctrPrimary.ButtonY.pressing()){
+                    break;
                 }
                 while(ctrPrimary.ButtonA.pressing()){wait(20);}
                 calibrateGyros();
                 clearMotorRotations();
                 int selection = selectAutonomous();
-                if(selection == 0){//exits if auton 1 is selected
-                    break;
-                }
                 colorSelect();//select color
                 auton(selection);//run selected auton
                 stopAllMotors();
@@ -917,9 +918,8 @@ void auton(int autonMode){
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         clock = 0;
                         process = nextProcess;
-                    } else {
-                        break;
                     }
+                    break;
                 case 0://Drive forward slightly
                     robot.setLiftLevel(0);//Hold the lift down
                     driveForward(-0.1, 80);
@@ -956,7 +956,7 @@ void auton(int autonMode){
                     break;
                 case 5://drive backwards
                     if (clock >= 250){
-                        driveForward(0.56, 30);
+                        driveForward(0.8, 30);
                         process = -1;
                         nextProcess = 6;
                     }
@@ -970,7 +970,7 @@ void auton(int autonMode){
                     break;
                 case 7://Drive forward to line up with the pole
                     if(clock >= 100){
-                        driveForward(-1.2, 40);
+                        driveForward(-1.03, 40);
                         process = -1;
                         nextProcess = 8;
                     }
@@ -1009,7 +1009,7 @@ void auton(int autonMode){
                 case 13://Lower lift and turn towards flag
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         robot.setLiftLevel(0);
-                        driveTurn(178, 60);
+                        driveTurn(175, 60);
                         process = -1;
                         nextProcess = 14;
                     }
@@ -1118,13 +1118,12 @@ void auton(int autonMode){
         driveSpeedPID.reset();
         while (confirmAuton() && process < (autonMode == 2 || autonMode == 4?17:14)){//Parks if auton 2 or 4 was chosen, otherwise doesnt park
             switch (process){
-                case -1:
+                case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         clock = 0;
                         process = nextProcess;
-                    } else {
-                        break;
                     }
+                    break;
                 case 0://Hold the lift down and drive forward sightly and release the claw
                     robot.setLiftLevel(0);
                     driveForward(-0.1, 80);
@@ -1170,7 +1169,7 @@ void auton(int autonMode){
                     break;
                 case 6://Turn towards the flags
                     if (clock >= 100){
-                        driveTurn(178 * (autonMode == 2 || autonMode == 3?1:-1), 60);
+                        driveTurn(175 * (autonMode == 2 || autonMode == 3?1:-1), 60);
                         process = -1;
                         nextProcess = 7;
                     }
@@ -1201,7 +1200,7 @@ void auton(int autonMode){
                     break;
                 case 13://Drive forwards to line up with the platform
                     if (clock >= 100){
-                        driveForward(1, 100);
+                        driveForward(-1, 100);
                         process = -1;
                         nextProcess = 14;
                     }
@@ -1214,7 +1213,7 @@ void auton(int autonMode){
                     break;
                 case 15://Drive onto the platform
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(2, 100);
+                        driveForward(-2, 100);
                         process ++;
                     }
                 case 16://Wait for the motors to stop and then end auton
@@ -1251,54 +1250,56 @@ void auton(int autonMode){
         driveSpeedPID.reset();
         while (confirmAuton() && process < 12){
             switch (process){
-                case -1:
+                case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         clock = 0;
                         process = nextProcess;
                     }
                     break;
-                case 0:
+                case 0://Drive forwards towards the propped cap at full speed to knock the core off of the ball and release the claw
                     robot.setLiftLevel(0);
                     robot.flipClaw(false);
                     driveForward(-1.25, 100);
                     process ++;
                     break;
-                case 1:
+                case 1://Drive backwards and raise the lift slightly
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         driveForward(0.25, 80);
+                        robot.setLiftLevel(1);
                         process = -1;
                         nextProcess = 2;
                     }
                     break;
-                case 2:
+                case 2://turn so launcher side is facing the back
                     if (clock >= 100){
                         driveTurn(-90 * (autonMode == 6?1:-1), 80);
                         process = -1;
                         nextProcess = 3;
                     }
                     break;
-                case 3:
+                case 3://Drive forwards to line up with cap
                     if (clock >= 100){
                         driveForward(1, 80);
                         process = -1;
                         nextProcess = 4;
                     }
                     break;
-                case 4:
+                case 4://Turn towards cap
                     if (clock >= 100){
                         driveTurn(0, 80);
+                        robot.setLiftLevel(0);
                         process = -1;
                         nextProcess = 5;
                     }
                     break;
-                case 5:
+                case 5://Drive towards the cap slowly
                     if (clock >= 100){
                         driveForward(-1, 40);
                         process = -1;
                         nextProcess = 6;
                     }
                     break;
-                case 6:
+                case 6://Flip the cap and lift the lift up
                     if (clock >= 100){
                         robot.setLiftLevel(3);
                         robot.flipClaw(true);
@@ -1306,32 +1307,32 @@ void auton(int autonMode){
                         process ++;
                     }
                     break;
-                case 7:
+                case 7://Drive backwards towards the post
                     if (clock >= 500){
                         driveForward(1, 25);
                         process = -1;
                         nextProcess = 8;
                     }
                     break;
-                case 8:
+                case 8://Turn towards the post
                     if (clock >= 100){
                         driveTurn(90 * (autonMode == 6?1:-1), 25);
                         process ++;
                     }
                     break;
-                case 9:
+                case 9://Lower the cap onto the pole
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         robot.setLiftLevel(2);
                         process ++;
                     }
                     break;
-                case 10:
+                case 10://Backup
                     if (!mtrLiftLeft.isSpinning() && !mtrLiftRight.isSpinning()){
                         driveForward(0.75, 80);
                         process ++;
                     }
                     break;
-                case 11:
+                case 11://Wait for motion to stop and end auton
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         process ++;
                     }
