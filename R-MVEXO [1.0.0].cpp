@@ -32,6 +32,7 @@ vex::accelerometer accelNavX = vex::accelerometer(robotMain.ThreeWirePort.E);
 vex::accelerometer accelNavY = vex::accelerometer(robotMain.ThreeWirePort.F);
 vex::digital_out redLightRight = vex::digital_out(robotMain.ThreeWirePort.H);
 
+
 /*--------------------------------------------*/
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
@@ -143,7 +144,7 @@ void calibrateGyros(){//Calibrates gyros
     ctrPrimary.Screen.print("(B) Bypass");
     gyroNav.startCalibration();
     int timer = 0;
-    while(gyroNav.isCalibrating() || timer < 3000){//waits for both gyros to finish or three seconds have passed
+    while(gyroNav.isCalibrating() || timer < 0){//waits for both gyros to finish or three seconds have passed
         if (ctrPrimary.ButtonB.pressing()){
             break;//allows bypass
         }
@@ -523,14 +524,12 @@ class Launcher {//Methods for controlling the ball launcher motors
 class Claw {//Methods for running the claw
     public: 
         void claw(bool up, bool down){//Run with booleans
-            if (up){
-                mtrClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+            if (up&&!down){
+                mtrClaw.spin(vex::directionType::fwd, 40, vex::velocityUnits::pct);
+            } else if(down&&!up){
+                mtrClaw.spin(vex::directionType::rev, 40, vex::velocityUnits::pct);
             } else {
-                if(down){
-                    mtrClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
-                } else {
-                    mtrClaw.stop(vex::brakeType::hold);
-                }
+                mtrClaw.stop(vex::brakeType::brake);
             }
         }
         void clawPower(int power){//Run at specific power
@@ -653,7 +652,7 @@ class RobotControl: public Lift, public DriveMethods, public Claw, public Launch
 class Flag {
     private:
         const double GRAVITY = 9.8; //m/s^2 Acceleration of gravity
-        const double INITIAL_VELOCITY = 18; //m/s Initial velocity of ball
+        const double INITIAL_VELOCITY = 22; //m/s Initial velocity of ball
         const double FLAG_HEIGHT = 0.14; //meters known height of flag object
          //Variable for holding distance
          //Variable holding height to bottom of flag
@@ -1116,7 +1115,7 @@ void auton(int autonMode){
         int nextProcess = 0;
         driveYawPID.reset();
         driveSpeedPID.reset();
-        while (confirmAuton() && process < (autonMode == 2 || autonMode == 4?17:14)){//Parks if auton 2 or 4 was chosen, otherwise doesnt park
+        while (confirmAuton() && process < 21){//Parks if auton 2 or 4 was chosen, otherwise doesnt park
             switch (process){
                 case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
@@ -1126,102 +1125,105 @@ void auton(int autonMode){
                     break;
                 case 0://Hold the lift down and drive forward sightly and release the claw
                     robot.setLiftLevel(0);
-                    driveForward(-0.1, 80);
-                    robot.flipClaw(false);
+                    robot.liftBall(true, false);
+                    driveForward(1.75, 100);
                     process = -1;
                     nextProcess = 1;
                     break;
                 case 1://Turn towards the far cap
-                    if (clock >= 100){
-                        driveTurn(45 * (autonMode == 2 || autonMode == 3?1:-1), 80);
+                    if (clock >= 1000){
+                        driveForward(-1.65, 80);
                         process = -1;
                         nextProcess = 2;
                     }
                     break;
                 case 2://Drive towards the cap
                     if (clock >= 100){
-                        driveForward(-0.796, 60);
+                        driveTurn(-95 * (autonMode == 2 || autonMode == 3?1:-1), 80);
                         process ++;
                     }
                     break;
                 case 3://drive forwards slowly
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(-0.25, 20);
-                        process = -1;
-                        nextProcess = 4;
+                        robot.launchAngle(false, true);
+                        process ++;
+                        clock = 0;
                     }
                     break;
                 case 4://Lift the lift up slightly and flip the cap
-                    if (clock >= 100){
-                        robot.setLiftLevel(1, 15);
-                        robot.flipClaw(true);
-                        clock = 0;
+                    if (clock >= 300){
+                        robot.launchAngle(false, false);
                         process ++;
                     }
                     break;
-                case 5://Drive backwards and lower the cap on the ground
-                    if (clock >= 250){
-                        driveForward(1, 30);
-                        robot.setLiftLevel(0);
-                        process = -1;
-                        nextProcess = 6;
-                    }
-                    break;
-                case 6://Turn towards the flags
+                case 7:
                     if (clock >= 100){
-                        driveTurn(175 * (autonMode == 2 || autonMode == 3?1:-1), 60);
-                        process = -1;
-                        nextProcess = 7;
+                        driveForward(-0.5, 80);
+                        process ++;
                     }
                     break;
-                case 7://Wait 100 milliseconds before firing
+                case 10: if (clock >= 100){
+                    if (clock >= 100){
+                        driveForward(0.5, 80);
+                        process = -1;
+                        nextProcess = 11;
+                    }
+                    break;
+                }
+                case 11://Wait 100 milliseconds before firing
                     if(clock >= 100){
-                        process ++;
-                    }
-                    break;
-                case 10://Drive forwards to hit the bottom flag
-                    driveForward(1.5, 100);
-                    process ++;
-                    break;
-                case 11://Drive backwards
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(-1, 100);
+                        robot.liftBall(false, false);
+                        driveTurn(-100 * (autonMode == 2 || autonMode == 3?1:-1), 70);
                         process = -1;
                         nextProcess = 12;
                     }
                     break;
-                case 12://Turn to face the oppisite side
+                case 12://Drive forwards to hit the bottom flag
                     if (clock >= 100){
-                        driveTurn(180 * (autonMode == 2 || autonMode == 3?1:-1), 100);
+                        driveForward(1.9, 100);
+                        process ++;
+                    }
+                    break;
+                case 13://Drive backwards
+                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                        driveForward(-1.9, 100);
+                        process = -1;
+                        nextProcess = 12;
+                    }
+                    break;
+                case 14://Turn to face the oppisite side
+                    if (clock >= 100){
+                        driveTurn(-90 * (autonMode == 2 || autonMode == 3?1:-1), 100);
                         robot.setLiftLevel(1);
                         process = -1;
                         nextProcess = 13;
                     }
                     break;
-                case 13://Drive forwards to line up with the platform
+                case 15:
                     if (clock >= 100){
                         driveForward(-2, 100);
                         process = -1;
                         nextProcess = 14;
                     }
-                    break;
-                case 14://turn towards the platform
+                case 16://Drive forwards to line up with the platform
                     if (clock >= 100){
-                        driveTurn(90 * (autonMode == 2 || autonMode == 3?1:-1), 100);
+                        driveTurn(-180 * (autonMode == 2 || autonMode == 3?1:-1), 80);
+                        process = -1;
+                        nextProcess = 15;
+                    }
+                    break;
+                case 17://turn towards the platform
+                    if (clock >= 100){
+                        driveForward(-1.5, 100);
                         process ++;
                     }
                     break;
-                case 15://Drive onto the platform
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(-1, 100);
-                        process ++;
-                    }
-                case 16://Wait for the motors to stop and then end auton
+                case 18://Wait for the motors to stop and then end auton
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         process ++;
                     }
             }
-            if (process == 8 || process == 9){//Line up and fire the ball launcher
+            if (process == 5 || process == 6 || process == 8 || process == 9){//Line up and fire the ball launcher
                 targetSystem.scanForFlags();//Run target system
                 double angle = targetSystem.targetSpecificFlag();
                 if (angle != -1){
@@ -1229,12 +1231,17 @@ void auton(int autonMode){
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
                 }
-                if (process == 8 && clock >= 3100){//Wait three seconds before firing
-                    mtrLauncherFire.startRotateTo(1800, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                if ((process == 5 || process == 8) && clock >= 1600){//Wait three seconds before firing
+                    mtrLauncherFire.startRotateTo(1800 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
                     process ++;
+                    clock = 0;
                 }
-                if (process == 9 && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+                if ((process == 6 || process == 9) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
                     process ++;
+                    clock = 0;
+                }
+                if (process == 6){
+                    robot.liftBall(true, false);
                 }
             }
             wait(20);
@@ -1328,7 +1335,7 @@ void auton(int autonMode){
                     break;
                 case 10://Backup
                     if (!mtrLiftLeft.isSpinning() && !mtrLiftRight.isSpinning()){
-                        driveForward(0.75, 80);
+                        driveForward(0.2, 80);
                         process ++;
                     }
                     break;
@@ -1338,6 +1345,8 @@ void auton(int autonMode){
                     }
                     break;
             }
+            wait(20);
+            clock += 20;
         }
     }
 }
@@ -1349,18 +1358,6 @@ void driver(){
     ctrPrimary.Screen.print("Party Time");//Party Time
     bool liftMode = false;
     bool waitForReleaseA = false;
-    bool waitForReleaseUp = false;
-    bool waitForReleaseDown = false;
-    bool waitForReleaseRight = false;
-    bool waitForReleaseLeft = false;
-    bool waitForReleaseY = false;
-    int liftLevel = 0;
-    bool holdLift = false;
-    bool clawFlipped = false;
-    bool reverseClawMotor = false;
-    ctrPrimary.Screen.setCursor(3,0);
-    ctrPrimary.Screen.clearLine(3);
-    ctrPrimary.Screen.print("Lift: %d", liftLevel);
     while (confirmDriver()){
         //Run driver implementation here
         if (ctrPrimary.ButtonA.pressing() && !waitForReleaseA){//Turns on auto target
@@ -1379,70 +1376,7 @@ void driver(){
                 mtrLauncherAngle.stop(vex::brakeType::hold);
             }
         } else {
-            robot.launchAngle(ctrSecond.ButtonR1.pressing(), ctrSecond.ButtonR2.pressing());//Angle launcher manually
-        }
-
-        if (holdLift){//Check if the lift is being held up
-            if (abs(ctrPrimary.Axis2.position(vex::percentUnits::pct)) > 5){
-                holdLift = false;
-            }
-        }
-        if (!holdLift){
-            robot.lift(ctrPrimary.Axis2.position(vex::percentUnits::pct));
-        }
-        if (ctrPrimary.ButtonRight.pressing() && !waitForReleaseRight){//Set the lift to the selected level
-            robot.setLiftLevel(liftLevel);
-            holdLift = true;
-            waitForReleaseRight = true;
-        }
-        if (!ctrPrimary.ButtonRight.pressing() && waitForReleaseRight){
-            waitForReleaseRight = false;
-        }
-        if (ctrPrimary.ButtonUp.pressing() && !waitForReleaseUp){//Increase the lift level
-            if(liftLevel == 5){
-                liftLevel = 0;
-            } else {
-                liftLevel ++;
-            }
-            ctrPrimary.Screen.setCursor(3,0);
-            ctrPrimary.Screen.clearLine(3);
-            ctrPrimary.Screen.print("Lift: %d", liftLevel);
-            waitForReleaseUp = true;
-        }
-        if (!ctrPrimary.ButtonUp.pressing() && waitForReleaseUp){
-            waitForReleaseUp = false;
-        }
-        if (ctrPrimary.ButtonDown.pressing() && !waitForReleaseDown){//Decrease the lift level
-            if(liftLevel == 0){
-                liftLevel = 5;
-            } else {
-                liftLevel --;
-            }
-            ctrPrimary.Screen.setCursor(3,0);
-            ctrPrimary.Screen.clearLine(3);
-            ctrPrimary.Screen.print("Lift: %d", liftLevel);
-            waitForReleaseDown = true;
-        }
-        if (!ctrPrimary.ButtonDown.pressing() && waitForReleaseDown){
-            waitForReleaseDown = false;
-        }
-        if (ctrPrimary.ButtonY.pressing() && !waitForReleaseY){
-            reverseClawMotor = !reverseClawMotor;
-            mtrClaw.setReversed(reverseClawMotor);
-            mtrClaw.setRotation(0, vex::rotationUnits::deg);
-            mtrLiftLeft.setRotation(0, vex::rotationUnits::deg);
-            mtrLiftRight.setRotation(0, vex::rotationUnits::deg);
-            waitForReleaseY = true;
-        }
-        if (!ctrPrimary.ButtonY.pressing() && waitForReleaseY){
-            waitForReleaseY = false;
-        }
-        //Power the claw
-        if (ctrPrimary.ButtonR1.pressing() || ctrPrimary.ButtonR2.pressing()){
-            mtrClaw.spin(vex::directionType::fwd, ctrPrimary.ButtonR1.pressing()?25:-25, vex::velocityUnits::pct);
-
-        } else {
-            mtrClaw.stop(vex::brakeType::coast);
+            robot.launchAngle(ctrPrimary.ButtonR1.pressing() || ctrSecond.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing() || ctrSecond.ButtonR2.pressing());//Angle launcher manually
         }
         if (!ctrPrimary.ButtonLeft.pressing() && waitForReleaseLeft){
             waitForReleaseLeft = false;
@@ -1451,14 +1385,14 @@ void driver(){
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct) * (liftMode?-1:1);//Run chassis with joystick, reverse the direction if the direction is reversed
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
         if (ctrSecond.ButtonLeft.pressing()){//If the second controller pressing the left or right button, turn the robot slowly
-            x = -10;
+            x = -30;
         }
         if (ctrSecond.ButtonRight.pressing()){
-            x = 10;
+            x = 30;
         }
         robot.driveH(y, x);//Power the lift
-        robot.liftBall(ctrSecond.ButtonL1.pressing(), ctrSecond.ButtonL2.pressing());//Ball Lift
-        robot.launchFire(ctrSecond.ButtonX.pressing(), ctrSecond.ButtonY.pressing());//Fire the launcher
+        robot.liftBall(ctrPrimary.ButtonL1.pressing() || ctrSecond.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing() || ctrSecond.ButtonL2.pressing());//Ball Lift
+        robot.launchFire(ctrPrimary.ButtonX.pressing() || ctrSecond.ButtonX.pressing(), ctrPrimary.ButtonY.pressing() || ctrSecond.ButtonY.pressing());//Fire the launcher
         runDiagnostics();//Check for warnings and display
         robotMain.Screen.clearScreen();//Display the gyros value on the processor
         robotMain.Screen.setCursor(1,0);
