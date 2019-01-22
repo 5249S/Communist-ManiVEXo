@@ -1369,8 +1369,8 @@ void driver(){
         }
         targetSystem.scanForFlags();//Run target system
         double angle = targetSystem.targetSpecificFlag();
-        if (!ctrSecond.ButtonR1.pressing() && !ctrSecond.ButtonR2.pressing()){//If no manual controls are being pressed, Angle the ball launcher
-            if (angle != -1 && !ctrSecond.ButtonX.pressing()){
+        if (!(ctrPrimary.ButtonR1.pressing() || ctrSecond.ButtonR1.pressing()) && !(ctrPrimary.ButtonR2.pressing() || ctrSecond.ButtonR2.pressing())){//If no manual controls are being pressed, Angle the ball launcher
+            if (angle != -1 && !(ctrPrimary.ButtonX.pressing() || ctrSecond.ButtonX.pressing())){
                 setLauncherToAngle(angle);
             } else {
                 mtrLauncherAngle.stop(vex::brakeType::hold);
