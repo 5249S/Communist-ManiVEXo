@@ -23,6 +23,7 @@ vex::vision::signature SIG_6 (6, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision::signature SIG_7 (7, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision visLauncher (vex::PORT11, 61, SIG_FLAG_RED, SIG_FLAG_BLUE, SIG_3, SIG_4, SIG_5, SIG_6, SIG_7);
 
+vex::limit limBallLift = vex::limit(robotMain.ThreeWirePort.A);
 vex::accelerometer accelLauncherX = vex::accelerometer(robotMain.ThreeWirePort.B);
 vex::accelerometer accelLauncherY = vex::accelerometer(robotMain.ThreeWirePort.C);
 vex::accelerometer accelLauncherZ = vex::accelerometer(robotMain.ThreeWirePort.D);
@@ -31,7 +32,6 @@ vex::gyro gyroNav = vex::gyro(robotMain.ThreeWirePort.G);
 vex::accelerometer accelNavX = vex::accelerometer(robotMain.ThreeWirePort.E);
 vex::accelerometer accelNavY = vex::accelerometer(robotMain.ThreeWirePort.F);
 vex::digital_out redLightRight = vex::digital_out(robotMain.ThreeWirePort.H);
-
 
 /*--------------------------------------------*/
 /*                    5249S                   */
@@ -488,7 +488,7 @@ class Pid {
 class Launcher {//Methods for controlling the ball launcher motors
     public: 
         void launchAngle(bool up, bool down){//Run with boolean controls
-            if (up && getAccelTiltAngle() < 28){
+            if (up && getAccelTiltAngle() < 48){
                 mtrLauncherAngle.spin(vex::directionType::fwd, 30, vex::velocityUnits::pct);
             } else {
                 if(down && getAccelTiltAngle() > 10){
@@ -502,7 +502,7 @@ class Launcher {//Methods for controlling the ball launcher motors
             if (power < 0  && getAccelTiltAngle() > 10){
                 mtrLauncherAngle.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
             } else {
-                if (power > 0 && getAccelTiltAngle() < 28){
+                if (power > 0 && getAccelTiltAngle() < 48){
                     mtrLauncherAngle.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
@@ -630,8 +630,14 @@ class DriveMethods {
 };
 class BallLift {//Methods for controlling the ball intake
     public:
-    void liftBall(bool up, bool down){//Run with boolean values
+    void liftBall(bool up, bool down, bool limit = false){//Run with boolean values
         if (up){
+            if (limit){
+                    if (limBallLift.pressing()){
+                    mtrBallLift.stop(vex::brakeType::coast);
+                    return;
+                }
+            }
             mtrBallLift.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
         } else {
             if(down){
@@ -648,7 +654,7 @@ class RobotControl: public Lift, public DriveMethods, public Claw, public Launch
 class Flag {
     private:
         const double GRAVITY = 9.8; //m/s^2 Acceleration of gravity
-        const double INITIAL_VELOCITY = 22; //m/s Initial velocity of ball
+        const double INITIAL_VELOCITY = 5.47; //m/s Initial velocity of ball
         const double FLAG_HEIGHT = 0.14; //meters known height of flag object
          //Variable for holding distance
          //Variable holding height to bottom of flag
@@ -1069,9 +1075,6 @@ void driver(){
         } else {
             robot.launchAngle(ctrPrimary.ButtonR1.pressing() || ctrSecond.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing() || ctrSecond.ButtonR2.pressing());//Angle launcher manually
         }
-        if (!ctrPrimary.ButtonLeft.pressing() && waitForReleaseLeft){
-            waitForReleaseLeft = false;
-        }
         //Run the chassis
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct) * (liftMode?-1:1);//Run chassis with joystick, reverse the direction if the direction is reversed
         int x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
@@ -1082,7 +1085,7 @@ void driver(){
             x = 30;
         }
         robot.driveH(y, x);//Power the lift
-        robot.liftBall(ctrPrimary.ButtonL1.pressing() || ctrSecond.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing() || ctrSecond.ButtonL2.pressing());//Ball Lift
+        robot.liftBall(ctrPrimary.ButtonL1.pressing() || ctrSecond.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing() || ctrSecond.ButtonL2.pressing(), !ctrPrimary.ButtonUp.pressing() && !ctrSecond.ButtonUp.pressing());//Ball Lift
         robot.launchFire(ctrPrimary.ButtonX.pressing() || ctrSecond.ButtonX.pressing(), ctrPrimary.ButtonY.pressing() || ctrSecond.ButtonY.pressing());//Fire the launcher
         runDiagnostics();//Check for warnings and display
         robotMain.Screen.clearScreen();//Display the gyros value on the processor
