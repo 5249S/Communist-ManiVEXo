@@ -604,10 +604,10 @@ class DriveMethods {
         DriveMethods() { }
         void driveH(int y, int x){ //Method for driving the chassis with an h-drive, using turning
             //*Repeat method in while loop for continuous control, this is instant implementation for the motor power calculators*
-            if (y < 3 && y > -3) {
+            if (y < 2 && y > -2) {
                 y = 0;
             }
-            if (x < 3 && x > -3) {
+            if (x < 2 && x > -2) {
                 x = 0;
             }
 
