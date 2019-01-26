@@ -915,6 +915,12 @@ void auton(int autonMode){
         driveSpeedPID.reset();
         while (confirmAuton() && process < 21){//Parks if auton 2 or 4 was chosen, otherwise doesnt park
             switch (process){
+		if (process == -1 && nextProcess < 7 || process < 7 && process != -1){
+		    robot.liftBall(true, false, true);
+		}
+		if (process == 7){
+		    robot.liftBall(true, false, false);
+		}
                 case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         clock = 0;
@@ -923,21 +929,20 @@ void auton(int autonMode){
                     break;
                 case 0://Hold the lift down and drive forward sightly and release the claw
                     robot.setLiftLevel(0);
-                    robot.liftBall(true, false);
-                    driveForward(1.75, 100);
+                    driveForward(1.75, 80);
                     process = -1;
                     nextProcess = 1;
                     break;
                 case 1://Turn towards the far cap
                     if (clock >= 1000){
-                        driveForward(-1.65, 80);
+                        driveForward(-1.65, 60);
                         process = -1;
                         nextProcess = 2;
                     }
                     break;
                 case 2://Drive towards the cap
                     if (clock >= 100){
-                        driveTurn(-95 * (colorRed?1:-1), 80);
+                        driveTurn(-95 * (colorRed?1:-1), 60);
                         process ++;
                     }
                     break;
@@ -956,13 +961,13 @@ void auton(int autonMode){
                     break;
                 case 7:
                     if (clock >= 100){
-                        driveForward(-0.5, 80);
+                        driveForward(-0.5, 60);
                         process ++;
                     }
                     break;
                 case 10: if (clock >= 100){
                     if (clock >= 100){
-                        driveForward(0.5, 80);
+                        driveForward(0.5, 60);
                         process = -1;
                         nextProcess = 11;
                     }
@@ -970,28 +975,27 @@ void auton(int autonMode){
                 }
                 case 11://Wait 100 milliseconds before firing
                     if(clock >= 100){
-                        robot.liftBall(false, false);
-                        driveTurn(-100 * (colorRed?1:-1), 70);
+                        driveTurn(-100 * (colorRed?1:-1), 60);
                         process = -1;
                         nextProcess = 12;
                     }
                     break;
                 case 12://Drive forwards to hit the bottom flag
                     if (clock >= 100){
-                        driveForward(1.9, 100);
+                        driveForward(1.9, 80);
                         process ++;
                     }
                     break;
                 case 13://Drive backwards
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(-1.9, 100);
+                        driveForward(-1.9, 80);
                         process = -1;
                         nextProcess = 12;
                     }
                     break;
                 case 14://Turn to face the oppisite side
                     if (clock >= 100){
-                        driveTurn(-90 * (colorRed?1:-1), 100);
+                        driveTurn(-90 * (colorRed?1:-1), 80);
                         robot.setLiftLevel(1);
                         process = -1;
                         nextProcess = 13;
@@ -999,20 +1003,20 @@ void auton(int autonMode){
                     break;
                 case 15:
                     if (clock >= 100){
-                        driveForward(-2, 100);
+                        driveForward(-2, 80);
                         process = -1;
                         nextProcess = 14;
                     }
                 case 16://Drive forwards to line up with the platform
                     if (clock >= 100){
-                        driveTurn(-180 * (colorRed?1:-1), 80);
+                        driveTurn(-180 * (colorRed?1:-1), 60);
                         process = -1;
                         nextProcess = 15;
                     }
                     break;
                 case 17://turn towards the platform
                     if (clock >= 100){
-                        driveForward(-1.5, 100);
+                        driveForward(-1.5, 80);
                         process ++;
                     }
                     break;
@@ -1037,9 +1041,6 @@ void auton(int autonMode){
                 if ((process == 6 || process == 9) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
                     process ++;
                     clock = 0;
-                }
-                if (process == 6){
-                    robot.liftBall(true, false);
                 }
             }
             wait(20);
