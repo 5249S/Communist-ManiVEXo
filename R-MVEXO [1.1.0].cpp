@@ -7,6 +7,8 @@ vex::competition compControl;
 
 vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
 vex::motor mtrDriveRight = vex::motor(vex::PORT7, true);
+vex::motor mtrDriveLeftBack = vex::motor(vex::PORT13);
+vex::motor mtrDriveRightBack = vex::motor(vex::PORT14, true);
 vex::motor mtrLiftLeft = vex::motor(vex::PORT3, true);
 vex::motor mtrLiftRight = vex::motor(vex::PORT4);
 vex::motor mtrClaw = vex::motor(vex::PORT12, true);
@@ -158,6 +160,8 @@ void calibrateGyros(){//Calibrates gyros
 void stopAllMotors(){//stops all motors on the robot
     mtrDriveLeft.stop(vex::brakeType::coast);
     mtrDriveRight.stop(vex::brakeType::coast);
+    mtrDriveLeftBack.stop(vex::brakeType::coast);
+    mtrDriveRightBack.stop(vex::brakeType::coast);
     mtrLiftLeft.stop(vex::brakeType::coast);
     mtrLiftRight.stop(vex::brakeType::coast);
     mtrClaw.stop(vex::brakeType::coast);
@@ -169,6 +173,8 @@ void stopAllMotors(){//stops all motors on the robot
 void clearMotorRotations(){
     mtrDriveLeft.resetRotation();
     mtrDriveRight.resetRotation();
+    mtrDriveLeftBack.resetRotation();
+    mtrDriveRightBack.resetRotation();
     mtrLiftLeft.resetRotation();
     mtrLiftRight.resetRotation();
     mtrClaw.resetRotation();
@@ -617,14 +623,18 @@ class DriveMethods {
             int rightPower = rightMotor(y, x);
             if (leftPower < 0){
                 mtrDriveLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
+		mtrDriveLeftBack.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
             } else {
                 mtrDriveLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
+		mtrDriveBack.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
             }
             
             if (rightPower < 0){
                 mtrDriveRight.spin(vex::directionType::rev, (double)(-rightPower), vex::velocityUnits::pct);
+		mtrDriveRightBack.spin(vex::directionType::rev, (double)(-rightPower), vex::velocityUnits::pct);
             } else {
                 mtrDriveRight.spin(vex::directionType::fwd, (double)rightPower, vex::velocityUnits::pct);
+		mtrDriveRightBack.spin(vex::directionType::fwd, (double)rightPower, vex::velocityUnits::pct);
             }
             
         }
@@ -916,6 +926,8 @@ void driveForward(double tiles, double velocity){
     double rightRotation = mtrDriveRight.rotation(vex::rotationUnits::deg) + tiles * 652;
     mtrDriveLeft.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
     mtrDriveRight.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+    mtrDriveLeftBack.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+    mtrDriveRightBack.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
 }
 void driveTurn(double degrees, double velocity){
     double currentHeading = (mtrDriveLeft.rotation(vex::rotationUnits::deg)-mtrDriveRight.rotation(vex::rotationUnits::deg)) * 90/684;
@@ -924,6 +936,8 @@ void driveTurn(double degrees, double velocity){
     double rightRotation = mtrDriveRight.rotation(vex::rotationUnits::deg) - headingChange * 342/90;
     mtrDriveLeft.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
     mtrDriveRight.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+    mtrDriveLeftBack.startRotateTo(leftRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
+    mtrDriveRightBack.startRotateTo(rightRotation, vex::rotationUnits::deg, velocity, vex::velocityUnits::pct);
 }
 /*--------------------------------------------*/
 /*                    5249S                   */
