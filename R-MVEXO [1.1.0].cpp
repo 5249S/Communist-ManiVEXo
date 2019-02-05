@@ -999,11 +999,18 @@ void auton(int autonMode){
                     }
                     break;
                 case 10: if (clock >= 100){
-                    if (clock >= 100){
-                        driveForward(0.5, 60);
-                        process = -1;
-                        nextProcess = 11;
-                    }
+	            if (autonMode == 1){
+		    	if (clock >= 100){
+			    driveTurn(colorRed?-180:180), 60);
+			}
+		    }
+		    if (autonMode == 2){
+			if (clock >= 100){
+			    driveForward(0.5, 60);
+			    process = -1;
+			    nextProcess = 11;
+			}
+		    }
                     break;
                 }
                 case 11://Wait 100 milliseconds before firing
