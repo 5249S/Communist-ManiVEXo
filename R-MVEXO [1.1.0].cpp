@@ -934,8 +934,8 @@ void driveTurn(double degrees, double velocity){
 //Auton 1: Picks up ball, hits two flags, parks 
 //Auton 2: Picks up ball, hits three flags
 //Auton 3: Picks up ball, hits two flags, parks from back
-//Auton 4: Picks up ball, hits two flags
-//Auton 5: Skills: Picks up ball hits three flags, center parks
+//Auton 4: Picks up ball, hits two flags from back
+//Auton 5: Skills: Picks up ball, hits three flags, center parks
 void auton(int autonMode){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(1,0);
@@ -993,38 +993,52 @@ void auton(int autonMode){
                     }
                     break;
                 case 7:
-                    if (clock >= 100){
-                        driveForward(-0.5, 60);
-                        process ++;
-                    }
+		    process ++;
                     break;
                 case 10: if (clock >= 100){
-	            if (autonMode == 1){
+	            if (autonMode == 1 || autonMode == 3){
 		    	if (clock >= 100){
 			    driveTurn(colorRed?-180:180), 60);
+			    process = -1;
+		            nextProcess = 11;
 			}
 		    }
-		    if (autonMode == 2){
+		    if (autonMode == 2 || autonMode == 5){
 			if (clock >= 100){
-			    driveForward(0.5, 60);
-			    process = -1;
-			    nextProcess = 11;
+			    process ++;
 			}
+		    }
+		    if (autonMode == 4){
+		        process ++;
 		    }
                     break;
                 }
                 case 11://Wait 100 milliseconds before firing
-                    if(clock >= 100){
-                        driveTurn((colorRed?-96:96), 60);
-                        process = -1;
-                        nextProcess = 12;
+		    if (autonMode == 2){
+                        if(clock >= 100){
+                            driveTurn((colorRed?-96:96), 60);
+                            process = -1;
+                            nextProcess = 12;
+			}
                     }
+		    if (autonMode == 1){
+		    	if(clock >= 100){
+			    driveForward(-1.5, 100);
+			    process = -1;
+			    nextProcess = 12;
+			}
+		    }
                     break;
                 case 12://Drive forwards to hit the bottom flag
-                    if (clock >= 100){
-                        driveForward((autonMode == 1?1.9:0), 80);
-                        process ++;
-                    }
+		    if (autonMode == 2){
+                        if (clock >= 100){
+                            driveForward(1.9, 80);
+                            process ++;
+                        }
+		    }
+		    if (autonMode == 1 || autonMode == 4){
+		    	process ++;
+		    }
                     break;
                 case 13://Drive backwards
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
@@ -1032,6 +1046,9 @@ void auton(int autonMode){
                         process = -1;
                         nextProcess = 12;
                     }
+		    if (autonMode == 1){
+		    	process ++;
+		    }
                     break;
                 case 14://Turn to face the oppisite side
                     if (clock >= 100){
@@ -1040,6 +1057,9 @@ void auton(int autonMode){
                         process = -1;
                         nextProcess = 13;
                     }
+		    if (autonMode == 1){
+		    	process ++;
+		    }
                     break;
                 case 15:
                     if (clock >= 100){
@@ -1047,34 +1067,56 @@ void auton(int autonMode){
                         process = -1;
                         nextProcess = 14;
                     }
+		    if (autonMode == 1){
+		    	process ++;
+		    }
                 case 16://Drive forwards to line up with the platform
                     if (clock >= 100){
                         driveTurn(-180 * (colorRed?1:-1), 60);
                         process = -1;
                         nextProcess = 15;
                     }
+		    if (autonMode == 1){
+		    	process ++;
+		    }
                     break;
                 case 17://turn towards the platform
                     if (clock >= 100){
                         driveForward(-1.5, 80);
                         process ++;
                     }
+		    if (autonMode == 1){
+		    	process ++;
+		    }
                     break;
                 case 18://Wait for the motors to stop and then end auton
                     if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
                         process ++;
                     }
+		    if (autonMode == 1){
+		    	process ++;
+		    }
             }
             if (process == 5 || process == 6 || process == 8 || process == 9){//Line up and fire the ball launcher
                 double angle = 0;
-                if (process == 5){
-                    angle = 18;
-                }
-                if (process == 8){
-                    angle = 30;
-                }
+		if (autonMode == 1 || autonMode == 2 || autonMode == 5){
+		    if (process == 5){
+		        angle = 18;
+		    }
+		    if (process == 8){
+		        angle = 30;
+		    }
+		}
+		if (autonMode == 3 || autonMode == 4){
+		    if (process == 5){
+		    	angle == 15;
+		    }
+		    if (process == 8){
+		    	angle = 25;
+		    }
+		}
                 if (process == 5 || process == 8){
-                    setLauncherToAngle(angle);                    
+                    setLauncherToAngle(angle);
                 } else {
                     mtrLauncherAngle.stop(vex::brakeType::hold);
                 }
