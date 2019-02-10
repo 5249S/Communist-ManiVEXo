@@ -1,40 +1,3 @@
-//robot-config.h
-
-vex::brain robotMain;
-vex::controller ctrPrimary = vex::controller(vex::controllerType::primary);
-vex::controller ctrSecond = vex::controller(vex::controllerType::partner);
-vex::competition compControl;
-
-vex::motor mtrDriveLeft = vex::motor(vex::PORT1);
-vex::motor mtrDriveRight = vex::motor(vex::PORT7, true);
-vex::motor mtrDriveLeftBack = vex::motor(vex::PORT13);
-vex::motor mtrDriveRightBack = vex::motor(vex::PORT14, true);
-vex::motor mtrLiftLeft = vex::motor(vex::PORT3, true);
-vex::motor mtrLiftRight = vex::motor(vex::PORT4);
-vex::motor mtrClaw = vex::motor(vex::PORT12, true);
-vex::motor mtrLauncherAngle = vex::motor(vex::PORT10, true);
-vex::motor mtrLauncherFire = vex::motor(vex::PORT8);
-vex::motor mtrBallLift = vex::motor(vex::PORT5, true);
-
-vex::vision::signature SIG_FLAG_RED (1, 7079, 7977, 7528, 409, 1415, 912, 8.199999809265137, 0);
-vex::vision::signature SIG_FLAG_BLUE (2, -4121, -3129, -3625, 13045, 15237, 14141, 9.300000190734863, 0);
-vex::vision::signature SIG_3 (3, 0, 0, 0, 0, 0, 0, 3, 0);
-vex::vision::signature SIG_4 (4, 0, 0, 0, 0, 0, 0, 3, 0);
-vex::vision::signature SIG_5 (5, 0, 0, 0, 0, 0, 0, 3, 0);
-vex::vision::signature SIG_6 (6, 0, 0, 0, 0, 0, 0, 3, 0);
-vex::vision::signature SIG_7 (7, 0, 0, 0, 0, 0, 0, 3, 0);
-vex::vision visLauncher = vex::vision(vex::PORT11, 61, SIG_FLAG_RED, SIG_FLAG_BLUE, SIG_3, SIG_4, SIG_5, SIG_6, SIG_7);
-
-vex::limit limBallLift = vex::limit(robotMain.ThreeWirePort.A);
-vex::accelerometer accelLauncherX = vex::accelerometer(robotMain.ThreeWirePort.B);
-vex::accelerometer accelLauncherY = vex::accelerometer(robotMain.ThreeWirePort.C);
-vex::accelerometer accelLauncherZ = vex::accelerometer(robotMain.ThreeWirePort.D);
-
-vex::gyro gyroNav = vex::gyro(robotMain.ThreeWirePort.G);
-vex::accelerometer accelNavX = vex::accelerometer(robotMain.ThreeWirePort.E);
-vex::accelerometer accelNavY = vex::accelerometer(robotMain.ThreeWirePort.F);
-vex::digital_out redLightRight = vex::digital_out(robotMain.ThreeWirePort.H);
-
 /*--------------------------------------------*/
 /*                    5249S                   */
 /*              Robotic ManiVEXo              */
@@ -623,10 +586,10 @@ class DriveMethods {
             int rightPower = rightMotor(y, x);
             if (leftPower < 0){
                 mtrDriveLeft.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
-		mtrDriveLeftBack.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
+		        mtrDriveLeftBack.spin(vex::directionType::rev, (double)(-leftPower), vex::velocityUnits::pct);
             } else {
                 mtrDriveLeft.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
-		mtrDriveBack.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
+		        mtrDriveLeftBack.spin(vex::directionType::fwd, (double)leftPower, vex::velocityUnits::pct);
             }
             
             if (rightPower < 0){
@@ -954,199 +917,249 @@ void auton(int autonMode){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(1,0);
     ctrPrimary.Screen.print("Autonomous");
-    if (autonMode == 1 || autonMode == 2){//If the auton is for the game
-        //Declare variable here
-        int clock = 0;//Reset clock, motors, and process
-        int process = 0; //variable to control where in the auton you are
-        int nextProcess = 0;
-        driveYawPID.reset();
-        driveSpeedPID.reset();
-        while (confirmAuton() && process < 21){//Parks if auton 2 or 4 was chosen, otherwise doesnt park
-            if (process == -1 && nextProcess < 7 || process < 7 && process != -1){
-                robot.liftBall(true, false, true);
-            }
-            if (process == 7){
-                robot.liftBall(true, false, false);
-            }
-            switch (process){
-                case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        clock = 0;
-                        process = nextProcess;
-                    }
-                    break;
-                case 0://Drive towards ball under cap and pick it up
-                    driveForward(1.75, 80);
-                    process = -1;
-                    nextProcess = 1;
-                    break;
-                case 1://Backup to firing position
-                    if (clock >= 1000){
-                        driveForward(-1.45, 60);
-                        process = -1;
-                        nextProcess = 2;
-                    }
-                    break;
-                case 2://Drive towards the flags
-                    if (clock >= 100){
-                        driveTurn((colorRed?-90:87), 60);
-                        process ++;
-                    }
-                    break;
-                case 3://lower the launcher down
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        robot.launchAngle(false, true);
-                        process ++;
-                        clock = 0;
-                    }
-                    break;
-                case 4://stop the launcher and begin firing of both balls
-                    if (clock >=500){
-                        robot.launchAngle(false, false);
-                        process ++;
-                    }
-                    break;
-                case 7:
-		    process ++;
-                    break;
-                case 10: if (clock >= 100){
-	            if (autonMode == 1 || autonMode == 3){
-		    	if (clock >= 100){
-			    driveTurn(colorRed?-180:180), 60);
-			    process = -1;
-		            nextProcess = 11;
-			}
-		    }
-		    if (autonMode == 2 || autonMode == 5){
-			if (clock >= 100){
-			    process ++;
-			}
-		    }
-		    if (autonMode == 4){
-		        process ++;
-		    }
-                    break;
+    //Declare variable here
+    int clock = 0;//Reset clock, motors, and process
+    int process = 0; //variable to control where in the auton you are
+    int nextProcess = 0;
+    driveYawPID.reset();
+    driveSpeedPID.reset();
+    if (autonMode == 0){
+        return;
+    }
+    while (confirmAuton() && process < 20){
+        if ((process == -1 && nextProcess < 7) || (process < 7 && process != -1)){
+            robot.liftBall(true, false, true);
+        }
+        if (process == 7){
+            robot.liftBall(true, false, false);
+        }
+        switch (process){
+            case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    clock = 0;
+                    process = nextProcess;
                 }
-                case 11://Wait 100 milliseconds before firing
-		    if (autonMode == 2){
-                        if(clock >= 100){
-                            driveTurn((colorRed?-96:96), 60);
-                            process = -1;
-                            nextProcess = 12;
-			}
+                break;
+            case 0://Drive towards ball under cap and pick it up
+                driveForward(1.75, 80);
+                process = -1;
+                nextProcess = 1;
+                break;
+            case 1://Backup to firing position
+                if (clock >= 1000){
+                    driveForward(-1.45, 60);
+                    process = -1;
+                    nextProcess = 2;
+                }
+                break;
+            case 2://Drive towards the flags
+                if (clock >= 100){
+                    if (autonMode == 1 || autonMode == 2 || autonMode == 5){
+                        driveTurn((colorRed?-91:87), 60);
+                    } else {
+                        driveTurn((colorRed?-94:90), 60);
                     }
-		    if (autonMode == 1){
-		    	if(clock >= 100){
-			    driveForward(-1.5, 100);
-			    process = -1;
-			    nextProcess = 12;
-			}
-		    }
-                    break;
-                case 12://Drive forwards to hit the bottom flag
-		    if (autonMode == 2){
-                        if (clock >= 100){
-                            driveForward(1.9, 80);
-                            process ++;
-                        }
-		    }
-		    if (autonMode == 1 || autonMode == 4){
-		    	process ++;
-		    }
-                    break;
-                case 13://Drive backwards
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(-1.9, 80);
+                    process ++;
+                }
+                break;
+            case 3://lower the launcher down
+                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                    robot.launchAngle(false, true);
+                    process ++;
+                    clock = 0;
+                }
+                break;
+            case 4://stop the launcher and begin firing of both balls
+                if (clock >=500){
+                    robot.launchAngle(false, false);
+                    process ++;
+                }
+                break;
+            case 7:
+                process ++;
+                break;
+            case 10://Autons diverge here
+                if (autonMode == 1 || autonMode == 3){//Backup
+                    driveForward(-0.8, 60);
+                    process = -1;
+                    nextProcess = 11;
+                }
+                if (autonMode == 2 || autonMode == 5){
+                    process ++;
+                }
+                if (autonMode == 3){//Turn straight
+                    driveTurn((colorRed?-90: 90), 60);
+                    process = -1;
+                    nextProcess = 11;
+                }
+                if (autonMode == 4){
+                    process ++;
+                }
+                break;
+            case 11: 
+                if (autonMode == 1){//Turn towards the platform
+                    if (clock >= 100){
+                        driveTurn((colorRed?-180:180), 60);
                         process = -1;
                         nextProcess = 12;
                     }
-		    if (autonMode == 1){
-		    	process ++;
-		    }
-                    break;
-                case 14://Turn to face the oppisite side
+                }
+                if (autonMode == 2 || autonMode == 5){
                     if (clock >= 100){
-                        driveTurn(-90 * (colorRed?1:-1), 80);
-                        robot.setLiftLevel(1);
+                        process ++;
+                    }
+                }
+                if (autonMode == 3){//Drive Straight
+                    if (clock >= 100){
+                        driveForward(1.3, 60);
+                        process = -1;
+                        nextProcess = 12;
+                    }
+                }
+                if (autonMode == 4){
+                    process ++;
+                }
+                break;
+            case 12:
+                if (autonMode == 1){//Drive onto platform
+                    if(clock >= 100){
+                        driveForward(-2, 100);
                         process = -1;
                         nextProcess = 13;
                     }
-		    if (autonMode == 1){
-		    	process ++;
-		    }
-                    break;
-                case 15:
+                }
+                if (autonMode == 2 || autonMode == 5){//Turn to hit bottom flag
+                    if(clock >= 100){
+                        driveTurn((colorRed?-96:98), 60);
+                        process = -1;
+                        nextProcess = 13;
+                    }
+                }
+                if (autonMode == 3){//Turn towards platform
                     if (clock >= 100){
-                        driveForward(-2, 80);
+                        driveTurn((colorRed?-180:180), 60);
+                        process = -1;
+                        nextProcess = 13;
+                    }
+                }
+                if (autonMode == 4){
+                    process ++;
+                }
+                break;
+            case 13:
+                if (autonMode == 1 || autonMode == 4){//End of 1 and 4
+                    process ++;
+                }
+                if (autonMode == 2 || autonMode == 5){//Drive forwards to hit the bottom flag
+                    if (clock >= 100){
+                        driveForward(1.9, 80);
+                        process ++;
+                    }
+                }
+                if (autonMode == 3){
+                    if(clock >= 100){
+                        driveForward(-2, 100);
                         process = -1;
                         nextProcess = 14;
                     }
-		    if (autonMode == 1){
-		    	process ++;
-		    }
-                case 16://Drive forwards to line up with the platform
-                    if (clock >= 100){
-                        driveTurn(-180 * (colorRed?1:-1), 60);
+                }
+                break;
+            case 14:
+                if (autonMode == 1 || autonMode == 3 || autonMode == 4){
+                    process ++;
+                }
+                if (autonMode == 2 || autonMode == 5){//Drive backwards
+                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                        driveForward(-1.9, 80);
                         process = -1;
                         nextProcess = 15;
                     }
-		    if (autonMode == 1){
-		    	process ++;
-		    }
-                    break;
-                case 17://turn towards the platform
+                }
+                break;
+            case 15:
+                if (autonMode != 5){
+                    process ++;
+                }
+                if (autonMode == 5){
                     if (clock >= 100){
-                        driveForward(-1.5, 80);
-                        process ++;
+                        driveTurn((colorRed?-90:90), 60);
+                        process = -1;
+                        nextProcess = 16;
                     }
-		    if (autonMode == 1){
-		    	process ++;
-		    }
-                    break;
-                case 18://Wait for the motors to stop and then end auton
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        process ++;
+                }
+                break;
+            case 16:
+                if (autonMode != 5){
+                    process ++;
+                }
+                if (autonMode == 5){
+                    if (clock >= 100){
+                        driveForward(-1, 60);
+                        process = -1;
+                        nextProcess = 17;
                     }
-		    if (autonMode == 1){
-		    	process ++;
-		    }
-            }
-            if (process == 5 || process == 6 || process == 8 || process == 9){//Line up and fire the ball launcher
-                double angle = 0;
-		if (autonMode == 1 || autonMode == 2 || autonMode == 5){
-		    if (process == 5){
-		        angle = 18;
-		    }
-		    if (process == 8){
-		        angle = 30;
-		    }
-		}
-		if (autonMode == 3 || autonMode == 4){
-		    if (process == 5){
-		    	angle == 15;
-		    }
-		    if (process == 8){
-		    	angle = 25;
-		    }
-		}
-                if (process == 5 || process == 8){
-                    setLauncherToAngle(angle);
-                } else {
-                    mtrLauncherAngle.stop(vex::brakeType::hold);
                 }
-                if ((process == 5 || process == 8) && clock >= 1600){//Wait three seconds before firing
-                    mtrLauncherFire.startRotateTo(1800 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                break;
+            case 17:
+                if (autonMode != 5){
                     process ++;
-                    clock = 0;
                 }
-                if ((process == 6 || process == 9) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+                if (autonMode == 5){
+                    if (clock >= 100){
+                        driveTurn((colorRed?-180:180), 60);
+                        process = -1;
+                        nextProcess = 18;
+                    }
+                }
+                break;
+            case 18:
+                if (autonMode != 5){
                     process ++;
-                    clock = 0;
                 }
-            }
-            wait(20);
-            clock += 20;
+                if (autonMode == 5){
+                    if (clock >= 100){
+                        driveForward(-3, 60);
+                        process = -1;
+                        nextProcess = 19;
+                    }
+                }
+                break;
         }
+        if (process == 5 || process == 6 || process == 8 || process == 9){//Line up and fire the ball launcher
+            double angle = 0;
+            if (autonMode == 1 || autonMode == 2 || autonMode == 5){
+                if (process == 5){
+                    angle = 19;
+                }
+                if (process == 8){
+                    angle = 33;
+                }
+            }
+            if (autonMode == 3 || autonMode == 4){
+                if (process == 5){
+                    angle = 20;
+                }
+                if (process == 8){
+                    angle = 27;
+                }
+            }
+            if (process == 5 || process == 8){
+                setLauncherToAngle(angle);
+            } else {
+                mtrLauncherAngle.stop(vex::brakeType::hold);
+            }
+            if ((process == 5 || process == 8) && clock >= 1600){//Wait three seconds before firing
+                mtrLauncherFire.startRotateTo(1800 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                process ++;
+                clock = 0;
+            }
+            if ((process == 6 || process == 9) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+                process ++;
+                clock = 0;
+            }
+        }
+        wait(20);
+        clock += 20;
     }
 }
 
