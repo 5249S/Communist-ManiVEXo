@@ -7,12 +7,12 @@ vex::competition compControl;
 
 vex::motor mtrDriveLeft = vex::motor(vex::PORT15, true);
 vex::motor mtrDriveLeftBack = vex::motor(vex::PORT14);
-vex::motor mtrDriveRight = vex::motor(vex::PORT13, true);
-vex::motor mtrDriveRightBack = vex::motor(vex::PORT12);
+vex::motor mtrDriveRight = vex::motor(vex::PORT13);
+vex::motor mtrDriveRightBack = vex::motor(vex::PORT12,true);
 
 vex::motor mtrLiftLeft = vex::motor(vex::PORT3, true);
 vex::motor mtrLiftRight = vex::motor(vex::PORT4);
-vex::motor mtrClaw = vex::motor(vex::PORT12, true);
+vex::motor mtrClaw = vex::motor(vex::PORT2, true);
 vex::motor mtrLauncherAngle = vex::motor(vex::PORT10, true);
 vex::motor mtrLauncherFire = vex::motor(vex::PORT8);
 vex::motor mtrBallLift = vex::motor(vex::PORT5, true);
@@ -24,7 +24,7 @@ vex::vision::signature SIG_4 (4, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision::signature SIG_5 (5, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision::signature SIG_6 (6, 0, 0, 0, 0, 0, 0, 3, 0);
 vex::vision::signature SIG_7 (7, 0, 0, 0, 0, 0, 0, 3, 0);
-vex::vision visLauncher (vex::PORT11, 109, SIG_FLAG_RED, SIG_FLAG_BLUE, SIG_3, SIG_4, SIG_5, SIG_6, SIG_7);
+vex::vision visLauncher (vex::PORT11, 75, SIG_FLAG_RED, SIG_FLAG_BLUE, SIG_3, SIG_4, SIG_5, SIG_6, SIG_7);
 
 vex::limit limBallLift = vex::limit(robotMain.ThreeWirePort.A);
 vex::accelerometer accelLauncherX = vex::accelerometer(robotMain.ThreeWirePort.B);
