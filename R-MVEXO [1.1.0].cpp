@@ -41,7 +41,7 @@ double getAccelTiltAngle(){//Method for getting the tilt angle of the ball launc
     return (180/3.141592)*atan((trueValues[0])/(sqrt(pow(trueValues[1],2)+pow(trueValues[2],2))));//Calculates tilt angle
 }
 void runDiagnostics(){//Method for displaying any problems with the robot
-    char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MllH ","MlrH","","","",""};//array of warning texts
+    char warningText[10][6] = {"BatL ","BatH ","MdlH ","MdrH ","MblH ","MbrH","Mlf2 ","Mla ","Mlf",""};//array of warning texts
     for (int i = 0; i < 10; i++){ //store the previous state of each error to check for a change
         warning[i][1] = warning[i][0];
     }
@@ -49,9 +49,9 @@ void runDiagnostics(){//Method for displaying any problems with the robot
     warning[1][0] = robotMain.Battery.temperature() > 80; //Battery temperature > 80%
     warning[2][0] = mtrDriveLeft.temperature(vex::percentUnits::pct) > 45; //Left Drive Motor Temp >45%
     warning[3][0] = mtrDriveRight.temperature(vex::percentUnits::pct) >45; //Right Drive Motor Temp >45%
-    warning[4][0] = mtrLiftLeft.temperature(vex::percentUnits::pct) > 45; //Left Lift Motor Temp >45%
-    warning[5][0] = mtrLiftRight.temperature(vex::percentUnits::pct) > 45; //Right Lift Motor Temp >45%
-    warning[6][0] = mtrClaw.temperature(vex::percentUnits::pct) > 45; //Claw Motor Temp >45%
+    warning[4][0] = mtrDriveLeftBack.temperature(vex::percentUnits::pct) > 45; //Left Lift Motor Temp >45%
+    warning[5][0] = mtrDriveRightBack.temperature(vex::percentUnits::pct) > 45; //Right Lift Motor Temp >45%
+    warning[6][0] = mtrLauncherFire2.temperature(vex::percentUnits::pct) > 45; //Claw Motor Temp >45%
     warning[7][0] = mtrLauncherAngle.temperature(vex::percentUnits::pct) >45; //Launcher Angle Motor Temp >45%
     warning[8][0] = mtrLauncherFire.temperature(vex::percentUnits::pct) > 45; //Launcher Fire Motor Temp >45%
     warning[9][0] = false;
@@ -125,11 +125,9 @@ void stopAllMotors(){//stops all motors on the robot
     mtrDriveRight.stop(vex::brakeType::coast);
     mtrDriveLeftBack.stop(vex::brakeType::coast);
     mtrDriveRightBack.stop(vex::brakeType::coast);
-    mtrLiftLeft.stop(vex::brakeType::coast);
-    mtrLiftRight.stop(vex::brakeType::coast);
-    mtrClaw.stop(vex::brakeType::coast);
     mtrLauncherAngle.stop(vex::brakeType::coast);
     mtrLauncherFire.stop(vex::brakeType::coast);
+    mtrLauncherFire2.stop(vex::brakeType::coast);
 	mtrBallLift.stop(vex::brakeType::coast);
     clearDiagnostics();
 }
@@ -138,11 +136,9 @@ void clearMotorRotations(){
     mtrDriveRight.resetRotation();
     mtrDriveLeftBack.resetRotation();
     mtrDriveRightBack.resetRotation();
-    mtrLiftLeft.resetRotation();
-    mtrLiftRight.resetRotation();
-    mtrClaw.resetRotation();
     mtrLauncherAngle.resetRotation();
     mtrLauncherFire.resetRotation();
+    mtrLauncherFire2.resetRotation();
     mtrBallLift.resetRotation();
 }
 bool isField(){//Method for checking if either field control device is connected
@@ -483,59 +479,11 @@ class Launcher {//Methods for controlling the ball launcher motors
         void launchFire(bool powerFwd, bool powerRev){//Fire the ball launcher
             if (powerFwd || powerRev){
                 mtrLauncherFire.spin(vex::directionType::fwd, powerFwd?100:-100, vex::velocityUnits::pct);
+                mtrLauncherFire2.spin(vex::directionType::fwd, powerFwd?100:-100, vex::velocityUnits::pct);
             } else {
-                mtrLauncherFire.stop(vex::brakeType::coast);
+                mtrLauncherFire.stop(vex::brakeType::hold);
+                mtrLauncherFire2.stop(vex::brakeType::hold);
             }
-        }
-};
-class Claw {//Methods for running the claw
-    public: 
-        void claw(bool up, bool down){//Run with booleans
-            if (up&&!down){
-                mtrClaw.spin(vex::directionType::fwd, 40, vex::velocityUnits::pct);
-            } else if(down&&!up){
-                mtrClaw.spin(vex::directionType::rev, 40, vex::velocityUnits::pct);
-            } else {
-                mtrClaw.stop(vex::brakeType::brake);
-            }
-        }
-        void clawPower(int power){//Run at specific power
-            if (power < 0){
-                mtrClaw.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
-            } else {
-                if (power > 0){
-                    mtrClaw.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
-                } else {
-                    mtrClaw.stop(vex::brakeType::hold);
-                }
-            }
-            
-        }
-        void flipClaw(bool flipped){
-            mtrClaw.startRotateTo(flipped?0:180, vex::rotationUnits::deg, 30, vex::velocityUnits::pct);
-        }
-};
-class Lift {//Methods for running the lift
-    public:
-        void lift(int power){//Run lift at specific power
-            if (power < 0){
-                mtrLiftLeft.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
-                mtrLiftRight.spin(vex::directionType::rev, (double)(-power), vex::velocityUnits::pct);
-            } else if (power > 0){
-                mtrLiftLeft.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
-                mtrLiftRight.spin(vex::directionType::fwd, (double)power, vex::velocityUnits::pct);
-            } else {
-                mtrLiftLeft.stop(vex::brakeType::hold);
-                mtrLiftRight.stop(vex::brakeType::hold);
-            }
-        }
-        void setLiftLevel(int level, double power = 30){
-            const double levels[6] = {0, 100, 420, 550, 614, 740};
-            if (level > 5){
-                return;
-            }
-            mtrLiftLeft.startRotateTo(levels[level], vex::rotationUnits::deg, power, vex::velocityUnits::pct);
-            mtrLiftRight.startRotateTo(levels[level], vex::rotationUnits::deg, power, vex::velocityUnits::pct);
         }
 };
 class DriveMethods {
@@ -623,7 +571,7 @@ class BallLift {//Methods for controlling the ball intake
         }
     }
 };
-class RobotControl: public Lift, public DriveMethods, public Claw, public Launcher, public BallLift {//Combine methods into one class
+class RobotControl: public DriveMethods, public Launcher, public BallLift {//Combine methods into one class
     
 };
 class Flag {
@@ -684,7 +632,7 @@ class BallLauncher: private Flag {
             int yP = -y + 160;//Makes center the origin
             return atan((yP/FOCAL_LENGTH)) + toRad * (getAccelTiltAngle() + offset);//Returns angle at point in radians
         }
-        const vex::color lineUpColors[4] = {vex::color::red, vex::color::yellow, vex::color::blue, vex::color::green};
+        const int lineUpColors[3][3] = {{255, 0 , 0}, {0, 0, 255}, {0, 255, 0}};
     public:
         struct TargetInformation {
             int imageLocationX = 0;
@@ -735,22 +683,22 @@ class BallLauncher: private Flag {
             for (int i = 0; i < maxIndex; i++){
                 int x = targetArray[i].inLineX;
                 int y = (int)targetArray[i].inLineY * 3;
-                robotMain.Screen.drawRectangle(x - 15, y - 10, 30, 20, (colorRed?vex::color::red:vex::color::blue));
+                robotMain.Screen.drawRectangle(x - 15, y - 10, 30, 20, (!colorRed?vex::color::red:vex::color::blue));
                 int stateInstance = 0;
                 if (abs(targetArray[i].inLineX) < 20){
-                    stateInstance ++;
-                }
-                if (fabs(targetArray[i].inLineY) < 2){
-                    stateInstance += 2;
+                    stateInstance = 1;
+                    if (fabs(targetArray[i].inLineY) < 2){
+                        stateInstance = 2;
+                    }
                 }
                 if (stateInstance > state){
                     state = stateInstance;
                 }
             }
-            //visLauncher.setLedColor(lineUpColors[state]);
+            visLauncher.setLedMode(vex::vision::ledMode::manual);
+            visLauncher.setLedColor(lineUpColors[state][0], lineUpColors[state][1], lineUpColors[state][2]);
             robotMain.Screen.setPenColor(vex::color::white);
             robotMain.Screen.drawLine(-240, 0, 240, 0);
-            //robotMain.Screen.setPenColor(lineUpColors[state]);
             robotMain.Screen.drawLine(-30, -10, -25, -10);
             robotMain.Screen.drawLine(-30, -10, -30, -5);
             robotMain.Screen.drawLine(25, -10, 30, -10);
@@ -917,249 +865,516 @@ void auton(int autonMode){
     ctrPrimary.Screen.clearScreen();
     ctrPrimary.Screen.setCursor(1,0);
     ctrPrimary.Screen.print("Autonomous");
-    //Declare variable here
-    int clock = 0;//Reset clock, motors, and process
-    int process = 0; //variable to control where in the auton you are
-    int nextProcess = 0;
-    driveYawPID.reset();
-    driveSpeedPID.reset();
-    if (autonMode == 0){
-        return;
+    if (autonMode != 5){
+        //Declare variable here
+        int clock = 0;//Reset clock, motors, and process
+        int process = 0; //variable to control where in the auton you are
+        int nextProcess = 0;
+        driveYawPID.reset();
+        driveSpeedPID.reset();
+        if (autonMode == 0){
+            return;
+        }
+        while (confirmAuton() && process < 20){
+            if ((process == -1 && nextProcess < 7) || (process < 7 && process != -1)){
+                robot.liftBall(true, false, true);
+            }
+            if (process == 7){
+                robot.liftBall(true, false, false);
+            }
+            switch (process){
+                case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
+                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                        clock = 0;
+                        process = nextProcess;
+                    }
+                    break;
+                case 0://Drive towards ball under cap and pick it up
+                    driveForward(1.75, 80);
+                    process = -1;
+                    nextProcess = 1;
+                    break;
+                case 1://Backup to firing position
+                    if (clock >= 1000){
+                        driveForward(-1.45, 60);
+                        process = -1;
+                        nextProcess = 2;
+                    }
+                    break;
+                case 2://Drive towards the flags
+                    if (clock >= 100){
+                        if (autonMode == 1 || autonMode == 2 || autonMode == 5){
+                            driveTurn((colorRed?-91:87), 60);
+                        } else {
+                            driveTurn((colorRed?-94:90), 60);
+                        }
+                        process ++;
+                    }
+                    break;
+                case 3://lower the launcher down
+                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                        robot.launchAngle(false, true);
+                        process ++;
+                        clock = 0;
+                    }
+                    break;
+                case 4://stop the launcher and begin firing of both balls
+                    if (clock >=500){
+                        robot.launchAngle(false, false);
+                        process ++;
+                    }
+                    break;
+                case 7:
+                    process ++;
+                    break;
+                case 10://Autons diverge here
+                    if (autonMode == 1 || autonMode == 3){//Backup
+                        driveForward(-0.8, 60);
+                        process = -1;
+                        nextProcess = 11;
+                    }
+                    if (autonMode == 2 || autonMode == 5){
+                        process ++;
+                    }
+                    if (autonMode == 3){//Turn straight
+                        driveTurn((colorRed?-90: 90), 60);
+                        process = -1;
+                        nextProcess = 11;
+                    }
+                    if (autonMode == 4){
+                        process ++;
+                    }
+                    break;
+                case 11: 
+                    if (autonMode == 1){//Turn towards the platform
+                        if (clock >= 100){
+                            driveTurn((colorRed?-180:180), 60);
+                            process = -1;
+                            nextProcess = 12;
+                        }
+                    }
+                    if (autonMode == 2 || autonMode == 5){
+                        if (clock >= 100){
+                            process ++;
+                        }
+                    }
+                    if (autonMode == 3){//Drive Straight
+                        if (clock >= 100){
+                            driveForward(1.3, 60);
+                            process = -1;
+                            nextProcess = 12;
+                        }
+                    }
+                    if (autonMode == 4){
+                        process ++;
+                    }
+                    break;
+                case 12:
+                    if (autonMode == 1){//Drive onto platform
+                        if(clock >= 100){
+                            driveForward(-2, 100);
+                            process = -1;
+                            nextProcess = 13;
+                        }
+                    }
+                    if (autonMode == 2 || autonMode == 5){//Turn to hit bottom flag
+                        if(clock >= 100){
+                            driveTurn((colorRed?-96:98), 60);
+                            process = -1;
+                            nextProcess = 13;
+                        }
+                    }
+                    if (autonMode == 3){//Turn towards platform
+                        if (clock >= 100){
+                            driveTurn((colorRed?-180:180), 60);
+                            process = -1;
+                            nextProcess = 13;
+                        }
+                    }
+                    if (autonMode == 4){
+                        process ++;
+                    }
+                    break;
+                case 13:
+                    if (autonMode == 1 || autonMode == 4){//End of 1 and 4
+                        process ++;
+                    }
+                    if (autonMode == 2 || autonMode == 5){//Drive forwards to hit the bottom flag
+                        if (clock >= 100){
+                            driveForward(1.9, 80);
+                            process ++;
+                        }
+                    }
+                    if (autonMode == 3){
+                        if(clock >= 100){
+                            driveForward(-2, 100);
+                            process = -1;
+                            nextProcess = 14;
+                        }
+                    }
+                    break;
+                case 14:
+                    if (autonMode == 1 || autonMode == 3 || autonMode == 4){
+                        process ++;
+                    }
+                    if (autonMode == 2 || autonMode == 5){//Drive backwards
+                        if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                            driveForward(-1.9, 80);
+                            process = -1;
+                            nextProcess = 15;
+                        }
+                    }
+                    break;
+                case 15:
+                    if (autonMode != 5){
+                        process ++;
+                    }
+                    if (autonMode == 5){
+                        if (clock >= 100){
+                            driveTurn((colorRed?-90:90), 60);
+                            process = -1;
+                            nextProcess = 16;
+                        }
+                    }
+                    break;
+                case 16:
+                    if (autonMode != 5){
+                        process ++;
+                    }
+                    if (autonMode == 5){
+                        if (clock >= 100){
+                            driveForward(-1, 60);
+                            process = -1;
+                            nextProcess = 17;
+                        }
+                    }
+                    break;
+                case 17:
+                    if (autonMode != 5){
+                        process ++;
+                    }
+                    if (autonMode == 5){
+                        if (clock >= 100){
+                            driveTurn((colorRed?-180:180), 60);
+                            process = -1;
+                            nextProcess = 18;
+                        }
+                    }
+                    break;
+                case 18:
+                    if (autonMode != 5){
+                        process ++;
+                    }
+                    if (autonMode == 5){
+                        if (clock >= 100){
+                            driveForward(-3, 60);
+                            process = -1;
+                            nextProcess = 19;
+                        }
+                    }
+                    break;
+            }
+            if (process == 5 || process == 6 || process == 8 || process == 9){//Line up and fire the ball launcher
+                double angle = 0;
+                if (autonMode == 1 || autonMode == 2 || autonMode == 5){
+                    if (process == 5){
+                        angle = 19;
+                    }
+                    if (process == 8){
+                        angle = 33;
+                    }
+                }
+                if (autonMode == 3 || autonMode == 4){
+                    if (process == 5){
+                        angle = 20;
+                    }
+                    if (process == 8){
+                        angle = 27;
+                    }
+                }
+                if (process == 5 || process == 8){
+                    setLauncherToAngle(angle);
+                } else {
+                    mtrLauncherAngle.stop(vex::brakeType::hold);
+                }
+                if ((process == 5 || process == 8) && clock >= 1600){
+                    mtrLauncherFire.startRotateTo(360 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                    mtrLauncherFire2.startRotateTo(360 + mtrLauncherFire2.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);                    
+                    process ++;
+                    clock = 0;
+                }
+                if ((process == 6 || process == 9) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+                    process ++;
+                    clock = 0;
+                }
+            }
+            wait(20);
+            clock += 20;
+        }
     }
-    while (confirmAuton() && process < 20){
-        if ((process == -1 && nextProcess < 7) || (process < 7 && process != -1)){
-            robot.liftBall(true, false, true);
-        }
-        if (process == 7){
-            robot.liftBall(true, false, false);
-        }
-        switch (process){
-            case -1://Case for pausing the auton until the drive motors are not moving, to allow for a timing system between processes
-                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                    clock = 0;
-                    process = nextProcess;
-                }
-                break;
-            case 0://Drive towards ball under cap and pick it up
-                driveForward(1.75, 80);
-                process = -1;
-                nextProcess = 1;
-                break;
-            case 1://Backup to firing position
-                if (clock >= 1000){
-                    driveForward(-1.45, 60);
-                    process = -1;
-                    nextProcess = 2;
-                }
-                break;
-            case 2://Drive towards the flags
-                if (clock >= 100){
-                    if (autonMode == 1 || autonMode == 2 || autonMode == 5){
-                        driveTurn((colorRed?-91:87), 60);
-                    } else {
-                        driveTurn((colorRed?-94:90), 60);
+    if (autonMode == 5){
+        //Declare variable here
+        int clock = 0;//Reset clock, motors, and process
+        int process = 0; //variable to control where in the auton you are
+        int nextProcess = 0;
+        int liftProcess = 0;
+        while (confirmAuton() && process < 52){
+            switch (process){
+                case -1:
+                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
+                        clock = 0;
+                        process = nextProcess;
+                        break;
                     }
-                    process ++;
-                }
-                break;
-            case 3://lower the launcher down
-                if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                    robot.launchAngle(false, true);
-                    process ++;
-                    clock = 0;
-                }
-                break;
-            case 4://stop the launcher and begin firing of both balls
-                if (clock >=500){
-                    robot.launchAngle(false, false);
-                    process ++;
-                }
-                break;
-            case 7:
-                process ++;
-                break;
-            case 10://Autons diverge here
-                if (autonMode == 1 || autonMode == 3){//Backup
-                    driveForward(-0.8, 60);
+                    break;
+                //retrieve ball
+                case 0:
+                    driveForward(1.75, 50);
                     process = -1;
-                    nextProcess = 11;
-                }
-                if (autonMode == 2 || autonMode == 5){
-                    process ++;
-                }
-                if (autonMode == 3){//Turn straight
-                    driveTurn((colorRed?-90: 90), 60);
-                    process = -1;
-                    nextProcess = 11;
-                }
-                if (autonMode == 4){
-                    process ++;
-                }
-                break;
-            case 11: 
-                if (autonMode == 1){//Turn towards the platform
+                    nextProcess = 1;
+                    liftProcess = 1;
+                    break;
+                //Flip cap
+                case 1:
+                    if (clock >= 2000){
+                        driveForward(0.5, 30);
+                        process = -1;
+                        nextProcess = 2;
+                        liftProcess = 2;
+                    }
+                    break;
+                //Shoot 2 flags
+                case 2: 
                     if (clock >= 100){
-                        driveTurn((colorRed?-180:180), 60);
+                        driveForward(-2.1, 80);
+                        process = -1;
+                        nextProcess = 3;
+                        liftProcess = 1;
+                    }
+                    break;
+                case 3:
+                    if (clock >= 100){
+                        driveTurn(-94, 60);
+                        process = -1;
+                        nextProcess = 4;
+                    }
+                    break;
+                //Hit bottom flag, pick up balls on the way there
+                case 8:
+                    driveTurn(-90, 60);
+                    process = -1;
+                    nextProcess = 9;
+                    liftProcess = 1;
+                    break;
+                case 9:
+                    if (clock >= 100){
+                        driveForward(2, 80);
+                        process = -1;
+                        nextProcess = 10;
+                    }
+                    break;
+                case 10:
+                    if (clock >= 100){
+                        driveTurn(-98, 60);
+                        process = -1;
+                        nextProcess = 11;
+                    }
+                    break;
+                case 11:
+                    if (clock >= 100){
+                        driveForward(2, 80);
                         process = -1;
                         nextProcess = 12;
                     }
-                }
-                if (autonMode == 2 || autonMode == 5){
+                    break;
+                case 12:
                     if (clock >= 100){
-                        process ++;
-                    }
-                }
-                if (autonMode == 3){//Drive Straight
-                    if (clock >= 100){
-                        driveForward(1.3, 60);
-                        process = -1;
-                        nextProcess = 12;
-                    }
-                }
-                if (autonMode == 4){
-                    process ++;
-                }
-                break;
-            case 12:
-                if (autonMode == 1){//Drive onto platform
-                    if(clock >= 100){
-                        driveForward(-2, 100);
+                        driveForward(-2, 80);
                         process = -1;
                         nextProcess = 13;
+                        liftProcess = 3;
                     }
-                }
-                if (autonMode == 2 || autonMode == 5){//Turn to hit bottom flag
-                    if(clock >= 100){
-                        driveTurn((colorRed?-96:98), 60);
-                        process = -1;
-                        nextProcess = 13;
-                    }
-                }
-                if (autonMode == 3){//Turn towards platform
+                    break;
+                //Get ball
+                case 13:
                     if (clock >= 100){
-                        driveTurn((colorRed?-180:180), 60);
-                        process = -1;
-                        nextProcess = 13;
-                    }
-                }
-                if (autonMode == 4){
-                    process ++;
-                }
-                break;
-            case 13:
-                if (autonMode == 1 || autonMode == 4){//End of 1 and 4
-                    process ++;
-                }
-                if (autonMode == 2 || autonMode == 5){//Drive forwards to hit the bottom flag
-                    if (clock >= 100){
-                        driveForward(1.9, 80);
-                        process ++;
-                    }
-                }
-                if (autonMode == 3){
-                    if(clock >= 100){
-                        driveForward(-2, 100);
+                        driveTurn(0, 60);
                         process = -1;
                         nextProcess = 14;
                     }
-                }
-                break;
-            case 14:
-                if (autonMode == 1 || autonMode == 3 || autonMode == 4){
-                    process ++;
-                }
-                if (autonMode == 2 || autonMode == 5){//Drive backwards
-                    if (!mtrDriveLeft.isSpinning() && !mtrDriveRight.isSpinning()){
-                        driveForward(-1.9, 80);
+                    break;
+                case 14:
+                    if (clock >= 100){
+                        driveForward(1.7, 50);
                         process = -1;
                         nextProcess = 15;
+                        liftProcess = 1;
                     }
-                }
-                break;
-            case 15:
-                if (autonMode != 5){
-                    process ++;
-                }
-                if (autonMode == 5){
-                    if (clock >= 100){
-                        driveTurn((colorRed?-90:90), 60);
+                    break;
+                //Flip cap
+                case 15:
+                    if (clock >= 2000){
+                        driveForward(0.5, 30);
                         process = -1;
                         nextProcess = 16;
+                        liftProcess = 2;
                     }
-                }
-                break;
-            case 16:
-                if (autonMode != 5){
-                    process ++;
-                }
-                if (autonMode == 5){
+                    break;
+                //Turn and hit two flags
+                case 16:
                     if (clock >= 100){
-                        driveForward(-1, 60);
+                        driveTurn(-95, 60);
                         process = -1;
                         nextProcess = 17;
+                        liftProcess = 1;
                     }
-                }
-                break;
-            case 17:
-                if (autonMode != 5){
-                    process ++;
-                }
-                if (autonMode == 5){
+                    break;
+                //Hit bottom flag
+                case 21:
+                    driveTurn(-97, 60);
+                    process = -1;
+                    nextProcess = 22;
+                    liftProcess = 2;
+                    break;
+                case 22:
                     if (clock >= 100){
-                        driveTurn((colorRed?-180:180), 60);
+                        driveForward(1.8, 80);
                         process = -1;
-                        nextProcess = 18;
+                        nextProcess = 23;
                     }
-                }
-                break;
-            case 18:
-                if (autonMode != 5){
-                    process ++;
-                }
-                if (autonMode == 5){
+                    break;
+                //flip cap
+                case 23:
                     if (clock >= 100){
-                        driveForward(-3, 60);
+                        driveForward(-1.1, 80);
                         process = -1;
-                        nextProcess = 19;
+                        nextProcess = 24;
                     }
-                }
-                break;
-        }
-        if (process == 5 || process == 6 || process == 8 || process == 9){//Line up and fire the ball launcher
+                    break;
+                case 24:
+                    if (clock >= 100){
+                        driveTurn(0, 60);
+                        process = -1;
+                        nextProcess = 25;
+                    }
+                    break;
+                case 25:
+                    if (clock >= 100){
+                        driveForward(2, 60);
+                        process = -1;
+                        nextProcess = 26;
+                    }
+                    break;
+                //Turn and flip another cap
+                case 26:
+                    if (clock >= 100){
+                        driveTurn(-180, 60);
+                        process = -1;
+                        nextProcess = 27;
+                    }
+                    break;
+                case 27:
+                    if (clock >= 100){
+                        driveForward(3.5, 100);
+                        process = -1;
+                        nextProcess = 28;
+                    }
+                    break;
+                //Park
+                case 28:
+                    driveTurn(-270, 40);
+                    process = -1;
+                    nextProcess = 29;
+                    break;
+                case 29:
+                    if (clock >= 100){
+                        driveForward(2,80);
+                        process = -1;
+                        nextProcess = 30;
+                    }
+                    break;
+                case 30:
+                    if (clock >= 100){
+                        driveTurn(-180, 60);
+                        process = -1;
+                        nextProcess = 31;
+                    }
+                    break;
+                case 31:
+                    if (clock >= 100){
+                        driveForward(-3.5, 100);
+                        process = -1;
+                        nextProcess = 32;
+                        liftProcess = 0;
+                    }
+                    break;
+            }
+            switch (liftProcess){
+                case 0:
+                    robot.liftBall(false, false);
+                    break;
+                case 1:
+                    robot.liftBall(true, false, true);//pull in and hold at limit switch
+                    break;
+                case 2:
+                    robot.liftBall(false, true, true);//run backwards
+                    break;
+                case 3:
+                    robot.liftBall(true, false, false);//pull in without limit
+                    break;
+            }
+            //First fire sequence
             double angle = 0;
-            if (autonMode == 1 || autonMode == 2 || autonMode == 5){
-                if (process == 5){
-                    angle = 19;
-                }
-                if (process == 8){
-                    angle = 33;
-                }
+            if (process == 4){
+                angle = 20;
             }
-            if (autonMode == 3 || autonMode == 4){
-                if (process == 5){
-                    angle = 20;
-                }
-                if (process == 8){
-                    angle = 27;
-                }
+            if (process == 6){
+                angle = 27;
             }
-            if (process == 5 || process == 8){
+            if (process == 4 || process == 6){
                 setLauncherToAngle(angle);
-            } else {
+            }
+            if (process == 5 || process == 7){
                 mtrLauncherAngle.stop(vex::brakeType::hold);
             }
-            if ((process == 5 || process == 8) && clock >= 1600){//Wait three seconds before firing
-                mtrLauncherFire.startRotateTo(1800 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+            if ((process == 4 || process == 6) && clock >= 1600){
+                mtrLauncherFire.startRotateTo(360 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                mtrLauncherFire2.startRotateTo(360 + mtrLauncherFire2.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
                 process ++;
                 clock = 0;
             }
-            if ((process == 6 || process == 9) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+            if ((process == 5 || process == 7) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+                process ++;
+                liftProcess = 3;
+                clock = 0;
+            }
+            //Second fire sequence
+            if (process == 17){
+                angle = 19;
+            }
+            if (process == 19){
+                angle = 33;
+            }
+            if (process == 17 || process == 19){
+                setLauncherToAngle(angle);
+            }
+            if (process == 18 || process == 20){
+                mtrLauncherAngle.stop(vex::brakeType::hold);
+            }
+            if ((process == 17 || process == 19) && clock >= 1600){
+                mtrLauncherFire.startRotateTo(360 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+                mtrLauncherFire2.startRotateTo(360 + mtrLauncherFire2.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
                 process ++;
                 clock = 0;
             }
+            if ((process == 18 || process == 20) && !mtrLauncherFire.isSpinning()){//Wait for the fire motor to stop
+                process ++;
+                liftProcess = 3;
+                clock = 0;
+            }
+            clock += 20;
+            wait(20);
         }
-        wait(20);
-        clock += 20;
     }
 }
 
@@ -1170,9 +1385,11 @@ void driver(){
     ctrPrimary.Screen.print("Party Time");//Party Time
     bool liftMode = false;
     bool waitForReleaseA = false;
-    bool waitForReleaseDown = false;
-    bool autoTarget = false;
-    
+    bool waitForReleaseX = false;
+    bool fire = true;
+    mtrLauncherFire.startRotateTo(200, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+    mtrLauncherFire2.startRotateTo(200, vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+
     while (confirmDriver()){
         //Run driver implementation here
         if (ctrPrimary.ButtonA.pressing() && !waitForReleaseA){//Turns on auto target
@@ -1182,41 +1399,33 @@ void driver(){
         if (!ctrPrimary.ButtonA.pressing() && waitForReleaseA){//Waits for release to change the state of auto target
             waitForReleaseA = false;
         }
-        if (ctrSecond.ButtonDown.pressing() && !waitForReleaseDown){
-            waitForReleaseDown = true;
-            autoTarget = !autoTarget;
+        if (ctrPrimary.ButtonX.pressing() && !waitForReleaseX){//Turns on auto target
+            waitForReleaseX = true;
+            fire = true;
+            mtrLauncherFire.startRotateTo(360 + mtrLauncherFire.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
+            mtrLauncherFire2.startRotateTo(360 + mtrLauncherFire2.rotation(vex::rotationUnits::deg), vex::rotationUnits::deg, 100, vex::velocityUnits::pct);
         }
-        if (!ctrSecond.ButtonDown.pressing() && waitForReleaseDown){
-            waitForReleaseDown = false;
+        if (!ctrPrimary.ButtonX.pressing() && waitForReleaseX){//Waits for release to change the state of auto target
+            waitForReleaseX = false;
         }
+        if (ctrPrimary.ButtonLeft.pressing() || ctrPrimary.ButtonRight.pressing() || !fire){
+            robot.launchFire(ctrPrimary.ButtonLeft.pressing(), ctrPrimary.ButtonRight.pressing());
+            fire = false;
+        }
+        robot.launchAngle(ctrPrimary.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing());
         targetSystem.scanForFlags();//Run target system
         double angle = targetSystem.targetSpecificFlag();
+        targetSystem.displayInformation();
         
-        if (!(ctrPrimary.ButtonR1.pressing() || ctrSecond.ButtonR1.pressing()) && !(ctrPrimary.ButtonR2.pressing() || ctrSecond.ButtonR2.pressing())){//If no manual controls are being pressed, Angle the ball launcher
-            if (autoTarget){
-                if (angle != -1 && !(ctrPrimary.ButtonX.pressing() || ctrSecond.ButtonX.pressing())){
-                    setLauncherToAngle(angle);
-                } else {
-                    mtrLauncherAngle.stop(vex::brakeType::hold);
-                }
-            } else {
-                robot.launchAngle(false, false);
-            }
-        } else {
-            robot.launchAngle(ctrPrimary.ButtonR1.pressing() || ctrSecond.ButtonR1.pressing(), ctrPrimary.ButtonR2.pressing() || ctrSecond.ButtonR2.pressing());//Angle launcher manually
-        }
         //Run the chassis
         int y = ctrPrimary.Axis3.position(vex::percentUnits::pct) * (liftMode?-1:1);//Run chassis with joystick, reverse the direction if the direction is reversed
         int x = ctrPrimary.Axis1.position(vex::percentUnits::pct);
-        if (fabs(ctrSecond.Axis4.position(vex::percentUnits::pct)/3) > 2){//If the second controller pressing the left or right button, turn the robot slowly
-            x = ctrSecond.Axis4.position(vex::percentUnits::pct)/3;
+        if (abs(ctrPrimary.Axis4.position(vex::percentUnits::pct)) > fabs((double)x)){
+            x = ctrPrimary.Axis4.position(vex::percentUnits::pct);
         }
         robot.driveH(y, x);//Power the lift
         robot.liftBall(ctrPrimary.ButtonL1.pressing() || ctrSecond.ButtonL1.pressing(), ctrPrimary.ButtonL2.pressing() || ctrSecond.ButtonL2.pressing(), !ctrPrimary.ButtonUp.pressing() && !ctrSecond.ButtonUp.pressing());//Ball Lift
-        robot.launchFire(ctrPrimary.ButtonX.pressing() || ctrSecond.ButtonX.pressing(), ctrPrimary.ButtonY.pressing() || ctrSecond.ButtonY.pressing());//Fire the launcher
-        robot.claw(ctrPrimary.ButtonLeft.pressing(), ctrPrimary.ButtonRight.pressing());
         runDiagnostics();//Check for warnings and display
-        targetSystem.displayInformation();
         wait(50);//run at 50 Hz
     }
 }
